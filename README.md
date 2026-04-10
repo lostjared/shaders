@@ -78,9 +78,6 @@ The `material/` folder contains **200+ shaders** focused on texture blending and
 Many shaders respond to mouse position for real-time control:
 - `air_full_mouse`, `audio_mouse`, `apart_mouse`, `bubble-zoom-mouse`, `code_flux_mouse`, `fisheye_mouse`, `hue-mouse`, `kale_mouse`, `matrix_mouse`, `neon_mouse`, `spiral-mouse`, `swirlMouse`, `xorMouse`, `zoom_in_out_mouse`
 
-### Gem & Crystal
-- `gem-color-spiral`, `gem-deep`, `gem-fish`, `gem-ripple`, `gem_frac`, `gem_glass`, `gem_metal`, `gem_rainbow_metal`, `gem_polar`, `halluc_gem`
-
 ## Common Uniforms
 
 These shaders typically expect the following GLSL uniforms:
