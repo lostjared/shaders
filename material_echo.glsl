@@ -1,0 +1,47 @@
+
+#version 330
+in vec2 tc;
+out vec4 color;
+uniform float alpha_r;
+uniform float alpha_g;
+uniform float alpha_b;
+uniform float alpha;
+uniform vec4 optx;
+uniform vec4 random_var;
+uniform float alpha_value;
+uniform mat4 mv_matrix;
+uniform mat4 proj_matrix;
+uniform sampler2D samp;
+uniform sampler2D mat_samp;
+
+uniform float value_alpha_r, value_alpha_g, value_alpha_b;
+uniform float index_value;
+uniform float time_f;
+uniform vec2 iResolution;
+uniform float restore_black;
+
+float random (vec2 st) {
+    return fract(sin(dot(st.xy,
+                         vec2(12.9898,78.233)))*
+        43758.5453123);
+}
+
+void main(void)
+{
+    color = texture(samp, tc);
+    
+    vec4 color1x, color2x, color3x;
+    vec4 color1, color2, color3;
+    
+    color1x = texture(mat_samp, tc/2);
+    color2x = texture(mat_samp, tc/4);
+    color3x = texture(mat_samp, tc/6);
+    
+    color1 = texture(samp, tc/2);
+    color2 = texture(samp, tc/4);
+    color3 = texture(samp, tc/6);
+
+    color = ((color1x * color1) * (color2x * color2)) * alpha * 8.0;
+    
+}
+
