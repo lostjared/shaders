@@ -34,7 +34,11 @@ void main() {
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
 
     float r = length(uv);
-    float angle = atan(uv.y, uv.x);
+    
+    // FIX 1: Rotate the UV space *before* extracting the angle.
+    // This keeps the hex grid mathematically seamless across the wrap.
+    vec2 rotatedUV = rot(iTime * 0.2 + mid * 0.5) * uv;
+    float angle = atan(rotatedUV.y, rotatedUV.x);
 
     // Tunnel mapping: polar to rectangular
     float tunnelDepth = 1.0 / (r + 0.1);
@@ -44,8 +48,8 @@ void main() {
     tunnelDepth += iTime * (1.0 + bass * 2.0);
 
     // Hexagonal tile pattern
+    // Because we rotated the UVs early, we don't need to rotate the hex grid here.
     vec2 hex = vec2(tunnelAngle * 3.0, tunnelDepth * 2.0);
-    hex = rot(iTime * 0.2 + mid * 0.5) * hex;
     vec2 hexFrac = fract(hex) - 0.5;
     float hexDist = max(abs(hexFrac.x), abs(hexFrac.y) * 0.866 + abs(hexFrac.x) * 0.5);
     float hexEdge = smoothstep(0.48, 0.45, hexDist);
@@ -59,8 +63,9 @@ void main() {
     col.g = texture(samp, sampUV).g;
     col.b = texture(samp, sampUV - vec2(chroma, 0.0)).b;
 
-    // Color band flow through tiles
-    float band = sin(tunnelDepth * 5.0 + tunnelAngle * 3.0 - iTime * 3.0) * 0.5 + 0.5;
+    // FIX 2: Use raw `angle` instead of `tunnelAngle * 3.0`.
+    // The raw angle provides a perfect 2*PI wrap, making the sine wave perfectly continuous.
+    float band = sin(tunnelDepth * 5.0 + angle - iTime * 3.0) * 0.5 + 0.5;
     col *= psyche(band + iTime * 0.15 + bass);
 
     // Hex edge neon glow

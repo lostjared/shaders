@@ -39,15 +39,17 @@ void main() {
     float drainSpeed = 2.0 + bass * 4.0;
     float drainAngle = angle + log(r + 0.01) * (5.0 + mid * 3.0) - iTime * drainSpeed;
 
-    // Spectral color bands in spiral
-    float bands = sin(drainAngle * (6.0 + treble * 4.0)) * 0.5 + 0.5;
+    // FIX 1: Lock the angle multiplier to an integer (6.0) so the sine wave wraps.
+    // Move the audio reactivity (+ treble * 4.0) outside the parenthesis so it acts 
+    // as a phase shift instead of a frequency multiplier.
+    float bands = sin(drainAngle * 6.0 + treble * 4.0) * 0.5 + 0.5;
     bands = pow(bands, 2.0);
 
     // Echo trails: multiple offset samples
     vec3 result = vec3(0.0);
     for (float i = 0.0; i < 5.0; i++) {
         float echoR = r + i * 0.02;
-        float echoAngle = drainAngle + i * 0.15;
+        float echoAngle = drainAngle + i * 0.15; // +0.15 is safe because it's a phase shift
         vec2 echoUV = vec2(cos(echoAngle), sin(echoAngle)) * echoR * 0.5 + 0.5;
         vec3 s = texture(samp, mirrorUV(echoUV)).rgb;
         s *= spectral(i * 0.2 + r + iTime * 0.3);
@@ -55,8 +57,13 @@ void main() {
     }
     result /= 2.0;
 
+    // FIX 2: Cancel out the 1.5 multiplier inside the spectral() function.
+    // By dividing the angle by 1.5 and multiplying by 2.0, the internal math 
+    // resolves to exactly 2.0, which is an integer and wraps cleanly.
+    float safeAngleForSpectral = (drainAngle / TAU) / 1.5 * 2.0;
+    
     // Band color overlay
-    result += spectral(drainAngle / TAU + r + iTime * 0.1) * bands * (0.3 + mid * 0.4);
+    result += spectral(safeAngleForSpectral + r + iTime * 0.1) * bands * (0.3 + mid * 0.4);
 
     // Drain center suction glow
     float suction = exp(-r * (4.0 - bass * 3.0));

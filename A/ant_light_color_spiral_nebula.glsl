@@ -53,16 +53,24 @@ void main() {
     float angle = atan(uv.y, uv.x);
 
     // Spiral arm warp
+    // It's safe to multiply the log(r) by a float because it doesn't wrap radially.
     float spiral = angle + log(r + 0.01) * (3.0 + bass * 4.0) - iTime * 0.8;
-    float armDensity = sin(spiral * (3.0 + mid * 2.0)) * 0.5 + 0.5;
+    
+    // FIX 1: Lock the spiral multiplier to an integer (3.0) for 3 distinct arms.
+    // Move the `mid * 2.0` audio reactivity outside the multiplication so it 
+    // shifts the phase (rotates the arms) rather than changing the frequency.
+    float armDensity = sin(spiral * 3.0 + mid * 2.0) * 0.5 + 0.5;
     armDensity = pow(armDensity, 1.5);
 
     // Nebula cloud layers
     float cloud = fbm(uv * 4.0 + iTime * 0.2 + bass * 0.5);
     cloud = mix(cloud, armDensity, 0.5 + mid * 0.3);
 
-    // Texture warp through spiral
-    vec2 spiralUV = vec2(cos(spiral * 0.3), sin(spiral * 0.3)) * r * 0.6 + 0.5;
+    // FIX 2: Remove the 0.3 multiplier inside cos/sin. 
+    // The angle multiplier is now implicitly 1.0, ensuring a perfect 2*PI wrap 
+    // for the texture coordinates.
+    vec2 spiralUV = vec2(cos(spiral), sin(spiral)) * r * 0.6 + 0.5;
+    
     float chroma = treble * 0.04;
     vec3 col;
     col.r = texture(samp, spiralUV + vec2(chroma, 0.0)).r;

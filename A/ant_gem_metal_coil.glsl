@@ -12,8 +12,11 @@ uniform float amp_peak;
 uniform float amp_smooth;
 uniform sampler1D spectrum;
 
+const float TAU = 6.28318530718;
+
 vec3 metalSpectrum(float t) {
-    return vec3(0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67))));
+    // Replaced the hardcoded number with TAU for mathematical precision
+    return vec3(0.5 + 0.5 * cos(TAU * (t + vec3(0.0, 0.33, 0.67))));
 }
 
 void main(void) {
@@ -51,9 +54,11 @@ void main(void) {
     baseTex.g = texture(samp, sampUV).g;
     baseTex.b = texture(samp, sampUV - vec2(chroma, 0.0)).b;
 
-    // Metallic coil coloring
-    vec3 coilColor1 = metalSpectrum(spiral * 0.1 + time_f * 0.15);
-    vec3 coilColor2 = metalSpectrum(spiral2 * 0.1 + time_f * 0.2 + 0.5);
+    // FIX: Divide the spiral by TAU before passing it to the spectrum function.
+    // This perfectly cancels out the internal TAU multiplication, maintaining 
+    // a whole-integer mathematical loop across the angle wrap.
+    vec3 coilColor1 = metalSpectrum((spiral / TAU) + time_f * 0.15);
+    vec3 coilColor2 = metalSpectrum((spiral2 / TAU) + time_f * 0.2 + 0.5);
     vec3 metalMix = mix(coilColor1, coilColor2, coil2);
 
     // Blend coils with texture

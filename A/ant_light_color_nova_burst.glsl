@@ -42,7 +42,11 @@ void main() {
     // Nova explosion: radial burst with chromatic split
     float burst = exp(-r * (2.0 - bass * 1.5));
     vec2 burstUV = uv * (1.0 + burst * bass * 0.5);
-    burstUV = rot(angle * 0.1 + iTime * 0.3 + mid) * burstUV;
+    
+    // FIX: Rotate/swirl the space based on 'r' (radius) rather than 'angle'.
+    // This creates a continuous, unbroken vortex twist. 
+    // I swapped `angle * 0.1` for `r * 1.5` to maintain a cool spatial distortion.
+    burstUV = rot(r * 1.5 + iTime * 0.3 + mid) * burstUV;
 
     vec2 sampUV = burstUV * 0.5 + 0.5;
     float chroma = (treble + air) * 0.05 + shockwave * 0.02;
@@ -58,7 +62,7 @@ void main() {
     // Core glow
     col += rainbow(iTime * 0.2) * burst * (1.5 + amp_peak * 3.0);
 
-    // Radial light spokes
+    // Radial light spokes (This was mathematically safe because of the floor() function!)
     float spokes = abs(sin(angle * (6.0 + floor(treble * 6.0)) + iTime));
     spokes = pow(spokes, 8.0) * burst;
     col += rainbow(angle / TAU + iTime * 0.3) * spokes * (1.0 + air * 2.0);

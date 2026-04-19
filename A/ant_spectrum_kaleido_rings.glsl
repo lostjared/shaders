@@ -54,9 +54,13 @@ void main() {
     float ringDensity = 12.0 + mid * 25.0;
     float ringPattern = sin(r * ringDensity - iTime * 3.0);
 
-    // Ring-wrapped texture sample
-    float ringR = fract(r * ringDensity / (2.0 * PI) + iTime * 0.2);
-    vec2 ringUV = vec2(angle / PI * 0.5 + 0.5, ringR);
+    // FIX 1: Remove fract() so the radius grows continuously.
+    // Your custom mirror() function needs a continuous, unwrapped number to fold properly.
+    float ringR = (r * ringDensity / (2.0 * PI)) + iTime * 0.2;
+    
+    // FIX 2: Use abs(angle) to seamlessly bounce the polar wrap instead of letting it snap.
+    // This prevents the GPU's mipmapper from tearing the texture when the angle resets.
+    vec2 ringUV = vec2(abs(angle) / PI, ringR);
     ringUV = mirror(ringUV);
 
     // Kaleidoscopic texture sample
@@ -67,8 +71,10 @@ void main() {
     // Echo rings: samples at different ring depths
     vec3 echoRings = vec3(0.0);
     for (float e = 1.0; e < 5.0; e++) {
-        float eR = fract((r + e * 0.05) * ringDensity / (2.0 * PI) + iTime * 0.2);
-        vec2 eUV = mirror(vec2(angle / PI * 0.5 + 0.5, eR));
+        // Apply the same continuous radius and mirrored angle fixes here
+        float eR = ((r + e * 0.05) * ringDensity / (2.0 * PI)) + iTime * 0.2;
+        vec2 eUV = mirror(vec2(abs(angle) / PI, eR));
+        
         vec3 eSamp = texture(samp, eUV).rgb;
         // Rainbow per ring
         float specFreq = texture(spectrum, e * 0.08 + 0.05).r;
