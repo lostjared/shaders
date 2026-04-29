@@ -95,9 +95,6 @@ Gameplay-friendly post-process variants — calibrated to be visible without sig
 - **Tone / film looks** — `game_amber_mono`, `game_anamorphic`, `game_anime_cel`, `game_arcade_crt`, `game_bleach_bypass`, `game_chroma_split`, `game_cinema_wide`, `game_color_grade_*`, `game_film_grain`, `game_lcd_subpixel`, `game_lo_fi`, `game_neon_outline`, `game_night_vision`, `game_paper_sketch`, `game_retro_vhs`, `game_thermal`, `game_tilt_shift`, `game_vignette_*`.
 - **`game_ant_*` boosted overlays** — gameplay-tuned versions of the `ant_gem_*` family (same names: `aurora_tunnel`, `chrome_wave`, `cosmic_web`, `metal_*`, `gem_*`, `frac_*`). Higher base alpha so the effect is visible during gameplay but the underlying scene remains readable.
 
-### `pilot_effect_ant_*` series (≈80 shaders)
-Stylized variants of the `ant_*` shaders intended for HUD / overlay use in pilot/cockpit-style scenes. They share the `ant_gem_*` naming (`_bloom`, `_flare`, `_lattice`, `_pulse`, `_ripple`, `_storm`, `_tunnel`, `_weave`, etc.) but emphasize transparent overlay output suitable for compositing on top of 3-D scenes.
-
 ### `react*` series (≈21 shaders)
 Numbered audio-reactive shaders (`react`, `react2` … `react20+`). Each reacts to `amp` / `amp_*` uniforms with a different visual response (color shift, warp, bloom, kaleidoscope, wave). Useful as drop-in audio-visualizer post-effects.
 
