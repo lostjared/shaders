@@ -254,4 +254,8 @@ A handful of shaders expect a model-view-projection setup for vertex transforms.
 
 ## License
 
-See [LICENSE](LICENSE) for details.
+This shader collection is **free to use** and released under the **MIT License**. You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of these shaders in personal, educational, or commercial projects, provided that the original copyright notice and permission notice are included in all copies or substantial portions of the work.
+
+The shaders are provided **"as is", without warranty of any kind**, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement.
+
+See [LICENSE](LICENSE) for the full license text.
