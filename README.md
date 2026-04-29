@@ -14,6 +14,7 @@ Shaders are organized alphabetically into folders by the first character of thei
 |--------|----------|
 | `0-9/` | Shaders starting with a digit |
 | `A/`–`Z/` | Shaders starting with the corresponding letter (case-insensitive) |
+| `material/` | Material-based texture blending and compositing shaders |
 
 ## Effect Categories
 
@@ -78,16 +79,105 @@ The `material/` folder contains **200+ shaders** focused on texture blending and
 Many shaders respond to mouse position for real-time control:
 - `air_full_mouse`, `audio_mouse`, `apart_mouse`, `bubble-zoom-mouse`, `code_flux_mouse`, `fisheye_mouse`, `hue-mouse`, `kale_mouse`, `matrix_mouse`, `neon_mouse`, `spiral-mouse`, `swirlMouse`, `xorMouse`, `zoom_in_out_mouse`
 
-## Common Uniforms
+### Gem & Crystal
+- `gem-color-spiral`, `gem-deep`, `gem-fish`, `gem-ripple`, `gem_frac`, `gem_glass`, `gem_metal`, `gem_rainbow_metal`, `gem_polar`, `halluc_gem`
 
-These shaders typically expect the following GLSL uniforms:
+## Uniforms Reference
+
+The shaders in this collection expect the uniforms listed below. Not every shader uses every uniform — most use a small subset (typically `samp`, `time_f`, `iResolution`, and optionally `iMouse` or one of the `amp_*` audio uniforms). Hosts loading these shaders should provide whichever of these uniforms are referenced by the shader being run.
+
+### Core Inputs
 
 | Uniform | Type | Description |
 |---------|------|-------------|
-| `iResolution` | `vec2`/`vec3` | Viewport resolution in pixels |
-| `iTime` / `time_f` | `float` | Elapsed time in seconds |
-| `iMouse` | `vec2`/`vec4` | Mouse position |
-| `samp` / `iChannel0` | `sampler2D` | Input texture (camera/video) |
+| `samp` | `sampler2D` | Primary input texture (camera/video frame, or current scene). The most common sampler in this collection. |
+| `iResolution` | `vec2` | Viewport resolution in pixels (width, height). A few shaders also accept `vec3`-style resolution; `vec2` is the canonical form here. |
+| `time_f` | `float` | Elapsed time in seconds — main animation clock used by the majority of shaders. |
+| `iTime` | `float` | Alternate elapsed-time uniform (Shadertoy-style). Equivalent to `time_f` where both are present. |
+| `iTimeDelta` | `float` | Time since the last frame, in seconds. |
+| `iFrame` | `int` | Current frame number (monotonically increasing). |
+| `iFrameRate` | `float` | Target/measured frame rate in frames per second. |
+| `iDate` | `vec4` | Wall-clock date packed as `(year, month, day, seconds-since-midnight)`. |
+| `time_speed` | `float` | Multiplier controlling the rate at which `time_f` advances (used by hosts that scrub or accelerate animation). |
+
+### Mouse / Pointer
+
+| Uniform | Type | Description |
+|---------|------|-------------|
+| `iMouse` | `vec2` / `vec4` | Mouse position. As `vec2`: current pointer in pixels. As `vec4`: `(xy = current position, zw = last click position; z/w sign indicates button state)`. |
+| `iMouseClick` | `vec2` | Position of the last mouse click in pixels. |
+
+### Additional Texture Samplers
+
+Some shaders blend, echo, or composite multiple textures. Hosts should bind these as needed.
+
+| Uniform | Type | Description |
+|---------|------|-------------|
+| `samp1` … `samp8` | `sampler2D` | Auxiliary texture inputs. Used variously as additional layers (`samp1`–`samp4`), older frames in echo/feedback chains, or cached intermediate buffers. |
+| `mat_samp` | `sampler2D` | Material/overlay texture (paired with `mat_size` and `image_pos`). Used by shaders in the `material/` folder. |
+| `mat_size` | `vec2` | Pixel dimensions of `mat_samp`. |
+| `image_pos` | `vec2` | Position offset (in pixels or normalized coords) at which the material texture should be placed. |
+
+### Audio Reactivity
+
+Shaders that respond to live audio expect any subset of these. Values are typically in the range `[0.0, 1.0]` unless noted.
+
+| Uniform | Type | Description |
+|---------|------|-------------|
+| `amp` | `float` | Generic audio amplitude / bass level (0.0–1.0). Often the simple "loudness" input. |
+| `uamp` | `float` | Audio amplitude after sensitivity scaling — the user-tunable version of `amp`. |
+| `iamp` | `float` | Estimated dominant frequency in Hz (via zero-crossing rate); not a 0–1 value. |
+| `amp_peak` | `float` | Peak absolute sample value in the current audio buffer. |
+| `amp_rms` | `float` | RMS energy of the current audio buffer. |
+| `amp_smooth` | `float` | Exponentially-smoothed amplitude for gradual transitions. |
+| `amp_low` | `float` | Bass-band energy (below ~300 Hz). |
+| `amp_mid` | `float` | Mid-band energy (~300–3000 Hz). |
+| `amp_high` | `float` | Treble-band energy (above ~3000 Hz). |
+| `spectrum` | `sampler1D` | 1-D frequency spectrum texture (FFT bins) for shaders that read individual bands. |
+| `iSampleRate` | `float` | Audio sample rate in Hz (e.g. 44100). |
+| `iChannelTime[4]` | `float[4]` | Playback time for each texture channel (Shadertoy-compatible). |
+| `iChannelResolution[4]` | `vec3[4]` | Resolution of each texture channel. |
+
+### Color / Channel Controls
+
+Used by shaders that expose per-channel mixing, fading, or alpha blending.
+
+| Uniform | Type | Description |
+|---------|------|-------------|
+| `alpha` | `float` | Generic alpha / blend factor (0.0–1.0). |
+| `alpha_value` | `float` | Alternate scalar alpha used by some shaders. |
+| `alpha_r`, `alpha_g`, `alpha_b` | `float` | Per-channel alpha multipliers for red/green/blue. |
+| `value_alpha_r`, `value_alpha_g`, `value_alpha_b` | `float` | Per-channel alpha values (alternate naming used by some shaders). |
+| `blendAmt` | `float` | Generic blend amount between two layers (0.0 = base only, 1.0 = overlay only). |
+| `blendMode` | `int` | Discrete blend-mode selector (0 = normal, additional values shader-specific). |
+| `inc_value`, `inc_valuex` | `vec4` | Color/parameter offsets accumulated per frame (used by stateful color-shift shaders). |
+| `optx` | `vec4` | Generic 4-component option vector (shader-specific). |
+
+### Effect / Animation Parameters
+
+Common tweak knobs exposed by individual effects.
+
+| Uniform | Type | Description |
+|---------|------|-------------|
+| `frequency` | `float` (default `0.5`) | Main spatial/temporal frequency of warps and waves. |
+| `strength` | `float` (default `1.0`) | Intensity multiplier for warps and distortions. |
+| `uDistortion` | `float` (default `0.5`) | Distortion magnitude for glitch / warp shaders. |
+| `uPhaseRate` | `float` (default `0.1`) | Phase advance rate for cyclic effects. |
+| `uRandRate` | `float` (default `0.2`) | Rate at which random/jitter values evolve. |
+| `uRotateSpeed` | `float` (default `1.0`) | Rotation speed multiplier. |
+| `uWarpSpeed` | `float` (default `0.1`) | Warp animation speed multiplier. |
+| `seed`, `random_seed`, `random_var` | `float` / `vec4` | Seed inputs for hashed/randomized shaders. |
+| `index_value` | `float` | Discrete index input (selector for palettes, modes, etc.). |
+| `restore_black` | `float` | Toggle (0/1) used by the "strip black / restore black" pipeline so cropped letterboxing can be re-applied after a color-altering pass. |
+
+### 3-D / Geometry (rarely used)
+
+A handful of shaders expect a model-view-projection setup for vertex transforms.
+
+| Uniform | Type | Description |
+|---------|------|-------------|
+| `mv_matrix` | `mat4` | Model-view matrix. |
+| `proj_matrix` | `mat4` | Projection matrix. |
 
 ## License
 
