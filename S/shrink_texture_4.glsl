@@ -10,7 +10,7 @@ void main(void) {
     vec2 uv = tc;
     vec2 pos = uv - 0.5;
     float len = length(pos);
-    
+
     vec2 ripple = pos * (0.6 / len) * sin(len * 2.0 - time_f * 1.0);
     uv += ripple * 0.4;
     color = texture(samp, uv);

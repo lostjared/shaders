@@ -34,10 +34,8 @@ void main(void) {
     warpedCoords3.x = pingPong(rotatedTC.x + time_f * 0.6, 1.0);
     warpedCoords3.y = pingPong(rotatedTC.y + time_f * 0.6, 1.0);
 
-
     color.r = texture(samp, warpedCoords).r;
     color.g = texture(samp, warpedCoords2).g;
-    color.b  = texture(samp, warpedCoords3).b;
+    color.b = texture(samp, warpedCoords3).b;
     color.a = 1.0;
 }
-

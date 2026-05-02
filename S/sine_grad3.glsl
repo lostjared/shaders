@@ -31,4 +31,3 @@ void main(void) {
     vec4 ctx = texture(samp, spiral_tc);
     color = mix(ctx, vec4(color_gradient, 1.0), 0.5);
 }
-

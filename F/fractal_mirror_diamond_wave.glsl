@@ -26,7 +26,8 @@ vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }

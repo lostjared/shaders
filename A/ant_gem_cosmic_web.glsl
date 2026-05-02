@@ -28,12 +28,12 @@ vec3 cosmic(float t) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.10).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 p = (tc - 0.5) * vec2(aspect, 1.0);
@@ -65,7 +65,8 @@ void main() {
     const float maxIters = 30.0;
     for (float i = 0.0; i < maxIters; i++) {
         fp = abs(fp) / dot(fp, fp) - vec2(0.8 + lowMid * 0.2, 0.5);
-        if (length(fp) > 15.0) break;
+        if (length(fp) > 15.0)
+            break;
         iters++;
     }
     float norm = iters / maxIters;

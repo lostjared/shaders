@@ -17,35 +17,35 @@ void main(void) {
     // 2. Define the Swirl and Zoom
     // 'swirl' increases rotation based on distance and time
     float swirl = angle + (dist * 5.0) + (time_f * 0.5 * amp);
-    
+
     // 'zoom' pulls the texture coordinates inward over time
     float zoom = dist * (0.5 + sin(time_f * 0.2) * 0.2);
-    
+
     // 3. Convert back to Cartesian for texture sampling
     vec2 warpedUV;
     warpedUV.x = cos(swirl) * zoom;
     warpedUV.y = sin(swirl) * zoom;
-    
+
     // 4. Multi-tap Radial Sampling (The "Streak" Effect)
     // We sample multiple times to create the motion blur look in your image
     vec3 finalCol = vec3(0.0);
     int samples = 12;
     float blurSize = 0.1 * (amp + uamp);
 
-    for(int i = 0; i < samples; i++) {
+    for (int i = 0; i < samples; i++) {
         float slice = float(i) / float(samples);
         float scale = 1.0 - (slice * blurSize);
-        
+
         // Offset R, G, and B slightly for chromatic aberration
         vec2 rUV = (warpedUV * scale * 0.95) + 0.5;
         vec2 gUV = (warpedUV * scale * 1.00) + 0.5;
         vec2 bUV = (warpedUV * scale * 1.05) + 0.5;
-        
+
         finalCol.r += texture(samp, rUV).r;
         finalCol.g += texture(samp, gUV).g;
         finalCol.b += texture(samp, bUV).b;
     }
-    
+
     finalCol /= float(samples);
 
     // 5. Add that central "Open Source" glow from your image

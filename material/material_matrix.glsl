@@ -8,7 +8,7 @@ uniform float time_f;
 uniform vec2 iResolution;
 void main(void) {
     vec2 uv = tc;
-   float blockSize = 4.0 + 60.0 * abs(sin(time_f));
+    float blockSize = 4.0 + 60.0 * abs(sin(time_f));
 
     vec2 blockUV = floor(uv * iResolution / blockSize) * blockSize / iResolution;
 

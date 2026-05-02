@@ -23,7 +23,7 @@ void main(void) {
     vec3 darkColor = blendedColor * 0.5;
     vec3 brightColor = blendedColor * 1.5;
 
-     vec3 finalColor = mix(darkColor, brightColor, modulation);
+    vec3 finalColor = mix(darkColor, brightColor, modulation);
 
     color = vec4(finalColor, ctx.a);
 }

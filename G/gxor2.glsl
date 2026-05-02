@@ -16,8 +16,7 @@ void main() {
     vec3 rainbow = vec3(
         0.5 + 0.5 * sin(time_f + uv.x * 10.0),
         0.5 + 0.5 * sin(time_f + uv.y * 10.0 + 2.0),
-        0.5 + 0.5 * sin(time_f + (uv.x + uv.y) * 10.0 + 4.0)
-    );
+        0.5 + 0.5 * sin(time_f + (uv.x + uv.y) * 10.0 + 4.0));
     vec3 finalColor = mix(vec3(xor_effect_r, xor_effect_g, xor_effect_b), rainbow, 0.5);
     color = vec4(finalColor, texColor.a);
 }

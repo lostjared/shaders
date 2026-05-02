@@ -7,7 +7,7 @@ uniform sampler2D mat_samp;
 uniform float time_f;
 
 void main() {
-    
+
     color = texture(samp, tc);
     vec2 uv = tc;
     uv.x -= 0.05;
@@ -15,4 +15,3 @@ void main() {
     vec4 color2 = texture(mat_samp, uv);
     color = mix(color, color2, 0.5);
 }
-

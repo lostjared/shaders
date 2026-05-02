@@ -17,7 +17,7 @@ vec4 xor_RGB(vec4 icolor, vec4 source) {
         icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 float pingPong(float x, float length) {
@@ -40,4 +40,3 @@ void main() {
     vec4 xorResult = xor_RGB(texColor, fluctuatedColor);
     color = mix(texColor, xorResult, 0.5);
 }
-

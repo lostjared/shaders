@@ -11,25 +11,25 @@ float pingPong(float x, float length) {
     return m <= length ? m : length * 2.0 - m;
 }
 
-float h1(float n){ return fract(sin(n)*43758.5453123); }
-vec2 h2(float n){ return fract(sin(vec2(n, n+1.0))*vec2(43758.5453,22578.1459)); }
+float h1(float n) { return fract(sin(n) * 43758.5453123); }
+vec2 h2(float n) { return fract(sin(vec2(n, n + 1.0)) * vec2(43758.5453, 22578.1459)); }
 
-void main(void){
+void main(void) {
     float rate = 0.6;
     float t = time_f * rate;
     float t0 = floor(t);
     float a = fract(t);
-    float w = a*a*(3.0-2.0*a);
-    vec2 p0 = vec2(0.15) + h2(t0)*0.7;
-    vec2 p1 = vec2(0.15) + h2(t0+1.0)*0.7;
+    float w = a * a * (3.0 - 2.0 * a);
+    vec2 p0 = vec2(0.15) + h2(t0) * 0.7;
+    vec2 p1 = vec2(0.15) + h2(t0 + 1.0) * 0.7;
     vec2 center = mix(p0, p1, w);
 
     vec2 p = tc - center;
     float r = length(p);
     float ang = atan(p.y, p.x);
 
-    float swirl = 2.2 + 0.8*sin(time_f*0.35);
-    float spin = 0.6*sin(time_f*0.2);
+    float swirl = 2.2 + 0.8 * sin(time_f * 0.35);
+    float spin = 0.6 * sin(time_f * 0.2);
     ang += swirl * r + spin;
 
     float bend = 0.35;
@@ -37,7 +37,7 @@ void main(void){
 
     vec2 uv = center + vec2(cos(ang), sin(ang)) * rp;
 
-    uv += 0.02 * vec2(sin((tc.y+time_f)*4.0), cos((tc.x-time_f)*3.5));
+    uv += 0.02 * vec2(sin((tc.y + time_f) * 4.0), cos((tc.x - time_f) * 3.5));
 
     uv = vec2(pingPong(uv.x, 1.0), pingPong(uv.y, 1.0));
 

@@ -49,7 +49,7 @@ vec3 sampleWarp(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     float aspect = res.x / res.y;
 
     // Hardcoded values since we don't have uniforms for them anymore
-    float ampControl  = 1.0; 
+    float ampControl = 1.0;
     float freqControl = 1.0;
 
     vec2 p = (uv - center) * vec2(aspect, 1.0);
@@ -63,7 +63,7 @@ vec3 sampleWarp(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     a += (f1 * 4.0 + f2 * 2.0) * strength * 0.6;
     swirl = vec2(cos(a), sin(a)) * r;
 
-    float sliceBase  = 8.0;
+    float sliceBase = 8.0;
     float sliceRange = 8.0;
     float slices = sliceBase + sliceRange * (0.3 + 0.7 * ampControl) + 4.0 * sin(t * 0.17);
 
@@ -105,11 +105,11 @@ void main() {
     vec2 uv = gl_FragCoord.xy / iResolution;
 
     // Hardcoded control values
-    float ampControl  = 1.0;
+    float ampControl = 1.0;
     float freqControl = 1.0;
 
-    float tSpeed   = 0.3 + 1.7 * (freqControl * 0.5);
-    float t        = time_f * tSpeed;
+    float tSpeed = 0.3 + 1.7 * (freqControl * 0.5);
+    float t = time_f * tSpeed;
     float strength = 0.6 + 1.6 * (ampControl * 0.5);
 
     vec2 center = vec2(0.5); // Fixed center since iMouse is gone

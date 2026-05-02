@@ -18,14 +18,13 @@ uniform float time_f;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc) * texture(mat_samp, tc);
     float x = gl_FragCoord.x;
     float y = gl_FragCoord.y;
-    vec2 cord1 = vec2(tc[0]/x, tc[1]/y);
-    vec2 cord2 = vec2(tc[0]/x+32, tc[1]/y+16);
-    vec2 cord3 = vec2(tc[0]/x+64, tc[1]/y+32);
+    vec2 cord1 = vec2(tc[0] / x, tc[1] / y);
+    vec2 cord2 = vec2(tc[0] / x + 32, tc[1] / y + 16);
+    vec2 cord3 = vec2(tc[0] / x + 64, tc[1] / y + 32);
     vec4 col1 = texture(samp, cord1) * texture(mat_samp, cord1);
     vec4 col2 = texture(samp, cord2) * texture(mat_samp, cord2);
     vec4 col3 = texture(samp, cord3) * texture(mat_samp, cord3);

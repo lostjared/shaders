@@ -12,7 +12,7 @@ float pingPong(float x, float length) {
 }
 
 void main(void) {
-			vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
+    vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
     uv = uv - floor(uv);
     float angle1 = atan(uv.y - 0.5, uv.x - 0.5);
     float modulatedTime1 = pingPong(time_f, 3.0);
@@ -29,7 +29,7 @@ void main(void) {
     vec2 rotatedTC;
     rotatedTC.x = cos(angle3) * (uv.x - 0.5) - sin(angle3) * (uv.y - 0.5) + 0.5;
     rotatedTC.y = sin(angle3) * (uv.x - 0.5) + cos(angle3) * (uv.y - 0.5) + 0.5;
-    
+
     rotatedTC = sin(rotatedTC * (modulatedTime1 * modulatedTime2 * modulatedTime3));
 
     color = texture(samp, rotatedTC);

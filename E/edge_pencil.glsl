@@ -15,20 +15,10 @@ vec3 pencilSketch(sampler2D tex, vec2 uv) {
     vec2 offset = vec2(1.0 / iResolution.x, 1.0 / iResolution.y);
 
     float gx =
-          -1.0 * texture(tex, uv + vec2(-offset.x, -offset.y)).r
-        + -2.0 * texture(tex, uv + vec2(-offset.x, 0.0)).r
-        + -1.0 * texture(tex, uv + vec2(-offset.x, offset.y)).r
-        +  1.0 * texture(tex, uv + vec2(offset.x, -offset.y)).r
-        +  2.0 * texture(tex, uv + vec2(offset.x, 0.0)).r
-        +  1.0 * texture(tex, uv + vec2(offset.x, offset.y)).r;
+        -1.0 * texture(tex, uv + vec2(-offset.x, -offset.y)).r + -2.0 * texture(tex, uv + vec2(-offset.x, 0.0)).r + -1.0 * texture(tex, uv + vec2(-offset.x, offset.y)).r + 1.0 * texture(tex, uv + vec2(offset.x, -offset.y)).r + 2.0 * texture(tex, uv + vec2(offset.x, 0.0)).r + 1.0 * texture(tex, uv + vec2(offset.x, offset.y)).r;
 
     float gy =
-          -1.0 * texture(tex, uv + vec2(-offset.x, -offset.y)).r
-        + -2.0 * texture(tex, uv + vec2(0.0, -offset.y)).r
-        + -1.0 * texture(tex, uv + vec2(offset.x, -offset.y)).r
-        +  1.0 * texture(tex, uv + vec2(-offset.x, offset.y)).r
-        +  2.0 * texture(tex, uv + vec2(0.0, offset.y)).r
-        +  1.0 * texture(tex, uv + vec2(offset.x, offset.y)).r;
+        -1.0 * texture(tex, uv + vec2(-offset.x, -offset.y)).r + -2.0 * texture(tex, uv + vec2(0.0, -offset.y)).r + -1.0 * texture(tex, uv + vec2(offset.x, -offset.y)).r + 1.0 * texture(tex, uv + vec2(-offset.x, offset.y)).r + 2.0 * texture(tex, uv + vec2(0.0, offset.y)).r + 1.0 * texture(tex, uv + vec2(offset.x, offset.y)).r;
 
     float edge = sqrt(gx * gx + gy * gy);
     float noise = random(uv * time_f) * 0.1;

@@ -78,7 +78,8 @@ float fractal(vec2 uv, float time) {
     const float maxIterations = 50.0;
     for (float i = 0.0; i < maxIterations; i++) {
         z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + vec2(sin(time), cos(time));
-        if (length(z) > 2.0) break;
+        if (length(z) > 2.0)
+            break;
         iterations += 1.0;
     }
     return iterations / maxIterations;
@@ -88,7 +89,7 @@ void main(void) {
     vec2 uv = tc * 2.0 - 1.0;
     uv.y *= iResolution.y / iResolution.x;
 
-    float fractalValue = fractal(cos(uv*pingPong(time_f, 30.0)+1.0), time_f);
+    float fractalValue = fractal(cos(uv * pingPong(time_f, 30.0) + 1.0), time_f);
     vec3 fractalColor = rainbow(fractalValue);
 
     float time_t = pingPong(time_f, 15.0) + 1.0;

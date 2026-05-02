@@ -9,8 +9,7 @@ void main(void) {
     float warpAmount = tan(time_f);
     vec2 warp = vec2(
         sin(normCoord.y * 10.0 + time_f) * warpAmount,
-        cos(normCoord.x * 10.0 + time_f) * warpAmount
-    );
+        cos(normCoord.x * 10.0 + time_f) * warpAmount);
     vec2 warpedCoord = normCoord + warp;
     color = texture(samp, warpedCoord);
 }

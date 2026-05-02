@@ -24,7 +24,7 @@ void main() {
     // 1. Center and aspect-correct UVs
     vec2 uv = (tc - 0.5) * iResolution / min(iResolution.x, iResolution.y);
     vec2 uv0 = uv; // Store original UV for global reference
-    
+
     vec3 finalCol = vec3(0.0);
     float t = time_f * 0.2; // Slow down time for a trippier effect
 
@@ -55,6 +55,6 @@ void main() {
     // 4. Final Color Correction
     float shiftAmt = pingPong(time_f, 5.0);
     vec3 shiftedColor = hueShift(sampledColor.rgb + (finalCol * 0.5), shiftAmt);
-    
+
     color = vec4(shiftedColor, 1.0);
 }

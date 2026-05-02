@@ -12,8 +12,8 @@ float pingPong(float x, float length) {
 }
 
 void main(void) {
-	  	vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
-    uv = uv - floor(uv);    
+    vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
+    uv = uv - floor(uv);
     vec2 normCoord = (uv * 2.0 - 1.0) * vec2(iResolution.x / iResolution.y, 1.0);
     float dist = length(normCoord);
     float maxRippleRadius = 25.0;

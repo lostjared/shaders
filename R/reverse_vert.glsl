@@ -18,9 +18,8 @@ uniform float time_f;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     vec2 vpos = tc;
-    vpos[1] = 1.0-tc[1];
+    vpos[1] = 1.0 - tc[1];
     color = texture(samp, vpos);
 }

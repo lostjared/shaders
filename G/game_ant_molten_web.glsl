@@ -14,13 +14,12 @@ void main(void) {
     vec2 g = floor(p), f = fract(p);
     float d = 1.0;
     for (int j = -1; j <= 1; j++)
-    for (int i = -1; i <= 1; i++) {
-        vec2 o = vec2(i, j);
-        float h = hash(g + o);
-        vec2 r = o + vec2(0.5 + 0.5 * sin(h * 12.0 + time_f * 0.4),
-                          0.5 + 0.5 * cos(h * 9.0 + time_f * 0.3)) - f;
-        d = min(d, length(r));
-    }
+        for (int i = -1; i <= 1; i++) {
+            vec2 o = vec2(i, j);
+            float h = hash(g + o);
+            vec2 r = o + vec2(0.5 + 0.5 * sin(h * 12.0 + time_f * 0.4), 0.5 + 0.5 * cos(h * 9.0 + time_f * 0.3)) - f;
+            d = min(d, length(r));
+        }
     float lum = dot(c, vec3(0.299, 0.587, 0.114));
     float dark = smoothstep(0.6, 0.05, lum);
     float vein = smoothstep(0.10, 0.0, abs(d - 0.30)) * dark * 0.95;

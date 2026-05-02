@@ -20,16 +20,14 @@ uniform float restore_black;
 
 vec4 echo_loop(vec4 color, int count) {
     vec4 col = color;
-    for(int i = 2; i < count; i += 2) {
-        vec4 pos = texture(samp, tc/ (i * fract(time_f)));
+    for (int i = 2; i < count; i += 2) {
+        vec4 pos = texture(samp, tc / (i * fract(time_f)));
         col = (0.6 * col) + (0.3 * pos);
     }
     return col;
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     color = echo_loop(color, 14);
 }
-

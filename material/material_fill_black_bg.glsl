@@ -19,12 +19,10 @@ uniform float time_f;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 color2 = texture(mat_samp, tc);
-    if(color[0] <= 0.1 && color[1] <= 0.1 && color[2] <= 0.1) {
+    if (color[0] <= 0.1 && color[1] <= 0.1 && color[2] <= 0.1) {
         color = color2;
     }
 }
-

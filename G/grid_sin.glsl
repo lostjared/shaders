@@ -19,22 +19,20 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform float restore_black;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+                         vec2(12.9898, 78.233))) *
+                 43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 orig_color = color;
     float pos = gl_FragCoord.x / inc_valuex.x;
     float pos2 = gl_FragCoord.y / inc_valuex.y;
-    float f = fract(pos)*3, f2 = fract(pos2)*3;
-    vec4 color2 = inc_valuex/255 * alpha;
+    float f = fract(pos) * 3, f2 = fract(pos2) * 3;
+    vec4 color2 = inc_valuex / 255 * alpha;
     color = color * sin(f) * sin(f2);
-    if(color.r < 0.1 && color.g < 0.1 && color.b < 0.1)
-        color = orig_color*color2;
+    if (color.r < 0.1 && color.g < 0.1 && color.b < 0.1)
+        color = orig_color * color2;
 }
-

@@ -16,27 +16,30 @@ uniform float amp_high;
 out vec4 color;
 in vec2 tc;
 
-const float iAmplitude  = 1.0;
-const float iFrequency  = 1.0;
+const float iAmplitude = 1.0;
+const float iFrequency = 1.0;
 const float iBrightness = 1.05;
-const float iContrast   = 1.25;
+const float iContrast = 1.25;
 const float iSaturation = 1.30;
-const float iHueShift   = 0.0;
-const float iZoom       = 1.0;
-const float iRotation   = 0.0;
-const float iFireHeat   = 1.20;
+const float iHueShift = 0.0;
+const float iZoom = 1.0;
+const float iRotation = 0.0;
+const float iFireHeat = 1.20;
 
 // Hot palette: deep red -> orange -> yellow -> white
 vec3 firePalette(float t) {
     t = clamp(t, 0.0, 1.0);
-    vec3 c1 = vec3(0.05, 0.0, 0.10);   // ember violet
-    vec3 c2 = vec3(0.55, 0.05, 0.05);  // dark blood
-    vec3 c3 = vec3(1.00, 0.35, 0.05);  // lava orange
-    vec3 c4 = vec3(1.20, 0.95, 0.55);  // hot yellow
-    vec3 c5 = vec3(1.30, 1.20, 1.10);  // white-hot
-    if (t < 0.25) return mix(c1, c2, t / 0.25);
-    if (t < 0.55) return mix(c2, c3, (t - 0.25) / 0.30);
-    if (t < 0.80) return mix(c3, c4, (t - 0.55) / 0.25);
+    vec3 c1 = vec3(0.05, 0.0, 0.10);  // ember violet
+    vec3 c2 = vec3(0.55, 0.05, 0.05); // dark blood
+    vec3 c3 = vec3(1.00, 0.35, 0.05); // lava orange
+    vec3 c4 = vec3(1.20, 0.95, 0.55); // hot yellow
+    vec3 c5 = vec3(1.30, 1.20, 1.10); // white-hot
+    if (t < 0.25)
+        return mix(c1, c2, t / 0.25);
+    if (t < 0.55)
+        return mix(c2, c3, (t - 0.25) / 0.30);
+    if (t < 0.80)
+        return mix(c3, c4, (t - 0.55) / 0.25);
     return mix(c4, c5, (t - 0.80) / 0.20);
 }
 
@@ -49,7 +52,10 @@ vec4 mxTexture(sampler2D tex, vec2 uv) {
     return textureLod(tex, clamp(u, eps, 1.0 - eps), 0.0);
 }
 
-mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
+mat2 rot(float a) {
+    float c = cos(a), s = sin(a);
+    return mat2(c, -s, s, c);
+}
 
 float hash21(vec2 p) {
     p = fract(p * vec2(91.34, 47.21));
@@ -67,7 +73,11 @@ float vnoise(vec2 p) {
 }
 float fbm(vec2 p) {
     float v = 0.0, a = 0.5;
-    for (int i = 0; i < 6; ++i) { v += a * vnoise(p); p *= 2.05; a *= 0.5; }
+    for (int i = 0; i < 6; ++i) {
+        v += a * vnoise(p);
+        p *= 2.05;
+        a *= 0.5;
+    }
     return v;
 }
 
@@ -112,11 +122,12 @@ vec3 acidFire(vec2 uv, vec2 center, float t) {
 void main() {
     vec2 uv = tc;
     vec2 center = vec2(0.5);
-    if (iMouse.z > 0.0) center = iMouse.xy / iResolution;
-    float bass   = texture(spectrum, 0.03).r + amp_low  * 0.5;
-    float midF   = texture(spectrum, 0.22).r + amp_mid  * 0.5;
+    if (iMouse.z > 0.0)
+        center = iMouse.xy / iResolution;
+    float bass = texture(spectrum, 0.03).r + amp_low * 0.5;
+    float midF = texture(spectrum, 0.22).r + amp_mid * 0.5;
     float treble = texture(spectrum, 0.58).r + amp_high * 0.5;
-    float beat   = max(amp_peak, bass);
+    float beat = max(amp_peak, bass);
     float t = time_f * (0.1 + iFrequency * 0.25) * (1.0 + 0.6 * beat);
 
     vec3 col = acidFire(uv, center, t);

@@ -3,11 +3,11 @@
 out vec4 color;
 in vec2 tc;
 
-uniform sampler2D samp;   // current frame
-uniform sampler2D samp1;  // older frame #1
-uniform sampler2D samp2;  // older frame #2
-uniform sampler2D samp3;  // older frame #3
-uniform sampler2D samp4;  // older frame #4
+uniform sampler2D samp;  // current frame
+uniform sampler2D samp1; // older frame #1
+uniform sampler2D samp2; // older frame #2
+uniform sampler2D samp3; // older frame #3
+uniform sampler2D samp4; // older frame #4
 
 uniform vec2 iResolution;
 uniform float time_f;
@@ -17,24 +17,23 @@ float rand2D(in vec2 n) {
     return fract(sin(dot(n, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-void main(void)
-{
+void main(void) {
     // "uv" coordinates (same as tc)
     vec2 uv = tc;
 
     // 1) Create a circular ripple effect centered in the middle (0.5,0.5)
-    float dist     = length(uv - 0.5);
-    float ripple   = sin(dist * 30.0 - time_f * 5.0); 
+    float dist = length(uv - 0.5);
+    float ripple = sin(dist * 30.0 - time_f * 5.0);
     // ripple: oscillates based on distance & time
 
     // 2) Distort the texture coordinates by the ripple
     //    The 0.02 factor is how strong you want the ripple displacement.
     //    normalize(uv - 0.5) points outward from the center.
-    vec2 rippleUV  = uv + 0.02 * ripple * normalize(uv - 0.5);
+    vec2 rippleUV = uv + 0.02 * ripple * normalize(uv - 0.5);
 
     // 3) Add a glitch offset derived from time-based noise
     //    We shift coordinates differently for each texture, adding variation.
-    float glitch   = rand2D(uv + time_f * 0.1) * 2.0 - 1.0; 
+    float glitch = rand2D(uv + time_f * 0.1) * 2.0 - 1.0;
     vec2 glitchOff = 0.01 * vec2(glitch, glitch); // how big a glitch jump
 
     // 4) Sample from your 4 older frames with slightly shifted coords

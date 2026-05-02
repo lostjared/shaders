@@ -19,46 +19,44 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform float restore_black;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+                         vec2(12.9898, 78.233))) *
+                 43758.5453123);
 }
 
 vec4 clipColor(vec4 colorx) {
     ivec4 rgb;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         rgb[i] = int(colorx[i] * 255);
-        if(rgb[i] > 255)
-            rgb[i] = rgb[i]%255;
+        if (rgb[i] > 255)
+            rgb[i] = rgb[i] % 255;
     }
     vec4 col;
-    for(int i = 0; i < 3; ++i)
-        col[i] = float(rgb[i])/255;
+    for (int i = 0; i < 3; ++i)
+        col[i] = float(rgb[i]) / 255;
     return col;
 }
 
 vec4 xor_RGB(vec4 icolor, ivec4 isource) {
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
-        int_color[i] = int_color[i]^isource[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        icolor[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ isource[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 color2;
     color2 = texture(mat_samp, tc);
-    
+
     ivec4 source = ivec4(color * 255);
     vec4 b = xor_RGB(color2, source);
     color = (0.5 * color) + (0.5 * b);
 }
-

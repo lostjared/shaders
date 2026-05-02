@@ -24,11 +24,11 @@ float hash(vec2 p) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = tc;
@@ -36,15 +36,18 @@ void main() {
 
     // Diamond fold: abs-based 45-degree symmetry
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
 
     // Fractal fold iterations driven by hiMid
     int folds = 3 + int(hiMid * 3.0);
     for (int i = 0; i < 6; i++) {
-        if (i >= folds) break;
+        if (i >= folds)
+            break;
         p = abs(p) - 0.35 + bass * 0.1;
         p = rot(iTime * 0.15 + float(i) * 0.5 + mid * 0.3) * p;
-        if (p.y > p.x) p = p.yx;
+        if (p.y > p.x)
+            p = p.yx;
     }
 
     // Map to texture coordinates

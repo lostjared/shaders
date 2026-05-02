@@ -29,8 +29,7 @@ void main(void) {
 
     vec2 spiralUV = vec2(
         fract(spiralAngle / 6.28318 + 0.5),
-        fract(log(dist + 0.01) * 2.0 + time_f * 0.5)
-    );
+        fract(log(dist + 0.01) * 2.0 + time_f * 0.5));
 
     vec4 tex = texture(samp, spiralUV);
 

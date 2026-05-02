@@ -1,9 +1,9 @@
 #version 330 core
 
-in vec2 tc; // Texture coordinates
-out vec4 color; // Output color
-uniform sampler2D samp; // Scene texture
-uniform float time_f; // Time variable for animation
+in vec2 tc;               // Texture coordinates
+out vec4 color;           // Output color
+uniform sampler2D samp;   // Scene texture
+uniform float time_f;     // Time variable for animation
 uniform vec2 iResolution; // Screen resolution
 
 void main() {

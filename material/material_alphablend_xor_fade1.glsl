@@ -20,27 +20,26 @@ uniform vec2 iResolution;
 uniform float restore_black;
 uniform vec4 inc_value;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+                         vec2(12.9898, 78.233))) *
+                 43758.5453123);
 }
 
 vec4 fade_color(vec4 color, ivec4 source) {
-    color = color * inc_value/255 * alpha;
+    color = color * inc_value / 255 * alpha;
     ivec3 int_color;
-     for(int i = 0; i < 3; ++i) {
-         int_color[i] = int(255 * color[i]);
-         int_color[i] = int_color[i]^source[i];
-         if(int_color[i] > 255)
-             int_color[i] = int_color[i]%255;
-         color[i] = float(int_color[i])/255;
-     }
+    for (int i = 0; i < 3; ++i) {
+        int_color[i] = int(255 * color[i]);
+        int_color[i] = int_color[i] ^ source[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        color[i] = float(int_color[i]) / 255;
+    }
     return color;
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     ivec4 source = ivec4(color * 255);
     vec4 color2;
@@ -48,4 +47,3 @@ void main(void)
     color = (0.5 * color) + (0.5 * color2);
     color = fade_color(color, source);
 }
-

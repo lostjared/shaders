@@ -38,7 +38,8 @@ void main(void) {
     vec2 rotUV1 = center + vec2(cos(angle + rotBlur), sin(angle + rotBlur)) * dist;
     vec2 rotUV2 = center + vec2(cos(angle - rotBlur), sin(angle - rotBlur)) * dist;
     vec3 rotCol = (texture(samp, clamp(rotUV1, 0.0, 1.0)).rgb +
-                   texture(samp, clamp(rotUV2, 0.0, 1.0)).rgb) * 0.5;
+                   texture(samp, clamp(rotUV2, 0.0, 1.0)).rgb) *
+                  0.5;
     col = mix(col, rotCol, 0.3);
 
     // Treble sharpens center (counteracts blur)

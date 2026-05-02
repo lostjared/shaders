@@ -22,7 +22,7 @@ void main(void) {
     if (dist < radius) {
         uv *= 1.0 - (pinchAmount * (1.0 - dist / radius));
     }
-    
+
     uv += center;
     color = texture(samp, uv);
 }

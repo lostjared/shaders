@@ -17,7 +17,8 @@ void main() {
     float s = sin(a);
 
     vec2 q = vec2(p.x * c - p.y * s,
-                  p.x * s + p.y * c) + 0.5;
+                  p.x * s + p.y * c) +
+             0.5;
 
     vec2 uv = 1.0 - abs(1.0 - 2.0 * q);
     uv = fract(uv);

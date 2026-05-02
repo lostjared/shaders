@@ -10,23 +10,20 @@ mat3 rotationMatrixX(float angle) {
     return mat3(
         1.0, 0.0, 0.0,
         0.0, cos(angle), -sin(angle),
-        0.0, sin(angle), cos(angle)
-    );
+        0.0, sin(angle), cos(angle));
 }
 
 mat3 rotationMatrixY(float angle) {
     return mat3(
         cos(angle), 0.0, sin(angle),
-        0.0,       1.0, 0.0,
-       -sin(angle), 0.0, cos(angle)
-    );
+        0.0, 1.0, 0.0,
+        -sin(angle), 0.0, cos(angle));
 }
 
 mat2 rotationMatrixZ(float angle) {
     return mat2(
         cos(angle), -sin(angle),
-        sin(angle),  cos(angle)
-    );
+        sin(angle), cos(angle));
 }
 
 vec2 vortexDistortion(vec2 uv, float time) {
@@ -62,4 +59,3 @@ void main(void) {
     vec4 texColor = texture(samp, uv);
     color = texColor;
 }
-

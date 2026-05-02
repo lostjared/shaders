@@ -6,22 +6,21 @@ uniform vec2 iResolution;
 uniform float time_f;
 uniform sampler2D samp;
 
-
-float rand(vec2 co){
+float rand(vec2 co) {
     return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 vec4 xor_RGB(vec4 icolor, ivec4 isource) {
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
-        int_color[i] = int_color[i]^isource[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        icolor[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ isource[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 vec3 smoothBaseColor(float t) {

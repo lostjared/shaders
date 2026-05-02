@@ -4,13 +4,13 @@ in vec2 tc;
 out vec4 color;
 
 uniform float time_f;
-uniform sampler2D samp; 
+uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
-uniform float amp;          
-uniform float uamp;         
+uniform float amp;
+uniform float uamp;
 uniform float iTime;
-uniform int iFrame; 
+uniform int iFrame;
 uniform float iTimeDelta;
 uniform vec4 iDate;
 uniform vec2 iMouseClick;
@@ -26,19 +26,18 @@ void main(void) {
     uv.x *= aspect;
 
     float dist = length(uv);
-    
-    float twistStrength = (time_f * 10.0); 
+
+    float twistStrength = (time_f * 10.0);
     float angle = amp + (dist * twistStrength);
 
     float s = sin(angle);
     float c = cos(angle);
-    
+
     vec2 twistedUV = vec2(
         uv.x * c - uv.y * s,
-        uv.x * s + uv.y * c
-    );
+        uv.x * s + uv.y * c);
 
-    float bendStrength = (time_f * uamp * 0.5); 
+    float bendStrength = (time_f * uamp * 0.5);
     twistedUV.x += sin(twistedUV.y * 10.0 + time_f) * bendStrength;
 
     twistedUV.x /= aspect;

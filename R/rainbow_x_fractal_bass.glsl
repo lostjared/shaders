@@ -30,20 +30,22 @@ float fractal(vec2 z, float time, int maxIter) {
     float iterations = 0.0;
     vec2 c = vec2(sin(time * 0.3), cos(time * 0.2));
     for (int i = 0; i < 80; i++) {
-        if (i >= maxIter) break;
+        if (i >= maxIter)
+            break;
         z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
-        if (length(z) > 2.0) break;
+        if (length(z) > 2.0)
+            break;
         iterations += 1.0;
     }
     return iterations / float(maxIter);
 }
 
 void main(void) {
-    float aLow  = clamp(amp_low,  0.0, 1.0);
-    float aMid  = clamp(amp_mid,  0.0, 1.0);
+    float aLow = clamp(amp_low, 0.0, 1.0);
+    float aMid = clamp(amp_mid, 0.0, 1.0);
     float aHigh = clamp(amp_high, 0.0, 1.0);
-    float aPk   = clamp(amp_peak, 0.0, 1.0);
-    float aRms  = clamp(amp_rms,  0.0, 1.0);
+    float aPk = clamp(amp_peak, 0.0, 1.0);
+    float aRms = clamp(amp_rms, 0.0, 1.0);
 
     vec2 uv = tc * 2.0 - 1.0;
     uv.y *= iResolution.y / iResolution.x;

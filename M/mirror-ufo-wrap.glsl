@@ -7,16 +7,25 @@ uniform vec2 iResolution;
 uniform float time_f;
 uniform vec4 iMouse;
 
-mat3 rotX(float a){float s=sin(a),c=cos(a);return mat3(1,0,0, 0,c,-s, 0,s,c);}
-mat3 rotY(float a){float s=sin(a),c=cos(a);return mat3(c,0,s, 0,1,0, -s,0,c);}
-mat3 rotZ(float a){float s=sin(a),c=cos(a);return mat3(c,-s,0, s,c,0, 0,0,1);}
+mat3 rotX(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(1, 0, 0, 0, c, -s, 0, s, c);
+}
+mat3 rotY(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, 0, s, 0, 1, 0, -s, 0, c);
+}
+mat3 rotZ(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, -s, 0, s, c, 0, 0, 0, 1);
+}
 
 void main(void) {
     float aspect = iResolution.x / iResolution.y;
     vec2 ar = vec2(aspect, 1.0);
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
     vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
-    uv = uv - floor(uv);     
+    uv = uv - floor(uv);
     vec2 p2 = (uv - m) * ar;
     float ax = 0.25 * sin(time_f * 0.7);
     float ay = 0.25 * cos(time_f * 0.6);

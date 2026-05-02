@@ -13,9 +13,12 @@ vec3 thermalRamp(float t) {
     vec3 c2 = vec3(0.85, 0.10, 0.65);
     vec3 c3 = vec3(1.00, 0.55, 0.10);
     vec3 c4 = vec3(1.00, 0.95, 0.55);
-    if (t < 0.25) return mix(c0, c1, t / 0.25);
-    if (t < 0.5)  return mix(c1, c2, (t - 0.25) / 0.25);
-    if (t < 0.75) return mix(c2, c3, (t - 0.5)  / 0.25);
+    if (t < 0.25)
+        return mix(c0, c1, t / 0.25);
+    if (t < 0.5)
+        return mix(c1, c2, (t - 0.25) / 0.25);
+    if (t < 0.75)
+        return mix(c2, c3, (t - 0.5) / 0.25);
     return mix(c3, c4, (t - 0.75) / 0.25);
 }
 

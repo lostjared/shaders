@@ -8,34 +8,34 @@ out vec4 color;
 in vec2 tc; // Input UVs from the 3D Mesh
 
 // Audio Uniforms
-uniform float amp; 
-uniform float uamp; 
-uniform float iTime; 
-uniform int iFrame; 
-uniform float iTimeDelta; 
-uniform vec4 iDate; 
-uniform vec2 iMouseClick; 
-uniform float iFrameRate; 
-uniform vec3 iChannelResolution[4]; 
-uniform float iChannelTime[4]; 
-uniform float iSampleRate; 
-uniform float amp_peak; 
-uniform float amp_rms; 
-uniform float amp_smooth; 
-uniform float amp_low; 
-uniform float amp_mid; 
-uniform float amp_high; 
-uniform float iamp; 
+uniform float amp;
+uniform float uamp;
+uniform float iTime;
+uniform int iFrame;
+uniform float iTimeDelta;
+uniform vec4 iDate;
+uniform vec2 iMouseClick;
+uniform float iFrameRate;
+uniform vec3 iChannelResolution[4];
+uniform float iChannelTime[4];
+uniform float iSampleRate;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 // Controls
-const float iAmplitude  = 1.0;
-const float iFrequency  = 1.0;
+const float iAmplitude = 1.0;
+const float iFrequency = 1.0;
 const float iBrightness = 1.0;
-const float iContrast   = 1.0;
+const float iContrast = 1.0;
 const float iSaturation = 1.0;
-const float iHueShift   = 0.0;
-const float iZoom       = 1.0;
-const float iRotation   = 0.0;
+const float iHueShift = 0.0;
+const float iZoom = 1.0;
+const float iRotation = 0.0;
 
 // --- Helper Functions ---
 
@@ -56,16 +56,15 @@ vec3 rotateHue(vec3 col, float angle) {
     float U = cos(angle);
     float W = sin(angle);
     mat3 R = mat3(
-        0.299 + 0.701*U + 0.168*W,
-        0.587 - 0.587*U + 0.330*W,
-        0.114 - 0.114*U - 0.497*W,
-        0.299 - 0.299*U - 0.328*W,
-        0.587 + 0.413*U + 0.035*W,
-        0.114 - 0.114*U + 0.292*W,
-        0.299 - 0.300*U + 1.250*W,
-        0.587 - 0.588*U - 1.050*W,
-        0.114 + 0.886*U - 0.203*W
-    );
+        0.299 + 0.701 * U + 0.168 * W,
+        0.587 - 0.587 * U + 0.330 * W,
+        0.114 - 0.114 * U - 0.497 * W,
+        0.299 - 0.299 * U - 0.328 * W,
+        0.587 + 0.413 * U + 0.035 * W,
+        0.114 - 0.114 * U + 0.292 * W,
+        0.299 - 0.300 * U + 1.250 * W,
+        0.587 - 0.588 * U - 1.050 * W,
+        0.114 + 0.886 * U - 0.203 * W);
     return clamp(R * col, 0.0, 1.0);
 }
 
@@ -94,16 +93,16 @@ vec2 wrapUV(vec2 tc) {
 vec4 mxTexture(sampler2D tex, vec2 tc) {
     vec2 ts = vec2(textureSize(tex, 0));
     vec2 eps = 0.5 / ts;
-    
+
     vec2 uv = wrapUV(tc);
     vec2 sampleUV = clamp(uv, eps, 1.0 - eps);
-    
+
     float lod = 0.0;
     vec2 deriv = fwidth(tc);
     if (deriv.x > 0.0 || deriv.y > 0.0) {
         lod = log2(max(max(deriv.x, deriv.y) * max(ts.x, ts.y), 1.0));
     }
-    
+
     return textureLod(tex, sampleUV, lod);
 }
 
@@ -146,15 +145,15 @@ vec2 kaleido(vec2 p, float slices) {
 }
 
 vec3 sampleWarp(vec2 uv, float t, float strength, vec2 center, vec2 res) {
-    float aspect = res.x / res.y; 
+    float aspect = res.x / res.y;
 
     // Inject amp_smooth to base amplitude for an overall energy boost
-    float ampControl  = clamp(iAmplitude + amp_smooth * 1.5,  0.0, 3.0);
+    float ampControl = clamp(iAmplitude + amp_smooth * 1.5, 0.0, 3.0);
     // Inject amp_mid to base frequency so the pattern evolves faster during dense audio
     float freqControl = clamp(iFrequency + amp_mid * 1.5, 0.0, 3.0);
 
     vec2 p = (uv - center) * vec2(aspect, 1.0);
-    
+
     // TREBLE REACTION: Add a high-frequency micro-vibration to the water surface
     vec2 hf_vibration = vec2(sin(p.y * 50.0 + t * 20.0), cos(p.x * 50.0 + t * 20.0)) * amp_high * 0.03;
     p += hf_vibration;
@@ -167,14 +166,14 @@ vec3 sampleWarp(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     vec2 swirl = p;
     float r = length(swirl);
     float a = atan(swirl.y, swirl.x);
-    
+
     // MID REACTION: Increase the intensity of the swirl
     a += (f1 * 4.0 + f2 * 2.0) * strength * 0.6 * (1.0 + amp_mid * 2.0);
     swirl = vec2(cos(a), sin(a)) * r;
 
-    float sliceBase  = 8.0;
+    float sliceBase = 8.0;
     float sliceRange = 8.0;
-    
+
     // BASS REACTION: Bass hits increase the number of kaleidoscopic fragments
     float slices = sliceBase + sliceRange * (0.3 + 0.7 * ampControl) + 4.0 * sin(t * 0.17) + (amp_low * 12.0);
 
@@ -185,7 +184,7 @@ vec3 sampleWarp(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     flow.y += (f2 - f3) * 0.8 * strength;
 
     vec2 base = flow / vec2(aspect, 1.0) + center;
-    base = fract(base); 
+    base = fract(base);
 
     // TREBLE REACTION: Treble significantly boosts the chromatic aberration (color splitting)
     float chromaBoost = 0.5 + 0.5 * ampControl + (amp_high * 4.0);
@@ -221,15 +220,15 @@ void main() {
     uv = (uv - vec2(0.5)) * (1.0 - amp_low * 0.15) + vec2(0.5);
 
     // Inject audio into base strength and speed
-    float ampControl  = clamp(iAmplitude + amp_smooth * 1.5,  0.0, 3.0);
+    float ampControl = clamp(iAmplitude + amp_smooth * 1.5, 0.0, 3.0);
     float freqControl = clamp(iFrequency + amp_mid * 1.0, 0.0, 3.0);
 
-    float tSpeed   = 0.3 + 1.7 * (freqControl * 0.5);
-    float t        = time_f * tSpeed;
+    float tSpeed = 0.3 + 1.7 * (freqControl * 0.5);
+    float t = time_f * tSpeed;
     float strength = 0.6 + 1.6 * (ampControl * 0.5);
 
     vec2 center = vec2(0.5);
-    
+
     if (iMouse.z > 0.0) {
         center = iMouse.xy / iResolution;
     }

@@ -19,18 +19,16 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform float restore_black;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+                         vec2(12.9898, 78.233))) *
+                 43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    
-    if(!(color[0] > 0.9 && color[1] > 0.9 && color[2] > 0.9))
+
+    if (!(color[0] > 0.9 && color[1] > 0.9 && color[2] > 0.9))
         discard;
     color = texture(mat_samp, tc);
 }
-

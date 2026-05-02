@@ -11,7 +11,7 @@ float PI = 3.1415926535897932384626433832795;
 void main() {
     vec2 uv = (tc - 0.5) * 2.0;
     uv.x *= iResolution.x / iResolution.y;
-    
+
     float plasma = 0.0;
     plasma += sin((uv.x + time_f) * 5.0);
     plasma += sin((uv.y + time_f) * 5.0);
@@ -32,4 +32,3 @@ void main() {
 
     color = vec4(mix(baseColor, prismColor, 0.6), 1.0);
 }
-

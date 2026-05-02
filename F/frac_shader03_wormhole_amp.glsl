@@ -118,7 +118,8 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -132,12 +133,11 @@ vec2 wormholeUV(vec2 uv, vec2 c, float aspect, float t) {
     float swirl = 0.22 / r;
 
     float spinBase = 0.15 + 0.35 * gAmp01;
-    float spinHit  = 0.2 + 2.2 * gInstAmp;
+    float spinHit = 0.2 + 2.2 * gInstAmp;
 
     a += t * (spinBase + spinHit) + swirl;
 
-    float z = 0.65 + 0.35 * sin(t * 0.6)
-              + 0.15 * sin(r * 12.0 - t * (2.5 + 1.5 * gAmp01 + 2.0 * gInstAmp));
+    float z = 0.65 + 0.35 * sin(t * 0.6) + 0.15 * sin(r * 12.0 - t * (2.5 + 1.5 * gAmp01 + 2.0 * gInstAmp));
     float rr = 1.0 / (r * 3.5 + 0.06) + 0.08 * z;
 
     vec2 q = vec2(cos(a), sin(a)) * rr;
@@ -147,7 +147,8 @@ vec2 wormholeUV(vec2 uv, vec2 c, float aspect, float t) {
 
 vec3 limitHighlights(vec3 c) {
     float m = max(c.r, max(c.g, c.b));
-    if (m > 0.9) c *= 0.9 / m;
+    if (m > 0.9)
+        c *= 0.9 / m;
     return c;
 }
 
@@ -158,9 +159,9 @@ void main(void) {
     gAmp01 = clamp(ampMix / 2.5, 0.0, 1.0);
     gInstAmp = clamp(aInst / 2.5, 0.0, 1.0);
 
-    gSlow   = time_f * mix(0.15, 0.7, gAmp01);
-    gFast   = time_f * mix(0.6,  3.5, gAmp01);
-    gDetail = time_f * mix(0.3,  2.0, gAmp01);
+    gSlow = time_f * mix(0.15, 0.7, gAmp01);
+    gFast = time_f * mix(0.6, 3.5, gAmp01);
+    gDetail = time_f * mix(0.3, 2.0, gAmp01);
 
     vec4 baseTex = texture(samp, tc);
 
@@ -187,15 +188,15 @@ void main(void) {
 
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
+    if (q.y > q.x)
+        q = q.yx;
 
     float base = 1.82 + 0.18 * pingPong(sin(gSlow * 0.2) * (PI * gSlow), 5.0);
     float period = log(base) * pingPong(gSlow * PI, 5.0);
     float tz = gSlow * 0.65;
     float rD = diamondRadius(p) + 1e-6;
 
-    float ang = atan(q.y, q.x) + tz * 0.35
-              + 0.35 * sin(rD * 18.0 + gFast * 0.6);
+    float ang = atan(q.y, q.x) + tz * 0.35 + 0.35 * sin(rD * 18.0 + gFast * 0.6);
     float k = fract((log(rD) - tz) / period);
     float rw = exp(k * period);
     vec2 pwrap = vec2(cos(ang), sin(ang)) * rw;
@@ -204,8 +205,7 @@ void main(void) {
     vec2 u1 = fract((pwrap * 1.045) / ar + m);
     vec2 u2 = fract((pwrap * 0.955) / ar + m);
     vec2 dir = normalize(pwrap + 1e-6);
-    vec2 off = dir * (0.0015 + 0.001 * sin(gFast * 1.3))
-              * vec2(1.0, 1.0 / aspect);
+    vec2 off = dir * (0.0015 + 0.001 * sin(gFast * 1.3)) * vec2(1.0, 1.0 / aspect);
 
     float vign = 1.0 - smoothstep(0.75, 1.2, length((tc - m) * ar));
     vign = mix(0.9, 1.15, vign);
@@ -224,10 +224,9 @@ void main(void) {
     vec3 outCol = kaleidoRGB;
     outCol *= (0.75 + 0.25 * ring) * (0.85 + 0.15 * pulse) * vign;
 
-    vec3 bloom = outCol * outCol * 0.10
-               + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * 0.07;
+    vec3 bloom = outCol * outCol * 0.10 + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * 0.07;
 
-    vec2 wh0 = wormholeUV(tc,                    m, aspect, gSlow);
+    vec2 wh0 = wormholeUV(tc, m, aspect, gSlow);
     vec2 wh1 = wormholeUV(tc + vec2(0.0009, 0.0), m, aspect, gSlow + 0.03);
     vec2 wh2 = wormholeUV(tc - vec2(0.0009, 0.0), m, aspect, gSlow - 0.03);
 
@@ -240,10 +239,9 @@ void main(void) {
     float throat = smoothstep(0.38, 0.06, rCenter);
 
     float swirlGate = smoothstep(0.9, 1.6,
-        gSlow * 0.25 + 0.35 * sin(gSlow * 0.7));
+                                 gSlow * 0.25 + 0.35 * sin(gSlow * 0.7));
 
-    float gateBase = clamp(throat * (0.55 + 0.45 * pingPong(gSlow * PI, 5.0))
-                           + swirlGate * 0.15, 0.0, 1.0);
+    float gateBase = clamp(throat * (0.55 + 0.45 * pingPong(gSlow * PI, 5.0)) + swirlGate * 0.15, 0.0, 1.0);
 
     float hitBoost = clamp(aInst * 0.6, 0.0, 1.2);
     float gate = clamp(gateBase * (0.6 + 0.9 * gAmp01) + hitBoost, 0.0, 1.0);

@@ -7,7 +7,7 @@ uniform float time_f;
 uniform vec2 iResolution;
 
 float noise(vec2 p) {
-    return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453);
+    return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 float smoothNoise(vec2 p) {
@@ -28,7 +28,7 @@ float fbm(vec2 p) {
     float amplitude = 1.0;
     float frequency = 1.0;
 
-    for(int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
         total += smoothNoise(p * frequency) * amplitude;
         amplitude *= 0.5;
         frequency *= 2.0;
@@ -41,8 +41,7 @@ void main(void) {
     float distortionStrength = 0.02;
     vec2 distortion = vec2(
         fbm(tc * 10.0 + time_f) - 0.5,
-        fbm(tc * 10.0 - time_f) - 0.5
-    );
+        fbm(tc * 10.0 - time_f) - 0.5);
 
     vec2 distortedTC = tc + distortion * distortionStrength;
 

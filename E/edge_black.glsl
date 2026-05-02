@@ -9,20 +9,10 @@ vec3 edgeDetection(sampler2D tex, vec2 uv) {
     vec2 offset = vec2(1.0 / iResolution.x, 1.0 / iResolution.y);
 
     float gx =
-          -1.0 * texture(tex, uv + vec2(-offset.x, -offset.y)).r
-        + -2.0 * texture(tex, uv + vec2(-offset.x, 0.0)).r
-        + -1.0 * texture(tex, uv + vec2(-offset.x, offset.y)).r
-        +  1.0 * texture(tex, uv + vec2(offset.x, -offset.y)).r
-        +  2.0 * texture(tex, uv + vec2(offset.x, 0.0)).r
-        +  1.0 * texture(tex, uv + vec2(offset.x, offset.y)).r;
+        -1.0 * texture(tex, uv + vec2(-offset.x, -offset.y)).r + -2.0 * texture(tex, uv + vec2(-offset.x, 0.0)).r + -1.0 * texture(tex, uv + vec2(-offset.x, offset.y)).r + 1.0 * texture(tex, uv + vec2(offset.x, -offset.y)).r + 2.0 * texture(tex, uv + vec2(offset.x, 0.0)).r + 1.0 * texture(tex, uv + vec2(offset.x, offset.y)).r;
 
     float gy =
-          -1.0 * texture(tex, uv + vec2(-offset.x, -offset.y)).r
-        + -2.0 * texture(tex, uv + vec2(0.0, -offset.y)).r
-        + -1.0 * texture(tex, uv + vec2(offset.x, -offset.y)).r
-        +  1.0 * texture(tex, uv + vec2(-offset.x, offset.y)).r
-        +  2.0 * texture(tex, uv + vec2(0.0, offset.y)).r
-        +  1.0 * texture(tex, uv + vec2(offset.x, offset.y)).r;
+        -1.0 * texture(tex, uv + vec2(-offset.x, -offset.y)).r + -2.0 * texture(tex, uv + vec2(0.0, -offset.y)).r + -1.0 * texture(tex, uv + vec2(offset.x, -offset.y)).r + 1.0 * texture(tex, uv + vec2(-offset.x, offset.y)).r + 2.0 * texture(tex, uv + vec2(0.0, offset.y)).r + 1.0 * texture(tex, uv + vec2(offset.x, offset.y)).r;
 
     float edge = sqrt(gx * gx + gy * gy);
     float threshold = 0.3;
@@ -35,9 +25,3 @@ void main(void) {
     vec3 edgeColor = edgeDetection(samp, tc);
     color = vec4(edgeColor, 1.0);
 }
-
-
-
-
-
-

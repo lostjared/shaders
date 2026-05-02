@@ -54,7 +54,7 @@ void main(void) {
     float radius = length(uv);
     float angle = atan(uv.y, uv.x) + time_f * 1.5;
     float hue = mod(angle / (2.0 * 3.14159) + time_f * 0.3, 1.0);
-    
+
     vec3 prismColor = hsvToRgb(hue, 1.0, 1.0 - pingPong(radius * 0.8 + time_f * 0.5, 1.0));
     color = vec4(sin(prismColor * time_f) * texColor.rgb, texColor.a);
     color.a = 1.0;

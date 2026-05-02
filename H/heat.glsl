@@ -6,7 +6,7 @@ uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform float time_f;
 float noise(vec2 st) {
-    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
 void main(void) {
@@ -18,4 +18,3 @@ void main(void) {
     vec4 texColor = texture(samp, nuv);
     color = texColor;
 }
-

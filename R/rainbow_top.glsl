@@ -4,7 +4,8 @@ in vec2 tc;
 out vec4 color;
 uniform sampler2D samp;
 uniform float time_f;
-uniform vec2 iResolution; vec3 hsv2rgb(vec3 c) {
+uniform vec2 iResolution;
+vec3 hsv2rgb(vec3 c) {
     c.x = fract(c.x);
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);

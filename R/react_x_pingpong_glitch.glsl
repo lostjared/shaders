@@ -19,11 +19,11 @@ float pingPong(float x, float length) {
 }
 
 void main(void) {
-    float aLow  = clamp(amp_low,  0.0, 1.0);
-    float aMid  = clamp(amp_mid,  0.0, 1.0);
+    float aLow = clamp(amp_low, 0.0, 1.0);
+    float aMid = clamp(amp_mid, 0.0, 1.0);
     float aHigh = clamp(amp_high, 0.0, 1.0);
-    float aPk   = clamp(amp_peak, 0.0, 1.0);
-    float aRms  = clamp(amp_rms,  0.0, 1.0);
+    float aPk = clamp(amp_peak, 0.0, 1.0);
+    float aRms = clamp(amp_rms, 0.0, 1.0);
 
     float glitchStrength = 0.01 + aPk * 0.08;
     float speed = 8.0 + aRms * 15.0;
@@ -31,8 +31,7 @@ void main(void) {
     float freqY = 20.0 + aHigh * 20.0;
     vec2 glitch = vec2(
         pingPong(time_f * speed + tc.y * freqX, 1.0) * glitchStrength,
-        pingPong(time_f * speed + tc.x * freqY, 1.0) * glitchStrength
-    );
+        pingPong(time_f * speed + tc.x * freqY, 1.0) * glitchStrength);
 
     vec2 displacedTc = tc + glitch;
 

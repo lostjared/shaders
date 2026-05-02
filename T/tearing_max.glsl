@@ -16,10 +16,10 @@ void main(void) {
     float tear7 = sin(tc.x * 70.0 + time_f * 17.0) * 0.005;
     float tear8 = sin(tc.x * 80.0 + time_f * 19.0) * 0.003;
     float tear9 = sin(tc.x * 90.0 + time_f * 21.0) * 0.002;
-    
+
     float combined_tear = tear1 + tear2 + tear3 + tear4 + tear5 + tear6 + tear7 + tear8 + tear9;
-    
+
     vec2 new_tc = vec2(tc.x + combined_tear, tc.y + combined_tear);
-    
+
     color = texture(samp, new_tc);
 }

@@ -9,10 +9,10 @@ uniform vec4 iMouse;
 uniform float amp;
 uniform float uamp;
 
-float h1(float n){return fract(sin(n)*43758.5453123);}
-vec2 h2(float n){return fract(sin(vec2(n, n+1.0))*vec2(43758.5453,22578.1459));}
+float h1(float n) { return fract(sin(n) * 43758.5453123); }
+vec2 h2(float n) { return fract(sin(vec2(n, n + 1.0)) * vec2(43758.5453, 22578.1459)); }
 
-void main(void){
+void main(void) {
     vec2 uv = tc;
     float aspect = iResolution.x / iResolution.y;
 
@@ -33,7 +33,8 @@ void main(void){
     float k = amp * 0.25;
     float bend = k * fall;
     vec2 perp = normalize(vec2(-p.y, p.x));
-    if (!all(greaterThan(abs(p), vec2(0.0)))) perp = vec2(0.0);
+    if (!all(greaterThan(abs(p), vec2(0.0))))
+        perp = vec2(0.0);
     vec2 bendOff = perp * bend * (0.25 + 0.75 * sin(3.0 * d + time_f * 2.0));
 
     float stretch = uamp * 0.7 * fall;

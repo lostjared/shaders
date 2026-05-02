@@ -9,7 +9,7 @@ uniform vec4 iMouse;
 uniform float amp;
 uniform float uamp;
 uniform float iTime;
-uniform int iFrame; 
+uniform int iFrame;
 uniform float iTimeDelta;
 uniform vec4 iDate;
 uniform vec2 iMouseClick;
@@ -20,18 +20,18 @@ uniform float iSampleRate;
 
 const float PI = 3.1415926535897932384626433832795;
 
-float pingPong(float x, float length){
+float pingPong(float x, float length) {
     float m = mod(x, length * 2.0);
     return m <= length ? m : length * 2.0 - m;
 }
 
-vec3 hsv2rgb(vec3 c){
-    vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+vec3 hsv2rgb(vec3 c) {
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect){
+vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect) {
     float s = sin(angle), cc = cos(angle);
     vec2 p = uv - c;
     p.x *= aspect;
@@ -40,7 +40,7 @@ vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect){
     return p + c;
 }
 
-vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect){
+vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
     vec2 p = uv - c;
     p.x *= aspect;
     float ang = atan(p.y, p.x);
@@ -53,9 +53,9 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect){
     return r + c;
 }
 
-vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect){
+vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
-    for(int i = 0; i < 6; i++){
+    for (int i = 0; i < 6; i++) {
         float z = zoom + 0.15 * sin(t * 0.35 + float(i));
         p = abs((p - c) * z) - 0.5 + c;
         p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
@@ -63,7 +63,7 @@ vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect){
     return p;
 }
 
-void main(void){
+void main(void) {
     vec2 ar = vec2(iResolution.x / iResolution.y, 1.0);
 
     vec2 m = (iMouse.z > 0.5 ? (iMouse.xy / iResolution) : vec2(0.5));
@@ -74,9 +74,9 @@ void main(void){
     float sr = clamp((iSampleRate / 48000.0) * (rate / 60.0), 0.25, 4.0);
     float aMix = clamp(amp * 0.7 + uamp * 0.3, 0.0, 20.0);
 
-    float chanAspect = iChannelResolution[0].y > 0.0 
-        ? iChannelResolution[0].x / iChannelResolution[0].y 
-        : 1.0;
+    float chanAspect = iChannelResolution[0].y > 0.0
+                           ? iChannelResolution[0].x / iChannelResolution[0].y
+                           : 1.0;
     float chanBeat = 0.5 + 0.5 * sin(iChannelTime[0] * 0.5 + iDate.x * 0.1);
 
     float loopDuration = 25.0;
@@ -126,8 +126,7 @@ void main(void){
 
     vec2 uA = kUV + normalize(dir + 1e-5) * ripple;
     vec2 uB = mix(baseUV, kUV, 0.88);
-    vec2 uC = mix(baseUV, kUV, 0.94) 
-              + vec2(0.002 * sin(t + iDate.w * 0.05), 0.002 * cos(t + iTimeDelta * 5.0));
+    vec2 uC = mix(baseUV, kUV, 0.94) + vec2(0.002 * sin(t + iDate.w * 0.05), 0.002 * cos(t + iTimeDelta * 5.0));
 
     vec2 fA = fract(uA);
     vec2 fB = fract(uB);
@@ -157,8 +156,7 @@ void main(void){
 
     vec3 combined = mix(spiralMix, warpCol * 3.0, 0.6);
 
-    vec3 bloom = combined * combined * 0.18 
-               + pow(max(combined - 0.6, 0.0), vec3(2.0)) * 0.10;
+    vec3 bloom = combined * combined * 0.18 + pow(max(combined - 0.6, 0.0), vec3(2.0)) * 0.10;
     combined += bloom;
 
     combined = clamp(combined, vec3(0.0), vec3(1.0));

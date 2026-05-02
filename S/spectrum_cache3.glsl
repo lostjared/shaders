@@ -23,31 +23,38 @@ uniform vec2 iResolution;
 uniform float time_f;
 
 vec4 sampleCache(int idx, vec2 uv) {
-    if (idx == 0) return texture(samp1, uv);
-    if (idx == 1) return texture(samp2, uv);
-    if (idx == 2) return texture(samp3, uv);
-    if (idx == 3) return texture(samp4, uv);
-    if (idx == 4) return texture(samp5, uv);
-    if (idx == 5) return texture(samp6, uv);
-    if (idx == 6) return texture(samp7, uv);
+    if (idx == 0)
+        return texture(samp1, uv);
+    if (idx == 1)
+        return texture(samp2, uv);
+    if (idx == 2)
+        return texture(samp3, uv);
+    if (idx == 3)
+        return texture(samp4, uv);
+    if (idx == 4)
+        return texture(samp5, uv);
+    if (idx == 5)
+        return texture(samp6, uv);
+    if (idx == 6)
+        return texture(samp7, uv);
     return texture(samp8, uv);
 }
 
 void main(void) {
     vec4 current = texture(samp, tc);
 
-    float bass   = texture(spectrum, 0.04).r;
+    float bass = texture(spectrum, 0.04).r;
     float lowMid = texture(spectrum, 0.15).r;
-    float mid    = texture(spectrum, 0.30).r;
-    float hiMid  = texture(spectrum, 0.50).r;
+    float mid = texture(spectrum, 0.30).r;
+    float hiMid = texture(spectrum, 0.50).r;
     float treble = texture(spectrum, 0.70).r;
-    float air    = texture(spectrum, 0.88).r;
+    float air = texture(spectrum, 0.88).r;
 
     // Three prism directions rotate with time, spectrum tilts the base angle
     float baseAngle = time_f * 0.5 + mid * 0.8;
-    vec2 dirR = vec2(cos(baseAngle),           sin(baseAngle));
-    vec2 dirG = vec2(cos(baseAngle + 2.094),   sin(baseAngle + 2.094));
-    vec2 dirB = vec2(cos(baseAngle + 4.189),   sin(baseAngle + 4.189));
+    vec2 dirR = vec2(cos(baseAngle), sin(baseAngle));
+    vec2 dirG = vec2(cos(baseAngle + 2.094), sin(baseAngle + 2.094));
+    vec2 dirB = vec2(cos(baseAngle + 4.189), sin(baseAngle + 4.189));
 
     // Spread controlled by bass energy
     float spread = 0.004 + bass * 0.008;
@@ -86,8 +93,7 @@ void main(void) {
     vec3 prism = vec3(rAccum / rW, gAccum / gW, bAccum / bW);
 
     // Shimmer: high frequencies add a glitter overlay
-    float shimmer = treble * sin(tc.x * iResolution.x * 0.5 + time_f * 6.0)
-                  * sin(tc.y * iResolution.y * 0.5 + time_f * 5.0);
+    float shimmer = treble * sin(tc.x * iResolution.x * 0.5 + time_f * 6.0) * sin(tc.y * iResolution.y * 0.5 + time_f * 5.0);
     prism += shimmer * 0.08;
 
     // Blend with saturation boost driven by overall energy

@@ -11,7 +11,8 @@ void main(void) {
     float mid = texture(spectrum, 0.25).r;
     float midHi = texture(spectrum, 0.40).r;
     float dir = sign(midHi - mid);
-    if (dir == 0.0) dir = 1.0;
+    if (dir == 0.0)
+        dir = 1.0;
 
     float rippleAmplitude = 0.03;
     float rippleWavelength = 10.0 + mid * 18.0;

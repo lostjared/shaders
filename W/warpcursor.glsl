@@ -32,6 +32,6 @@ void main(void) {
 
     vec4 orig = texture(samp, uv);
     vec4 warpedCol = texture(samp, clamp(warped, vec2(0.0), vec2(1.0)));
-    //color = mix(orig, warpedCol, s);
-    color  = warpedCol;
+    // color = mix(orig, warpedCol, s);
+    color = warpedCol;
 }

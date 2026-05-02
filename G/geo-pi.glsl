@@ -13,10 +13,9 @@ float pingPong(float x, float length) {
     return m <= length ? m : length * 2.0 - m;
 }
 
-
 void main(void) {
     vec2 uv = tc * iResolution / vec2(iResolution.y);
-    float time = pingPong(time_f * PI, 10) *  0.5;
+    float time = pingPong(time_f * PI, 10) * 0.5;
     float time_t = mod(time_f, 10.0);
     float angle = time;
     vec2 center = vec2(0.5, 0.5) * iResolution / vec2(iResolution.y);

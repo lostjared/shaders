@@ -40,8 +40,7 @@ void main(void) {
     vec3 ringColor = vec3(
         0.5 + 0.5 * sin(hue * 6.28),
         0.5 + 0.5 * sin(hue * 6.28 + 2.09),
-        0.5 + 0.5 * sin(hue * 6.28 + 4.18)
-    );
+        0.5 + 0.5 * sin(hue * 6.28 + 4.18));
     tex.rgb += ring * ringColor * (0.3 + amp_peak * 0.5);
 
     // Treble adds a second faster ring

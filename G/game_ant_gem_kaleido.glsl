@@ -12,7 +12,8 @@ vec2 kaleido(vec2 uv, float seg) {
     float a = atan(p.y, p.x);
     float r = length(p);
     float st = 6.28318 / seg;
-    a = mod(a, st); a = abs(a - st * 0.5);
+    a = mod(a, st);
+    a = abs(a - st * 0.5);
     p = vec2(cos(a), sin(a)) * r;
     p.x /= iResolution.x / iResolution.y;
     return p + 0.5;

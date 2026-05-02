@@ -15,17 +15,17 @@ void main(void) {
     float tear7 = sin(tc.x * 70.0 + time_f * 17.0) * 0.005;
     float tear8 = sin(tc.x * 80.0 + time_f * 19.0) * 0.003;
     float tear9 = sin(tc.x * 90.0 + time_f * 21.0) * 0.002;
-    
+
     float combined_tear = tear1 + tear2 + tear3 + tear4 + tear5 + tear6 + tear7 + tear8 + tear9;
 
     vec2 center = vec2(0.5, 0.5);
-    
+
     vec2 vec = tc - center;
     float distance = length(vec);
     float angle = atan(vec.y, vec.x);
     angle += time_f * 2.0;
     vec2 new_vec = vec2(cos(angle), sin(angle)) * distance;
     vec2 new_tc = center + new_vec + vec2(combined_tear, combined_tear);
-    
+
     color = texture(samp, new_tc);
 }

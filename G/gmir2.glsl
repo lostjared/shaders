@@ -19,9 +19,7 @@ void main() {
     vec3 gradientEffect = vec3(
         0.5 + 0.5 * sin(time_f + uv.x * 15.0),
         0.5 + 0.5 * cos(time_f + uv.y * 15.0),
-        0.5 + 0.5 * sin(time_f + (uv.x + uv.y) * 15.0)
-    );
+        0.5 + 0.5 * sin(time_f + (uv.x + uv.y) * 15.0));
     vec3 finalColor = mix(texColor.rgb, gradientEffect, 0.3);
     color = vec4(finalColor, texColor.a);
 }
-

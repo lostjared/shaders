@@ -27,10 +27,10 @@ float pingPong(float x, float length) {
 }
 
 void main(void) {
-    float aLow  = clamp(amp_low,  0.0, 1.0);
-    float aMid  = clamp(amp_mid,  0.0, 1.0);
+    float aLow = clamp(amp_low, 0.0, 1.0);
+    float aMid = clamp(amp_mid, 0.0, 1.0);
     float aHigh = clamp(amp_high, 0.0, 1.0);
-    float aPk   = clamp(amp_peak, 0.0, 1.0);
+    float aPk = clamp(amp_peak, 0.0, 1.0);
     float aSmth = clamp(amp_smooth, 0.0, 1.0);
 
     vec2 uv = tc * 2.0 - 1.0;
@@ -43,13 +43,11 @@ void main(void) {
 
     float angle = atan(spiral_uv.y + wave, spiral_uv.x) + t * 2.0;
 
-    vec3 rainLow  = rainbow(angle / 6.28318 + 0.0);
-    vec3 rainMid  = rainbow(angle / 6.28318 + 0.33);
+    vec3 rainLow = rainbow(angle / 6.28318 + 0.0);
+    vec3 rainMid = rainbow(angle / 6.28318 + 0.33);
     vec3 rainHigh = rainbow(angle / 6.28318 + 0.66);
 
-    vec3 rainbow_color = rainLow * (0.3 + aLow * 0.7)
-                       + rainMid * (0.3 + aMid * 0.7)
-                       + rainHigh * (0.3 + aHigh * 0.7);
+    vec3 rainbow_color = rainLow * (0.3 + aLow * 0.7) + rainMid * (0.3 + aMid * 0.7) + rainHigh * (0.3 + aHigh * 0.7);
     rainbow_color = clamp(rainbow_color, 0.0, 1.0);
 
     vec4 tex = texture(samp, tc);

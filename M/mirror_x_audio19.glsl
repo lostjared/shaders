@@ -22,7 +22,8 @@ void main(void) {
     float aHigh = clamp(amp_high, 0.0, 1.0);
     float t = time_f;
     vec2 uv = tc;
-    if (uv.x < 0.5) uv.x = 1.0 - uv.x;
+    if (uv.x < 0.5)
+        uv.x = 1.0 - uv.x;
     float stretch = 1.0 + pingPong(t, 2.0) * 0.5 + 0.3 * aLow;
     uv.x = 0.5 + (uv.x - 0.5) * stretch;
     vec2 center = vec2(0.5) * iResolution;

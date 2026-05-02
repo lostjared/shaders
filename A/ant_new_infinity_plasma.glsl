@@ -20,7 +20,10 @@ vec3 rainbow(float t) {
     return 0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67)));
 }
 
-mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
+mat2 rot(float a) {
+    float s = sin(a), c = cos(a);
+    return mat2(c, -s, s, c);
+}
 
 vec2 kaleido(vec2 p, float seg) {
     float ang = atan(p.y, p.x);
@@ -36,11 +39,11 @@ vec2 mirror(vec2 u) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.04).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.04).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -66,7 +69,8 @@ void main() {
 
         vec2 kUV = kaleido(p, seg);
         kUV = abs(kUV);
-        if (kUV.y > kUV.x) kUV = kUV.yx;
+        if (kUV.y > kUV.x)
+            kUV = kUV.yx;
         vec2 texUV = mirror(kUV * 0.5 + 0.5);
 
         float co = d * 0.002 * (1.0 + treble);

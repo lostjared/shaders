@@ -17,6 +17,6 @@ void main(void) {
 
     float gx = dot(texture(samp, tc + vec2(px.x, 0.0)).rgb - texture(samp, tc - vec2(px.x, 0.0)).rgb, vec3(0.333));
     float gy = dot(texture(samp, tc + vec2(0.0, px.y)).rgb - texture(samp, tc - vec2(0.0, px.y)).rgb, vec3(0.333));
-    float edge = 1.0 - smoothstep(0.05, 0.18, sqrt(gx*gx + gy*gy));
+    float edge = 1.0 - smoothstep(0.05, 0.18, sqrt(gx * gx + gy * gy));
     color = vec4(quant * edge, 1.0);
 }

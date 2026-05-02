@@ -63,13 +63,13 @@ vec3 tentBlur3(sampler2D img, vec2 uv, vec2 res) {
 // MODIFIED: No neon mixing. Just returns the texture, slightly dimmed.
 vec3 preBlendColor(vec2 uv) {
     vec3 tex = tentBlur3(samp, uv, iResolution);
-    
+
     // Optional: Desaturate slightly to look more "serious" or keep as is.
     // float l = dot(tex, vec3(0.299, 0.587, 0.114));
-    // tex = mix(vec3(l), tex, 0.8); 
+    // tex = mix(vec3(l), tex, 0.8);
 
     // Return texture darkened by 30% to prevent blowout
-    return tex * 0.7; 
+    return tex * 0.7;
 }
 
 float diamondRadius(vec2 p) {
@@ -80,86 +80,87 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
 
 void main(void) {
     vec2 xuv = 1.0 - abs(1.0 - 2.0 * tc);
-    xuv = xuv - floor(xuv);    
+    xuv = xuv - floor(xuv);
     vec4 baseTex = texture(samp, xuv);
-    
+
     vec2 uv = tc * 2.0 - 1.0;
     float aspect = iResolution.x / iResolution.y;
     uv.x *= aspect;
-    
+
     // Reduced speed of the pingPong effect for a smoother look
-    float r = pingPong(sin(length(uv) * time_f), 5.0); 
+    float r = pingPong(sin(length(uv) * time_f), 5.0);
     float radius = sqrt(aspect * aspect + 1.0) + 0.5;
-    
+
     // Smoother glow transition
     float glow = smoothstep(radius, radius - 0.5, r); // increased range 0.25->0.5
-    
+
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
     vec2 ar = vec2(aspect, 1.0);
-    
+
     // Base background color (darkened original)
-    vec3 baseCol = preBlendColor(tc); 
-    
+    vec3 baseCol = preBlendColor(tc);
+
     float seg = 4.0 + 2.0 * sin(time_f * 0.33);
     vec2 kUV = reflectUV(tc, seg, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    
+
     float foldZoom = 1.45 + 0.55 * sin(time_f * 0.42);
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
     kUV = rotateUV(kUV, time_f * 0.23, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    
+
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
-    
+    if (q.y > q.x)
+        q = q.yx;
+
     float base = 1.82 + 0.18 * pingPong(sin(time_f * 0.2) * (PI * time_f), 5.0);
     float period = log(base) * pingPong(time_f * PI, 5.0);
     float tz = time_f * 0.65;
-    
+
     float rD = diamondRadius(p) + 1e-6;
     float ang = atan(q.y, q.x) + tz * 0.35 + 0.35 * sin(rD * 18.0 + time_f * 0.6);
-    
+
     float k = fract((log(rD) - tz) / period);
     float rw = exp(k * period);
-    
+
     vec2 pwrap = vec2(cos(ang), sin(ang)) * rw;
-    
+
     vec2 u0 = fract(pwrap / ar + m);
     vec2 u1 = fract((pwrap * 1.045) / ar + m);
     vec2 u2 = fract((pwrap * 0.955) / ar + m);
-    
+
     vec2 dir = normalize(pwrap + 1e-6);
     vec2 off = dir * (0.0015 + 0.001 * sin(time_f * 1.3)) * vec2(1.0, 1.0 / aspect);
-    
+
     float vign = 1.0 - smoothstep(0.75, 1.2, length((tc - m) * ar));
     vign = mix(0.9, 1.15, vign);
-    
-  
+
     vec3 rC = preBlendColor(u0 + off);
     vec3 gC = preBlendColor(u1);
     vec3 bC = preBlendColor(u2 - off);
-    
+
     vec3 kaleidoRGB = vec3(rC.r, gC.g, bC.b);
-  
+
     float ring = smoothstep(0.0, 0.7, sin(log(rD + 1e-3) * 9.5 + time_f * 1.2));
     ring = ring * pingPong((time_f * PI), 5.0);
-    
+
     float pulse = 0.5 + 0.5 * sin(time_f * 2.0 + rD * 28.0 + k * 12.0);
-    
+
     vec3 outCol = kaleidoRGB;
-    outCol *= (0.6 + 0.4 * pulse); 
+    outCol *= (0.6 + 0.4 * pulse);
     outCol *= vign;
-    
+
     outCol = clamp(outCol, vec3(0.0), vec3(1.0));
     vec3 finalRGB = mix(baseTex.rgb * 0.8, outCol, pingPong(glow * PI, 5.0) * 0.6);
-    
+
     color = vec4(finalRGB, baseTex.a);
 }

@@ -17,12 +17,10 @@ uniform float time_f;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 cb = color;
-    color[0] = color[0]*1.5;
-    color[1] = color[1]*1.5;
-    color[2] = color[2]*1.5;
+    color[0] = color[0] * 1.5;
+    color[1] = color[1] * 1.5;
+    color[2] = color[2] * 1.5;
 }
-

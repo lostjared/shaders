@@ -13,7 +13,6 @@ float pingPong(float x, float length) {
     return m <= length ? m : length * 2.0 - m;
 }
 
-
 vec3 rainbow(float t) {
     t = fract(t);
     float r = abs(t * 6.0 - 3.0) - 1.0;
@@ -25,7 +24,7 @@ vec3 rainbow(float t) {
 void main(void) {
     vec2 uv = tc * 2.0 - 1.0;
     uv.y *= iResolution.y / iResolution.x;
-    float angle = atan(uv.y, uv.x) + pingPong(time_f  * PI, 5.0) * 20.0;
+    float angle = atan(uv.y, uv.x) + pingPong(time_f * PI, 5.0) * 20.0;
 
     vec3 rainbow_color = rainbow(angle / (2.0 * 3.14159));
 

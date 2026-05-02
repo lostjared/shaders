@@ -25,7 +25,7 @@ void main() {
     angle = mod(angle, 2.0 * 3.14159 / 5.0);
     float sharpness = 0.5;
     bool inStar = radius < (cos(sharpness) / cos(angle - sharpness));
-    
+
     if (inStar) {
         color = texture(samp, tc);
         vec4 color2 = texture(mat_samp, tc);
@@ -34,4 +34,3 @@ void main() {
         color = texture(samp, tc);
     }
 }
-

@@ -19,12 +19,10 @@ void main() {
     vec3 rgbTrail = vec3(
         texture(samp, uv + trailOffsetR).r,
         texture(samp, uv + trailOffsetG).g,
-        texture(samp, uv + trailOffsetB).b
-    );
+        texture(samp, uv + trailOffsetB).b);
 
     float strobe = 0.5 + 0.5 * sin(time_f * 20.0);
     vec3 baseColor = texture(samp, uv).rgb;
 
     color = vec4(mix(baseColor, rgbTrail, strobe), 1.0);
 }
-

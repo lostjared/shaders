@@ -22,26 +22,25 @@ uniform vec2 iResolution;
 uniform float restore_black;
 in vec2 iResolution_;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     ivec3 source;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         source[i] = int(255 * color[i]);
     }
     float x = iResolution_.x / (gl_FragCoord.x / alpha_r);
     float y = iResolution_.y / (gl_FragCoord.y / alpha_g);
-    vec2 f = fract(vec2(x,y)) / timeval;
-    color[0] = (color[0]*15.5 * (f[0]+f[1]))*(alpha_r+0.1);
-    color[1] = (color[1]*15.5 * (f[0]+f[1]))*(alpha_g+0.1);
-    color[2] = (color[2]*15.5 * (f[0]+f[1]))*(alpha_b+0.1);
-    
+    vec2 f = fract(vec2(x, y)) / timeval;
+    color[0] = (color[0] * 15.5 * (f[0] + f[1])) * (alpha_r + 0.1);
+    color[1] = (color[1] * 15.5 * (f[0] + f[1])) * (alpha_g + 0.1);
+    color[2] = (color[2] * 15.5 * (f[0] + f[1])) * (alpha_b + 0.1);
+
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * color[i]);
-        int_color[i] = int_color[i]^source[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        color[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ source[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        color[i] = float(int_color[i]) / 255;
     }
 }

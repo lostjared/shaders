@@ -40,4 +40,3 @@ void main(void) {
         color = texture(samp, newTexCoord);
     }
 }
-

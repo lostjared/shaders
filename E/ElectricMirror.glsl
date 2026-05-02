@@ -9,7 +9,7 @@ uniform vec4 iMouse;
 uniform float amp;
 uniform float uamp;
 uniform float iTime;
-uniform int iFrame; 
+uniform int iFrame;
 uniform float iTimeDelta;
 uniform vec4 iDate;
 uniform vec2 iMouseClick;
@@ -21,20 +21,20 @@ uniform float iSampleRate;
 const float PI = 3.1415926535897932384626433832795;
 
 // --- UTILS ---
-float pingPong(float x, float length){
+float pingPong(float x, float length) {
     float m = mod(x, length * 2.0);
     return m <= length ? m : length * 2.0 - m;
 }
 
-vec3 hsv2rgb(vec3 c){
-    vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+vec3 hsv2rgb(vec3 c) {
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
 // --- NOISE FOR ELECTRICITY ---
 float hash12(vec2 p) {
-    vec3 p3  = fract(vec3(p.xyx) * .1031);
+    vec3 p3 = fract(vec3(p.xyx) * .1031);
     p3 += dot(p3, p3.yzx + 33.33);
     return fract((p3.x + p3.y) * p3.z);
 }
@@ -50,7 +50,7 @@ float noise(vec2 p) {
 }
 
 // --- GEOMETRY TRANSFORMS ---
-vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect){
+vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect) {
     float s = sin(angle), cc = cos(angle);
     vec2 p = uv - c;
     p.x *= aspect;
@@ -59,7 +59,7 @@ vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect){
     return p + c;
 }
 
-vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect){
+vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
     vec2 p = uv - c;
     p.x *= aspect;
     float ang = atan(p.y, p.x);
@@ -72,9 +72,9 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect){
     return r + c;
 }
 
-vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect){
+vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
-    for(int i = 0; i < 6; i++){
+    for (int i = 0; i < 6; i++) {
         p = abs((p - c) * (zoom + 0.15 * sin(t * 0.35 + float(i)))) - 0.5 + c;
         p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
     }
@@ -82,7 +82,7 @@ vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect){
 }
 
 // --- VISUAL ELEMENTS ---
-vec3 neonPalette(float t){
+vec3 neonPalette(float t) {
     vec3 pink = vec3(1.0, 0.15, 0.75);
     vec3 blue = vec3(0.10, 0.55, 1.0);
     vec3 green = vec3(0.10, 1.00, 0.45);
@@ -100,42 +100,42 @@ vec3 neonPalette(float t){
 vec3 electricLayer(vec2 uv, float t, float intensity) {
     vec2 p = uv - 0.5;
     p.x *= iResolution.x / iResolution.y;
-    
+
     float r = length(p);
     float a = atan(p.y, p.x);
-    
+
     // Create jagged noise based on angle and time
     // We layer two frequencies of noise for detail
     float n = noise(vec2(a * 8.0 - t * 2.0, r * 3.0 - t * 4.0));
     n += 0.5 * noise(vec2(a * 20.0 + t * 5.0, t * 8.0));
-    
+
     // The "Wave" structure
     // sin(a * X) creates radial beams
     // + n * X adds the jagged distortion
     float beam = sin(a * 12.0 + n * 3.0 - t * 3.0);
-    
+
     // Sharpen the beam to make it look like a bolt
     // The 'abs' makes it a line, the division creates the glow falloff
     float bolt = 0.02 / (abs(beam) + 0.05);
-    
+
     // Add concentric ripple electricity
     float ring = 0.01 / (abs(sin(r * 30.0 - t * 10.0 + n)) + 0.05);
-    
+
     // Combine and Mask
     // Fade out at edges (1.0 - smoothstep)
     // Fade out at center (smoothstep)
     float mask = smoothstep(0.0, 0.2, r) * (1.0 - smoothstep(0.5, 0.8, r));
-    
+
     float finalElec = (bolt + ring * 0.5) * mask * intensity;
-    
+
     // Electric Colors: Cyan/White/Violet
-    vec3 eColor = vec3(0.4, 0.9, 1.0) * finalElec; // Cyan core
+    vec3 eColor = vec3(0.4, 0.9, 1.0) * finalElec;   // Cyan core
     eColor += vec3(0.8, 0.2, 1.0) * finalElec * 0.5; // Violet fringe
-    
+
     return eColor;
 }
 
-vec3 warpTexture(vec2 baseUV, float seg, float zoom, float t, vec2 m, float aspect, float aMix, float sr, float spinAngle){
+vec3 warpTexture(vec2 baseUV, float seg, float zoom, float t, vec2 m, float aspect, float aMix, float sr, float spinAngle) {
     vec2 ar = vec2(aspect, 1.0);
     vec2 kUV = reflectUV(baseUV, seg, m, aspect);
     kUV = fractalFold(kUV, zoom, t, m, aspect);
@@ -189,18 +189,18 @@ vec3 warpTexture(vec2 baseUV, float seg, float zoom, float t, vec2 m, float aspe
 vec3 applyBitwiseBlend(vec3 currentCol, vec3 avgCol) {
     ivec3 curI = ivec3(currentCol * 255.0);
     ivec3 avgI = ivec3(avgCol * 255.0);
-    ivec3 sumI = avgI; 
+    ivec3 sumI = avgI;
     ivec3 xorI = curI ^ (ivec3(1) + sumI);
     vec3 xorF = vec3(xorI) / 255.0;
     vec3 avgF = vec3(avgI) / 255.0;
     vec3 newCol = mix(xorF, avgF, 0.5);
     float boost = 1.8;
-    vec3 midpoint = vec3(0.5); 
+    vec3 midpoint = vec3(0.5);
     newCol = midpoint + (newCol - midpoint) * boost;
     return clamp(newCol, 0.0, 1.0);
 }
 
-void main(void){
+void main(void) {
     float aspect = iResolution.x / iResolution.y;
     vec2 ar = vec2(aspect, 1.0);
     vec2 m = (iMouse.z > 0.5 ? (iMouse.xy / iResolution) : vec2(0.5));
@@ -237,7 +237,7 @@ void main(void){
     vec3 colBase = warpTexture(tc, seg, zoom, t, m, aspect, aMix, sr, spinAngle);
 
     vec3 colBubble = colBase;
-    if(dist < maxRadius){
+    if (dist < maxRadius) {
         vec2 texCoordR = centerPx + deltaPx * scaleFactor + dirN * offsetR * maxRadius;
         vec2 texCoordG = centerPx + deltaPx * scaleFactor + dirN * offsetG * maxRadius;
         vec2 texCoordB = centerPx + deltaPx * scaleFactor + dirN * offsetB * maxRadius;
@@ -257,16 +257,16 @@ void main(void){
     }
 
     vec3 baseVideo = textureGrad(samp, tc, dFdx(tc), dFdy(tc)).rgb;
-    
+
     float globalMix = 0.50 + 0.35 * clamp(ampNorm * 0.5, 0.0, 1.0);
     vec3 combined = mix(baseVideo, colBubble, globalMix);
 
     // --- ELECTRICITY INTEGRATION ---
     // We generate the electric field based on UVs and time
     // Intensity is boosted by audio (aMix)
-    float electricIntensity = 1.0 + aMix * 2.0; 
+    float electricIntensity = 1.0 + aMix * 2.0;
     vec3 electric = electricLayer(tc, t, electricIntensity);
-    
+
     // Add electricity to the combined image via Screen blend or simple addition
     combined += electric;
 

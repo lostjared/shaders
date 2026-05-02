@@ -9,7 +9,7 @@ uniform vec2 iResolution;
 void main(void) {
     vec2 normCoord = tc;
     float timeAdjustedFrequency = 10.0 + sin(time_f) * 5.0;
-    
+
     float timeAdjustedAmplitude = 0.01 + (sin(time_f * 0.5) * 0.5 + 0.5) * 0.05;
     float zigzagFactor = abs(fract(normCoord.y * timeAdjustedFrequency) - 0.5) * 2.0;
     float xDisplacement = zigzagFactor * timeAdjustedAmplitude;

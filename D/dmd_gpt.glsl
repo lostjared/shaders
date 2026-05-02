@@ -6,7 +6,7 @@ out vec4 color;
 uniform sampler2D samp;
 uniform vec2 iResolution;
 
-float diamond(vec2 p){
+float diamond(vec2 p) {
     p = abs(p);
     float d = p.x + p.y;
     return 1.0 - smoothstep(0.48, 0.5, d);

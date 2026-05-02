@@ -33,11 +33,11 @@ float hash(vec2 p) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.20).r;
-    float hiMid  = texture(spectrum, 0.38).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.20).r;
+    float hiMid = texture(spectrum, 0.38).r;
     float treble = texture(spectrum, 0.55).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     vec2 uv = (tc - 0.5) * 2.0;
     uv.x *= iResolution.x / iResolution.y;
@@ -45,7 +45,8 @@ void main() {
     // Crystal symmetry: quad mirror + rotation
     uv *= rot(iTime * 0.03);
     uv = abs(uv);
-    if (uv.y > uv.x) uv = uv.yx;
+    if (uv.y > uv.x)
+        uv = uv.yx;
     uv = abs(uv);
 
     // Voronoi-like crystal structure

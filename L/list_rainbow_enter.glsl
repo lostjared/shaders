@@ -7,7 +7,7 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform vec2 iMouse;
 
-vec3 rainbow(float t){
+vec3 rainbow(float t) {
     t = fract(t);
     float r = abs(t * 6.0 - 3.0) - 1.0;
     float g = 2.0 - abs(t * 6.0 - 2.0);
@@ -15,7 +15,7 @@ vec3 rainbow(float t){
     return clamp(vec3(r, g, b), 0.0, 1.0);
 }
 
-void main(){
+void main() {
     vec2 mouse = iMouse / iResolution;
     mouse.y = 1.0 - mouse.y;
     vec2 uv = tc - mouse;

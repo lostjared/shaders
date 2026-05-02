@@ -8,9 +8,9 @@ uniform float time_f;
 uniform vec2 iResolution;
 
 void main() {
-    
+
     vec2 pos = tc;
-    
+
     float wave_x = sin((tc.x + time_f) * 5.0);
     float wave_y = cos((tc.y + time_f) * 8.0);
 

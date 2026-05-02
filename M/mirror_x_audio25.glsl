@@ -23,7 +23,8 @@ void main(void) {
     vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
     float n = 3.0 + floor(aLow * 5.0);
     for (int i = 0; i < 5; i++) {
-        if (float(i) >= n) break;
+        if (float(i) >= n)
+            break;
         uv = abs(uv * 2.0 - 1.0);
         uv *= 1.0 + 0.05 * sin(t + float(i) * 1.7) * aMid;
     }

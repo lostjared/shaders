@@ -45,11 +45,11 @@ vec2 mirror(vec2 uv) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -65,7 +65,8 @@ void main() {
     float seg = floor(6.0 + bass * 4.0);
     vec2 kUV = kaleidoscope(flameUV, seg);
     kUV = abs(kUV);
-    if (kUV.y > kUV.x) kUV = kUV.yx;
+    if (kUV.y > kUV.x)
+        kUV = kUV.yx;
 
     // Mirror flame texture
     vec2 texUV = mirror(kUV * 0.6 + 0.5);
@@ -80,7 +81,8 @@ void main() {
         eFlame.y -= e * 0.02;
         vec2 eKUV = kaleidoscope(eFlame, seg);
         eKUV = abs(eKUV);
-        if (eKUV.y > eKUV.x) eKUV = eKUV.yx;
+        if (eKUV.y > eKUV.x)
+            eKUV = eKUV.yx;
         vec3 s = texture(samp, mirror(eKUV * 0.6 + 0.5)).rgb;
         // Warm-to-cool rainbow tint
         s *= rainbow(e * 0.15 + uv.y + 0.5 + iTime * 0.2 + mid);

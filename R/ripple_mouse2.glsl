@@ -7,7 +7,7 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
 
-float ripplePulse(vec2 uv, vec2 c, float t0){
+float ripplePulse(vec2 uv, vec2 c, float t0) {
     float d = length(uv - c);
     float k = 28.0;
     float w = 8.0;
@@ -17,7 +17,7 @@ float ripplePulse(vec2 uv, vec2 c, float t0){
     return a * falloff * gate;
 }
 
-void main(){
+void main() {
     vec2 uv = tc;
     vec2 mouse = iMouse.xy / iResolution.xy;
 
@@ -25,12 +25,12 @@ void main(){
     float baseStart = floor(time_f / interval) * interval;
 
     float r = 0.0;
-    r += ripplePulse(uv, mouse, baseStart - 0.0*interval);
-    r += ripplePulse(uv, mouse, baseStart - 1.0*interval);
-    r += ripplePulse(uv, mouse, baseStart - 2.0*interval);
+    r += ripplePulse(uv, mouse, baseStart - 0.0 * interval);
+    r += ripplePulse(uv, mouse, baseStart - 1.0 * interval);
+    r += ripplePulse(uv, mouse, baseStart - 2.0 * interval);
 
     vec2 dir = normalize(uv - mouse + 1e-6);
-    float amp = 0.08;              // ~4x the original 0.02
+    float amp = 0.08; // ~4x the original 0.02
     vec2 offset = dir * r * amp;
 
     vec4 col = texture(samp, uv + offset);

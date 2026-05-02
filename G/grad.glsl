@@ -29,21 +29,19 @@ vec4 xor_RGB(vec4 icolor, vec4 source) {
 
 void main(void) {
 
-    if(time_f == 0.0) {
+    if (time_f == 0.0) {
         color = vec4(1, 1, 1, 1);
         return;
     }
 
     vec2 uv = tc;
     vec2 warp = uv + vec2(
-        sin(uv.y * 10.0 + time_f) * 0.1,
-        sin(uv.x * 10.0 + time_f) * 0.1
-    );
+                         sin(uv.y * 10.0 + time_f) * 0.1,
+                         sin(uv.x * 10.0 + time_f) * 0.1);
     vec3 colorShift = vec3(
         0.5 * sin(time_f * 0.5) + 0.5,
         0.5 * sin(time_f * 0.7 + 2.0) + 0.5,
-        0.5 * sin(time_f * 0.3 + 4.0) + 0.5
-    );
+        0.5 * sin(time_f * 0.3 + 4.0) + 0.5);
     float feedback = rand(uv + time_f);
     vec2 feedbackUv = tc;
     float time_t = mod(time_f, 50);

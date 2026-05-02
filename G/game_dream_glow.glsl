@@ -13,7 +13,7 @@ void main(void) {
     float total = 0.0;
     for (int i = -3; i <= 3; ++i) {
         for (int j = -3; j <= 3; ++j) {
-            float w = exp(-(float(i*i + j*j)) * 0.18);
+            float w = exp(-(float(i * i + j * j)) * 0.18);
             g += texture(samp, tc + vec2(float(i), float(j)) * px * 1.5).rgb * w;
             total += w;
         }

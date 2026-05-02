@@ -24,11 +24,11 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.20).r;
-    float hiMid  = texture(spectrum, 0.42).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.20).r;
+    float hiMid = texture(spectrum, 0.42).r;
     float treble = texture(spectrum, 0.60).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 p = (tc - 0.5) * vec2(aspect, 1.0);
@@ -62,7 +62,8 @@ void main() {
         fuv = fract(fuv * (1.4 + hiMid * 0.3)) - 0.5;
         fuv = rot(iTime * 0.1 + i * 0.6) * fuv;
         fuv = abs(fuv);
-        if (fuv.y > fuv.x) fuv = fuv.yx;
+        if (fuv.y > fuv.x)
+            fuv = fuv.yx;
 
         float d = length(fuv) * exp(-length(p0));
         d = sin(d * (8.0 + treble * 6.0) + iTime) / 8.0;

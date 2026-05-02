@@ -34,5 +34,3 @@ void main(void) {
     color = mix(sin(ctx * time_t), vec4(color_gradient, 1.0), 0.5);
     color.a = 1.0;
 }
-
-

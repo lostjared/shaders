@@ -26,11 +26,9 @@ void main() {
     vec3 glitchRGB = vec3(
         texture(samp, distortedUV + vec2(offset.x, 0.0)).r,
         texture(samp, distortedUV + vec2(-offset.x, offset.y)).g,
-        texture(samp, distortedUV + vec2(0.0, -offset.y)).b
-    );
+        texture(samp, distortedUV + vec2(0.0, -offset.y)).b);
 
     float strobe = step(0.5, fract(time_f * 10.0)) * 0.2;
 
     color = vec4(mix(texColor.rgb, glitchRGB, glitchLine + strobe), texColor.a);
 }
-

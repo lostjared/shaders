@@ -19,13 +19,11 @@ uniform float time_f;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = (0.5 * texture(samp, tc)) + (0.5 * texture(mat_samp, tc));
-        
-    vec4 color2 = (0.5 * texture(samp, tc/3)) + (0.5 * texture(mat_samp, tc/3));
-    vec4 color3 = (0.5 * texture(samp, tc/5)) + (0.5 * texture(mat_samp, tc/5));
-    vec4 color4 = (0.5 * texture(samp, tc/7)) + (0.5 * texture(mat_samp, tc/7));
+
+    vec4 color2 = (0.5 * texture(samp, tc / 3)) + (0.5 * texture(mat_samp, tc / 3));
+    vec4 color3 = (0.5 * texture(samp, tc / 5)) + (0.5 * texture(mat_samp, tc / 5));
+    vec4 color4 = (0.5 * texture(samp, tc / 7)) + (0.5 * texture(mat_samp, tc / 7));
     color = (color * 0.4) + (color2 * 0.4) + (color3 * 0.4) + (color4 * 0.4);
 }
-

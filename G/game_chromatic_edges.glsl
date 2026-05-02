@@ -12,7 +12,7 @@ void main(void) {
     float k = r2 * 0.04;
     vec2 dir = v;
     float cr = texture(samp, tc + dir * k * 1.0).r;
-    float cg = texture(samp, tc                 ).g;
+    float cg = texture(samp, tc).g;
     float cb = texture(samp, tc - dir * k * 1.0).b;
     color = vec4(cr, cg, cb, 1.0);
 }

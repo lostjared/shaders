@@ -111,7 +111,8 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -123,12 +124,14 @@ vec2 rot2(vec2 v, float a) {
 
 vec2 h2(vec2 p) {
     return fract(sin(vec2(dot(p, vec2(127.1, 311.7)),
-                          dot(p, vec2(269.5, 183.3)))) * 43758.5453);
+                          dot(p, vec2(269.5, 183.3)))) *
+                 43758.5453);
 }
 
 vec3 limitHighlights(vec3 c) {
     float m = max(c.r, max(c.g, c.b));
-    if (m > 0.9) c *= 0.9 / m;
+    if (m > 0.9)
+        c *= 0.9 / m;
     return c;
 }
 
@@ -239,25 +242,22 @@ void main(void) {
     float speedR = 5.0 * speedScale;
     float speedG = 6.5 * speedScale;
     float speedB = 4.0 * speedScale;
-    float ampR   = 0.03 * (0.7 + 0.6 * a01);
-    float ampG   = 0.025 * (0.7 + 0.6 * a01);
-    float ampB   = 0.035 * (0.7 + 0.6 * a01);
-    float waveR  = 10.0;
-    float waveG  = 12.0;
-    float waveB  = 8.0;
+    float ampR = 0.03 * (0.7 + 0.6 * a01);
+    float ampG = 0.025 * (0.7 + 0.6 * a01);
+    float ampB = 0.035 * (0.7 + 0.6 * a01);
+    float waveR = 10.0;
+    float waveG = 12.0;
+    float waveB = 8.0;
 
-    float rR = sin(uv.x * waveR        + tFast * speedR) * ampR
-             + sin(uv.y * waveR * 0.8  + tFast * speedR * 1.2) * ampR;
-    float rG = sin(uv.x * waveG * 1.5  + tFast * speedG) * ampG
-             + sin(uv.y * waveG * 0.3  + tFast * speedG * 0.7) * ampG;
-    float rB = sin(uv.x * waveB * 0.5  + tFast * speedB) * ampB
-             + sin(uv.y * waveB * 1.7  + tFast * speedB * 1.3) * ampB;
+    float rR = sin(uv.x * waveR + tFast * speedR) * ampR + sin(uv.y * waveR * 0.8 + tFast * speedR * 1.2) * ampR;
+    float rG = sin(uv.x * waveG * 1.5 + tFast * speedG) * ampG + sin(uv.y * waveG * 0.3 + tFast * speedG * 0.7) * ampG;
+    float rB = sin(uv.x * waveB * 0.5 + tFast * speedB) * ampB + sin(uv.y * waveB * 1.7 + tFast * speedB * 1.3) * ampB;
 
     vec2 tcR = uv + vec2(rR, rR);
     vec2 tcG = uv + vec2(rG, -0.5 * rG);
     vec2 tcB = uv + vec2(0.3 * rB, rB);
 
-    vec3 pats[4] = vec3[](vec3(1,0,1), vec3(0,1,0), vec3(1,0,0), vec3(0,0,1));
+    vec3 pats[4] = vec3[](vec3(1, 0, 1), vec3(0, 1, 0), vec3(1, 0, 0), vec3(0, 0, 1));
     float pspd = 4.0;
     int pidx = int(mod(floor(tBase * pspd + seed * 4.0), 4.0));
     vec3 mir = pats[pidx];
@@ -279,8 +279,7 @@ void main(void) {
     vec2 airG = tangG * sw * fallG * (0.06 + 0.22 * a) * (0.6 + 0.4 * cos(uv.y * 38.0 + tFast * 3.3 + seed * 1.7));
     vec2 airB = tangB * sw * fallB * (0.06 + 0.22 * a) * (0.6 + 0.4 * cos(uv.y * 42.0 + tFast * 2.9 + seed * 0.9));
 
-    vec2 jit = (h2(uv * vec2(233.3, 341.9) + tFast + seed) - 0.5)
-             * (0.0006 + 0.004 * ua);
+    vec2 jit = (h2(uv * vec2(233.3, 341.9) + tFast + seed) - 0.5) * (0.0006 + 0.004 * ua);
 
     tcR += airR + jit;
     tcG += airG + jit;
@@ -300,15 +299,15 @@ void main(void) {
 
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
+    if (q.y > q.x)
+        q = q.yx;
 
     float base = 1.82 + 0.18 * pingPong(sin(tSlow * 0.2) * (PI * tSlow), 5.0);
     float period = log(base) * pingPong(tSlow * PI, 5.0);
     float tz = tSlow * 0.65;
     float rD = diamondRadius(p) + 1e-6;
 
-    float ang = atan(q.y, q.x) + tz * 0.35
-              + 0.35 * sin(rD * 18.0 + tFast * 0.6);
+    float ang = atan(q.y, q.x) + tz * 0.35 + 0.35 * sin(rD * 18.0 + tFast * 0.6);
     float k = fract((log(rD) - tz) / period);
     float rw = exp(k * period);
     vec2 pwrap = vec2(cos(ang), sin(ang)) * rw;
@@ -328,7 +327,7 @@ void main(void) {
     vec2 sB = mix(u2, fB, 0.6);
 
     vec3 rC = preBlendColor(sR + off, tSlow, tFast, aspect);
-    vec3 gC = preBlendColor(sG,       tSlow, tFast, aspect);
+    vec3 gC = preBlendColor(sG, tSlow, tFast, aspect);
     vec3 bC = preBlendColor(sB - off, tSlow, tFast, aspect);
 
     vec3 kaleidoRGB = vec3(rC.r, gC.g, bC.b);
@@ -341,8 +340,7 @@ void main(void) {
     vec3 outCol = kaleidoRGB;
     outCol *= (0.75 + 0.25 * ring) * (0.85 + 0.15 * pulse) * vign;
 
-    vec3 bloom = outCol * outCol * 0.10
-               + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * 0.06;
+    vec3 bloom = outCol * outCol * 0.10 + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * 0.06;
 
     float pulseAdd = 0.004 * (0.5 + 0.5 * sin(tFast * 3.7 + seed));
     outCol += bloom;

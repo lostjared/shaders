@@ -29,12 +29,12 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.12).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.38).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.38).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     vec2 uv = (tc - 0.5) * 2.0;
     uv.x *= iResolution.x / iResolution.y;
@@ -46,7 +46,8 @@ void main() {
         p *= rot(float(i) * 0.4 + iTime * 0.04);
         p = abs(p);
         // Prism fold: triangular
-        if (p.x + p.y > 0.5) p = vec2(0.5 - p.y, 0.5 - p.x);
+        if (p.x + p.y > 0.5)
+            p = vec2(0.5 - p.y, 0.5 - p.x);
     }
 
     // Mirror texture
@@ -67,7 +68,8 @@ void main() {
             ep = abs(ep) - vec2(0.4 + bass * 0.1 + e * 0.005, 0.3 + lowMid * 0.1 + e * 0.005);
             ep *= rot(float(i) * 0.4 + iTime * 0.04 + e * 0.02);
             ep = abs(ep);
-            if (ep.x + ep.y > 0.5) ep = vec2(0.5 - ep.y, 0.5 - ep.x);
+            if (ep.x + ep.y > 0.5)
+                ep = vec2(0.5 - ep.y, 0.5 - ep.x);
         }
         vec3 s = texture(samp, mirror(ep * 0.8 + 0.5)).rgb;
         s *= rainbow(e * 0.2 + length(p) + iTime * 0.2 + mid);

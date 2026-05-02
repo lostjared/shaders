@@ -19,31 +19,30 @@ uniform float time_f;
 
 uniform float restore_black;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+                         vec2(12.9898, 78.233))) *
+                 43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     ivec3 source;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         source[i] = int(255 * color[i]);
     }
 
     vec3 st1 = gl_FragCoord.xyz;
-    for(int i = 0; i < 3; ++i) {
-        color[i] = color[i]*timeval*st1[i];
+    for (int i = 0; i < 3; ++i) {
+        color[i] = color[i] * timeval * st1[i];
     }
- 
+
     ivec3 int_color;
-      for(int i = 0; i < 3; ++i) {
-          int_color[i] = int(255 * color[i]);
-          int_color[i] = int_color[i]^source[i];
-          if(int_color[i] > 255)
-              int_color[i] = int_color[i]%255;
-          color[i] = float(int_color[i])/255;
-      }
+    for (int i = 0; i < 3; ++i) {
+        int_color[i] = int(255 * color[i]);
+        int_color[i] = int_color[i] ^ source[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        color[i] = float(int_color[i]) / 255;
+    }
 }

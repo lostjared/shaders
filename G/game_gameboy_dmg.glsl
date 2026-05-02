@@ -14,9 +14,13 @@ void main(void) {
     vec3 p2 = vec3(0.55, 0.67, 0.06);
     vec3 p3 = vec3(0.61, 0.74, 0.06);
     vec3 quant;
-    if (lum < 0.25)      quant = p0;
-    else if (lum < 0.5)  quant = p1;
-    else if (lum < 0.75) quant = p2;
-    else                 quant = p3;
+    if (lum < 0.25)
+        quant = p0;
+    else if (lum < 0.5)
+        quant = p1;
+    else if (lum < 0.75)
+        quant = p2;
+    else
+        quant = p3;
     color = vec4(quant, 1.0);
 }

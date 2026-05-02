@@ -15,9 +15,18 @@ uniform float uamp; // Treble / High Freq (0.0 to 1.0)
 // --- UTILITIES ---
 const float PI = 3.14159265359;
 
-mat3 rotX(float a){float s=sin(a),c=cos(a);return mat3(1,0,0, 0,c,-s, 0,s,c);}
-mat3 rotY(float a){float s=sin(a),c=cos(a);return mat3(c,0,s, 0,1,0, -s,0,c);}
-mat3 rotZ(float a){float s=sin(a),c=cos(a);return mat3(c,-s,0, s,c,0, 0,0,1);}
+mat3 rotX(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(1, 0, 0, 0, c, -s, 0, s, c);
+}
+mat3 rotY(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, 0, s, 0, 1, 0, -s, 0, c);
+}
+mat3 rotZ(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, -s, 0, s, c, 0, 0, 0, 1);
+}
 
 // --- NOISE ---
 float hash(vec2 p) {
@@ -57,7 +66,7 @@ vec3 renderLayer(vec2 uv, float t, float bassStr, float trebleStr) {
     float aspect = iResolution.x / iResolution.y;
     vec2 ar = vec2(aspect, 1.0);
     vec2 center = vec2(0.5);
-    
+
     // Mouse Interaction: If mouse is pressed, move the vortex center
     if (iMouse.z > 0.5) {
         center = iMouse.xy / iResolution;
@@ -77,10 +86,10 @@ vec3 renderLayer(vec2 uv, float t, float bassStr, float trebleStr) {
     float rippleWavelength = 8.0;
     float rippleSpeed = 4.0 + (trebleStr * 10.0); // Fast jitter on highs
     float noiseVal = fbm(twistedP * 5.0 + t);
-    
+
     float rippleX = sin(twistedP.x * rippleWavelength + t * rippleSpeed + noiseVal * 2.0);
     float rippleY = cos(twistedP.y * rippleWavelength + t * rippleSpeed - noiseVal * 2.0);
-    
+
     // Treble makes the ripples sharper/deeper
     float rippleAmp = 0.05 + 0.05 * noiseVal * (1.0 + trebleStr * 2.0);
     vec2 rippledP = twistedP + vec2(rippleX, rippleY) * rippleAmp;
@@ -88,7 +97,7 @@ vec3 renderLayer(vec2 uv, float t, float bassStr, float trebleStr) {
     // 3. 3D PROJECTION
     vec3 p3 = vec3(rippledP, 1.0);
     // BASS shakes the camera slightly
-    float shake = bassStr * 0.1 * sin(t * 20.0); 
+    float shake = bassStr * 0.1 * sin(t * 20.0);
     mat3 R = rotX(t * 0.2 + shake) * rotY(t * 0.15) * rotZ(t * 0.1);
     vec3 r = R * p3;
     float zScale = 1.0 / (1.0 + r.z * 0.5);
@@ -100,7 +109,7 @@ vec3 renderLayer(vec2 uv, float t, float bassStr, float trebleStr) {
 
     // 5. CHROMATIC ABERRATION (Reacts to Bass)
     // Heavy bass = huge color split
-    float aberrationStr = 0.01 + (0.04 + bassStr * 0.05) * (1.0 / (len + 0.5)); 
+    float aberrationStr = 0.01 + (0.04 + bassStr * 0.05) * (1.0 / (len + 0.5));
     vec2 offset = vec2(aberrationStr, 0.0);
 
     vec3 texR = texture(samp, clamp(tiledUV - offset, 0.0, 1.0)).rgb;
@@ -111,7 +120,7 @@ vec3 renderLayer(vec2 uv, float t, float bassStr, float trebleStr) {
     // 6. GLOW
     float glowMask = smoothstep(0.6, 0.95, abs(rippleX * rippleY));
     vec3 palette = electricPalette(len - t);
-    
+
     // Flash brighter on beat
     return mix(layerColor, layerColor + palette, glowMask * (0.8 + bassStr * 0.5));
 }
@@ -125,13 +134,13 @@ void main(void) {
 
     // PASS 1: Current Frame
     vec3 col0 = renderLayer(tc, time_f, simBass, simTreble);
-    
+
     // PASS 2: Echo 1
     vec3 col1 = renderLayer(tc, time_f - 0.1, simBass * 0.8, simTreble * 0.8);
-    
+
     // PASS 3: Echo 2
     vec3 col2 = renderLayer(tc, time_f - 0.2, simBass * 0.6, simTreble * 0.6);
-    
+
     vec3 finalColor = col0 + (col1 * 0.5) + (col2 * 0.25);
     finalColor = finalColor / (1.0 + finalColor * 0.4);
 

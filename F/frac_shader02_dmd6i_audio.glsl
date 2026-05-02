@@ -101,10 +101,10 @@ vec3 preBlendColor(vec2 uv) {
     vec2 p = (uv - 0.5) * vec2(aspect, 1.0);
     float r = length(p);
     float t = time_f;
-    
+
     // AUDIO: Smooth energy accelerates the neon color cycling
     vec3 neon = neonPalette(t + r * 1.3 + (amp_smooth * 4.0));
-    
+
     float neonAmt = smoothstep(0.1, 0.8, r);
     neonAmt = 0.3 + 0.4 * (1.0 - neonAmt);
     vec3 grad = mix(tex, neon, neonAmt);
@@ -121,7 +121,8 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -131,18 +132,18 @@ void main(void) {
     vec2 uv = tc * 2.0 - 1.0;
     float aspect = iResolution.x / iResolution.y;
     uv.x *= aspect;
-    float r = pingPong(sin(length(uv) * time_f), 5.0); 
+    float r = pingPong(sin(length(uv) * time_f), 5.0);
     float radius = sqrt(aspect * aspect + 1.0) + 0.5;
     float glow = smoothstep(radius, radius - 0.25, r);
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
     vec2 ar = vec2(aspect, 1.0);
     vec3 baseCol = preBlendColor(tc);
-    
+
     // AUDIO: Bass increases the number of kaleido reflection segments
     float seg = 4.0 + 2.0 * sin(time_f * 0.33) + (amp_low * 6.0);
     vec2 kUV = reflectUV(tc, seg, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    
+
     // AUDIO: Mids push the fractal folding zoom
     float foldZoom = 1.45 + 0.55 * sin(time_f * 0.42) + (amp_mid * 0.6);
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
@@ -150,14 +151,15 @@ void main(void) {
     kUV = diamondFold(kUV, m, aspect);
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
-    
+    if (q.y > q.x)
+        q = q.yx;
+
     float base = 1.82 + 0.18 * pingPong(sin(time_f * 0.2) * (PI * time_f), 5.0);
     float period = log(base) * pingPong(time_f * PI, 5.0);
-    
+
     // AUDIO: Smooth energy accelerates the spiral wrapping rotation
     float tz = time_f * 0.65 + (amp_smooth * 2.5);
-    
+
     float rD = diamondRadius(p) + 1e-6;
     float ang = atan(q.y, q.x) + tz * 0.35 + 0.35 * sin(rD * 18.0 + time_f * 0.6);
     float k = fract((log(rD) - tz) / period);
@@ -167,28 +169,28 @@ void main(void) {
     vec2 u1 = fract((pwrap * 1.045) / ar + m);
     vec2 u2 = fract((pwrap * 0.955) / ar + m);
     vec2 dir = normalize(pwrap + 1e-6);
-    
+
     // AUDIO: Treble drives the chromatic aberration offset
     vec2 off = dir * (0.0015 + 0.001 * sin(time_f * 1.3) + (amp_high * 0.02)) * vec2(1.0, 1.0 / aspect);
-    
+
     float vign = 1.0 - smoothstep(0.75, 1.2, length((tc - m) * ar));
     vign = mix(0.9, 1.15, vign);
     vec3 rC = preBlendColor(u0 + off);
     vec3 gC = preBlendColor(u1);
     vec3 bC = preBlendColor(u2 - off);
     vec3 kaleidoRGB = vec3(rC.r, gC.g, bC.b);
-    
+
     float ring = smoothstep(0.0, 0.7, sin(log(rD + 1e-3) * 9.5 + time_f * 1.2));
     ring = ring * pingPong((time_f * PI), 5.0);
-    
+
     // AUDIO: Peak energy increases the overall pulse intensity
     float pulse = 0.5 + 0.5 * sin(time_f * 2.0 + rD * 28.0 + k * 12.0) + (amp_peak * 0.8);
 
-			 pulse *= iamp;    
+    pulse *= iamp;
 
     vec3 outCol = kaleidoRGB;
     outCol *= (0.75 + 0.25 * ring) * (0.85 + 0.15 * pulse) * vign;
-    
+
     // AUDIO: RMS and Peak pump the bloom effect
     vec3 bloom = outCol * outCol * (0.18 + amp_rms * 0.6) + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * (0.12 + amp_peak * 0.4);
 
@@ -196,7 +198,6 @@ void main(void) {
     outCol = mix(outCol, baseCol, pingPong(pulse * PI, 5.0) * 0.18);
     outCol = clamp(outCol, vec3(0.05), vec3(0.97));
     vec3 finalRGB = mix(baseTex.rgb, outCol, pingPong(glow * PI, 5.0) * 0.8);
-    
 
     // --- Audio Reactivity: direct output modulation ---
     float _ab = clamp(amp_peak, 0.0, 1.0);

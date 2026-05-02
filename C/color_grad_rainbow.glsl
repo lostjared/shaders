@@ -45,7 +45,7 @@ void main(void) {
 
     vec2 uv = tc * 2.0 - 1.0;
     uv.y *= iResolution.y / iResolution.x;
-    
+
     float time_t = pingPong(time_f, 15.0) + 1.0;
     float wave = sin(uv.x * 10.0 + time_t * 2.0) * 0.1;
     vec2 random_direction = smoothRandom2(time_t) * 0.5;

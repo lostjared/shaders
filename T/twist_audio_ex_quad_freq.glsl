@@ -14,10 +14,14 @@ void main(void) {
     float q3 = texture(spectrum, 0.80).r;
 
     float e;
-    if (tc.x < 0.5 && tc.y < 0.5) e = q0;
-    else if (tc.x >= 0.5 && tc.y < 0.5) e = q1;
-    else if (tc.x < 0.5 && tc.y >= 0.5) e = q2;
-    else e = q3;
+    if (tc.x < 0.5 && tc.y < 0.5)
+        e = q0;
+    else if (tc.x >= 0.5 && tc.y < 0.5)
+        e = q1;
+    else if (tc.x < 0.5 && tc.y >= 0.5)
+        e = q2;
+    else
+        e = q3;
 
     vec2 center = vec2(0.5);
     vec2 d = tc - center;

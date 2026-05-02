@@ -38,7 +38,7 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
 
 vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
-    // CHANGED: Reduced iterations from 6 to 3. 
+    // CHANGED: Reduced iterations from 6 to 3.
     // This keeps the diamonds large and prevents the geometry from becoming "noisy" or pixelated.
     for (int i = 0; i < 3; i++) {
         p = abs((p - c) * (zoom + 0.15 * sin(t * 0.35 + float(i)))) - 0.5 + c;
@@ -64,7 +64,7 @@ vec3 tentBlur3(sampler2D img, vec2 uv, vec2 res) {
 vec3 preBlendColor(vec2 uv) {
     vec3 tex = tentBlur3(samp, uv, iResolution);
     // Darkened texture return
-    return tex * 0.7; 
+    return tex * 0.7;
 }
 
 float diamondRadius(vec2 p) {
@@ -75,85 +75,87 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
 
 void main(void) {
     vec2 xuv = 1.0 - abs(1.0 - 2.0 * tc);
-    xuv = xuv - floor(xuv);    
+    xuv = xuv - floor(xuv);
     vec4 baseTex = texture(samp, xuv);
-    
+
     vec2 uv = tc * 2.0 - 1.0;
     float aspect = iResolution.x / iResolution.y;
     uv.x *= aspect;
-    
-    float r = pingPong(sin(length(uv) * time_f), 5.0); 
+
+    float r = pingPong(sin(length(uv) * time_f), 5.0);
     float radius = sqrt(aspect * aspect + 1.0) + 0.5;
     float glow = smoothstep(radius, radius - 0.5, r);
-    
+
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
     vec2 ar = vec2(aspect, 1.0);
-    
-    vec3 baseCol = preBlendColor(tc); 
-    
+
+    vec3 baseCol = preBlendColor(tc);
+
     float seg = 4.0 + 2.0 * sin(time_f * 0.33);
     vec2 kUV = reflectUV(tc, seg, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    
+
     // CHANGED: Reduced fold zoom aggression.
     // Range is now 1.0 to 1.3 (was 1.45 to 2.0). Keeps shapes from collapsing.
     float foldZoom = 1.15 + 0.15 * sin(time_f * 0.42);
-    
+
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
     kUV = rotateUV(kUV, time_f * 0.23, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    
+
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
-    
+    if (q.y > q.x)
+        q = q.yx;
+
     float base = 1.82 + 0.18 * pingPong(sin(time_f * 0.2) * (PI * time_f), 5.0);
     float period = log(base) * pingPong(time_f * PI, 5.0);
     float tz = time_f * 0.65;
-    
+
     float rD = diamondRadius(p) + 1e-6;
     float ang = atan(q.y, q.x) + tz * 0.35 + 0.35 * sin(rD * 18.0 + time_f * 0.6);
-    
+
     float k = fract((log(rD) - tz) / period);
     float rw = exp(k * period);
-    
+
     // CHANGED: Multiplied by 0.5 to zoom out the texture mapping itself.
     vec2 pwrap = vec2(cos(ang), sin(ang)) * rw * 0.5;
-    
+
     vec2 u0 = fract(pwrap / ar + m);
     vec2 u1 = fract((pwrap * 1.045) / ar + m);
     vec2 u2 = fract((pwrap * 0.955) / ar + m);
-    
+
     vec2 dir = normalize(pwrap + 1e-6);
     vec2 off = dir * (0.0015 + 0.001 * sin(time_f * 1.3)) * vec2(1.0, 1.0 / aspect);
-    
+
     float vign = 1.0 - smoothstep(0.75, 1.2, length((tc - m) * ar));
     vign = mix(0.9, 1.15, vign);
-    
+
     vec3 rC = preBlendColor(u0 + off);
     vec3 gC = preBlendColor(u1);
     vec3 bC = preBlendColor(u2 - off);
-    
+
     vec3 kaleidoRGB = vec3(rC.r, gC.g, bC.b);
-    
+
     float ring = smoothstep(0.0, 0.7, sin(log(rD + 1e-3) * 9.5 + time_f * 1.2));
     ring = ring * pingPong((time_f * PI), 5.0);
-    
+
     float pulse = 0.5 + 0.5 * sin(time_f * 2.0 + rD * 28.0 + k * 12.0);
-    
+
     vec3 outCol = kaleidoRGB;
-    outCol *= (0.6 + 0.4 * pulse); 
+    outCol *= (0.6 + 0.4 * pulse);
     outCol *= vign;
     outCol = clamp(outCol, vec3(0.0), vec3(1.0));
-    
+
     vec3 finalRGB = mix(baseTex.rgb * 0.8, outCol, pingPong(glow * PI, 5.0) * 0.6);
-    
+
     color = vec4(finalRGB, baseTex.a);
 }

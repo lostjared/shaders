@@ -20,11 +20,11 @@ vec3 metalSpectrum(float t) {
 }
 
 void main(void) {
-    float bass   = texture(spectrum, 0.04).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.04).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     vec2 uv = tc * 2.0 - 1.0;
     uv.x *= iResolution.x / iResolution.y;
@@ -55,7 +55,7 @@ void main(void) {
     baseTex.b = texture(samp, sampUV - vec2(chroma, 0.0)).b;
 
     // FIX: Divide the spiral by TAU before passing it to the spectrum function.
-    // This perfectly cancels out the internal TAU multiplication, maintaining 
+    // This perfectly cancels out the internal TAU multiplication, maintaining
     // a whole-integer mathematical loop across the angle wrap.
     vec3 coilColor1 = metalSpectrum((spiral / TAU) + time_f * 0.15);
     vec3 coilColor2 = metalSpectrum((spiral2 / TAU) + time_f * 0.2 + 0.5);

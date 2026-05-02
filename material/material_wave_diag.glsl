@@ -9,16 +9,15 @@ uniform vec2 iResolution;
 
 void main(void) {
     vec2 normCoord = gl_FragCoord.xy / iResolution.xy;
-float diagonalDistance = (normCoord.x + normCoord.y - 1.0) * sqrt(2.0);
+    float diagonalDistance = (normCoord.x + normCoord.y - 1.0) * sqrt(2.0);
     float antiDiagonalDistance = (normCoord.x - normCoord.y) * sqrt(2.0);
     float diagonalWave = sin((diagonalDistance + time_f) * 5.0); // Wave frequency and speed
     float antiDiagonalWave = cos((antiDiagonalDistance + time_f) * 5.0);
     float combinedWave = (diagonalWave + antiDiagonalWave) * 0.5;
 
     vec2 waveAdjusted = vec2(tc.x + combinedWave * 0.202, tc.y + combinedWave * 0.202);
-    
+
     color = texture(samp, waveAdjusted);
-    vec4 color2 = texture(mat_samp,sin(waveAdjusted));
+    vec4 color2 = texture(mat_samp, sin(waveAdjusted));
     color = mix(color, color2, 0.5);
 }
-

@@ -22,7 +22,8 @@ void main(void) {
     float aHigh = clamp(amp_high, 0.0, 1.0);
     float t = time_f;
     vec2 uv = tc;
-    if (uv.y < 0.5) uv.y = 1.0 - uv.y;
+    if (uv.y < 0.5)
+        uv.y = 1.0 - uv.y;
     float pp = pingPong(t * 0.5, 1.0);
     float split = mix(0.3, 0.7, pp);
     if (uv.x < split) {

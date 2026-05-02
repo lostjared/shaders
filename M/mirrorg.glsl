@@ -18,8 +18,7 @@ void main() {
 
     vec2 refractedUV = vec2(
         centeredUV.x + sin(angle) * refractAmount,
-        centeredUV.y + cos(angle) * refractAmount
-    );
+        centeredUV.y + cos(angle) * refractAmount);
 
     vec2 crystalUV = refractedUV * 0.5 + 0.5;
     vec4 texColorBall = texture(samp, crystalUV);

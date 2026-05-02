@@ -7,13 +7,13 @@ uniform sampler2D samp;
 uniform float time_f;
 uniform vec2 iResolution;
 uniform float alpha;
-uniform float amp_peak; // peak absolute sample value in current audio buffer
-uniform float amp_rms; // RMS energy of current audio buffer
+uniform float amp_peak;   // peak absolute sample value in current audio buffer
+uniform float amp_rms;    // RMS energy of current audio buffer
 uniform float amp_smooth; // exponentially smoothed amplitude for gradual transitions
-uniform float amp_low; // bass energy (below ~300 Hz)
-uniform float amp_mid; // mid-range energy (~300-3000 Hz)
-uniform float amp_high; // treble energy (above ~3000 Hz)
-uniform float iamp; // estimated dominant frequency in Hz via zero-crossing rate
+uniform float amp_low;    // bass energy (below ~300 Hz)
+uniform float amp_mid;    // mid-range energy (~300-3000 Hz)
+uniform float amp_high;   // treble energy (above ~3000 Hz)
+uniform float iamp;       // estimated dominant frequency in Hz via zero-crossing rate
 
 float pingPong(float x, float length) {
     float modVal = mod(x, length * 2.0);
@@ -75,7 +75,7 @@ void main(void) {
     float diff = max(dot(normal, lightDir), 0.0);
     // AUDIO: Peak causes huge specular flares on transients
     float specExp = max(1.0, 16.0 - amp_peak * 15.0);
-    float spec = pow(max(dot(reflect(-lightDir, normal), vec3(0,0,1)), 0.0), specExp);
+    float spec = pow(max(dot(reflect(-lightDir, normal), vec3(0, 0, 1)), 0.0), specExp);
     spec *= 1.0 + amp_peak * 10.0;
 
     // 5. Final Mix

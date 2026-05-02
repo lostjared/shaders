@@ -27,11 +27,10 @@ void main() {
 
     float pulse = 0.5 + 0.5 * sin(time_f * 3.0);
     vec3 pulsatingColor = vec3(
-        0.5 + 0.5 * sin(time_f + uv.x * 10.0),
-        0.5 + 0.5 * cos(time_f + uv.y * 10.0),
-        0.5 + 0.5 * sin(time_f + (uv.x + uv.y) * 10.0)
-    ) * pulse;
+                              0.5 + 0.5 * sin(time_f + uv.x * 10.0),
+                              0.5 + 0.5 * cos(time_f + uv.y * 10.0),
+                              0.5 + 0.5 * sin(time_f + (uv.x + uv.y) * 10.0)) *
+                          pulse;
 
     color = vec4(texColor.rgb * 0.7 + pulsatingColor * 0.3, texColor.a);
 }
-

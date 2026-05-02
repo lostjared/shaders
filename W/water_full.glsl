@@ -14,7 +14,6 @@ void main(void) {
     vec2 rippleTC = tc + vec2(ripple, ripple);
     vec4 originalColor = texture(samp, tc);
     vec4 rippleColor = texture(samp, rippleTC);
-    //color = mix(originalColor, rippleColor, 0.5);
+    // color = mix(originalColor, rippleColor, 0.5);
     color = rippleColor;
 }
-

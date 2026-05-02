@@ -35,7 +35,8 @@ vec2 rotUV(vec2 uv, float a) {
 
 vec2 diamondFold(vec2 p) {
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     return p;
 }
 
@@ -50,12 +51,12 @@ vec2 reflectKaleido(vec2 p, float segments) {
 
 void main() {
     // Sample spectrum across many bands
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.10).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.38).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.38).r;
     float treble = texture(spectrum, 0.55).r;
-    float air    = texture(spectrum, 0.75).r;
+    float air = texture(spectrum, 0.75).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);

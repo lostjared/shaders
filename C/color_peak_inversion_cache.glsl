@@ -36,22 +36,29 @@ vec3 acid(float t) {
 
 // Helper to fetch history frames
 vec4 sampleCache(int idx, vec2 uv) {
-    if (idx == 0) return texture(samp1, uv);
-    if (idx == 1) return texture(samp2, uv);
-    if (idx == 2) return texture(samp3, uv);
-    if (idx == 3) return texture(samp4, uv);
-    if (idx == 4) return texture(samp5, uv);
-    if (idx == 5) return texture(samp6, uv);
-    if (idx == 6) return texture(samp7, uv);
+    if (idx == 0)
+        return texture(samp1, uv);
+    if (idx == 1)
+        return texture(samp2, uv);
+    if (idx == 2)
+        return texture(samp3, uv);
+    if (idx == 3)
+        return texture(samp4, uv);
+    if (idx == 4)
+        return texture(samp5, uv);
+    if (idx == 5)
+        return texture(samp6, uv);
+    if (idx == 6)
+        return texture(samp7, uv);
     return texture(samp8, uv);
 }
 
 void main() {
     // 1. Extract Audio Data
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -74,8 +81,7 @@ void main() {
     // UV distortion for the live feed
     vec2 distort = vec2(
         combined * 0.03 * (1.0 + bass),
-        (wave1 - wave2) * 0.02 * (1.0 + mid)
-    );
+        (wave1 - wave2) * 0.02 * (1.0 + mid));
     vec2 sampUV = tc + distort;
 
     // Chromatic aberration on the live feed
@@ -88,23 +94,23 @@ void main() {
     // Add acid interference and crests
     float interference = combined * 0.5 + 0.5;
     current_col *= acid(interference + iTime * 0.1 + bass) * 1.5;
-    
+
     float crest = pow(max(combined, 0.0), 6.0);
     current_col += acid(r1 + iTime * 0.2) * crest * (1.0 + air * 2.0);
 
     // 3. Add Polar Spirals
     float r_center = length(uv);
     float theta = atan(uv.y, uv.x);
-    
+
     float spiralArms = 3.0 + floor(treble * 4.0);
     float spiralTwist = 15.0 - bass * 8.0;
     float spiralSpeed = iTime * (4.0 + amp_smooth * 8.0);
-    
+
     float spiralPhase = theta * spiralArms - r_center * spiralTwist - spiralSpeed;
     float spiralBeams = pow(max(sin(spiralPhase), 0.0), 5.0);
-    float spiralFalloff = exp(-r_center * (2.0 - mid)); 
+    float spiralFalloff = exp(-r_center * (2.0 - mid));
     vec3 spiralColor = acid(r_center * 0.8 - iTime * 0.5 + mid * 0.5);
-    
+
     current_col += spiralColor * spiralBeams * (0.6 + bass * 2.0) * spiralFalloff;
     current_col *= 0.85 + amp_smooth * 0.35;
 
@@ -114,7 +120,7 @@ void main() {
 
     // Audio-reactive feedback parameters
     // Bass punches the zoom outward; heavy tracks will breathe visually
-    float zoomPerLayer = 0.96 + 0.02 * sin(iTime * 0.5) - (bass * 0.03); 
+    float zoomPerLayer = 0.96 + 0.02 * sin(iTime * 0.5) - (bass * 0.03);
     // Treble/Hi-hats add a nervous jitter to the rotation
     float rotPerLayer = 0.03 * sin(iTime * 0.3) + (treble * 0.015);
 
@@ -153,7 +159,7 @@ void main() {
     // 5. Final Processing
     accum = (accum - 0.5) * 1.15 + 0.5; // Contrast recovery
     accum = clamp(accum, 0.0, 1.0);
-    
+
     // Hard inversion glitch on absolute audio peaks
     accum = mix(accum, vec3(1.0) - accum, smoothstep(0.92, 1.0, amp_peak));
 

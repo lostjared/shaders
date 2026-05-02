@@ -20,4 +20,3 @@ void main(void) {
     float b = texture(samp, tcAdjustedB).b;
     color = vec4(r, g, b, 1.0);
 }
-

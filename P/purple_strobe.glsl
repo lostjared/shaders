@@ -19,26 +19,24 @@ in vec2 iResolution_;
 uniform vec2 iResolution;
 uniform float restore_black;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+                         vec2(12.9898, 78.233))) *
+                 43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    //vec4 value = vec4(0.2, 0.1, 0.8, 1.0);
+    // vec4 value = vec4(0.2, 0.1, 0.8, 1.0);
     vec2 color_value1 = gl_FragCoord.xy / iResolution_.xy;
 
     vec4 col = vec4(0.2, 0.4, 0.8, 1.0);
-    
+
     float rnd = random(color_value1);
-    
-    vec4 value = vec4(gl_FragCoord.x/255, gl_FragCoord.y/255, gl_FragCoord.x/255/rnd,1.0);
-    
+
+    vec4 value = vec4(gl_FragCoord.x / 255, gl_FragCoord.y / 255, gl_FragCoord.x / 255 / rnd, 1.0);
+
     col += value + alpha_r;
     color = color * col;
     color = color / 3.0;
 }
-

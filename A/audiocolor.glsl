@@ -1,14 +1,14 @@
 #version 330 core
 
-in vec2 tc;                  // Texcoords passed from vertex shader
-out vec4 color;              // Final color output of the fragment
+in vec2 tc;     // Texcoords passed from vertex shader
+out vec4 color; // Final color output of the fragment
 
-uniform float time_f;        // Time (in seconds, typically)
-uniform sampler2D samp;      // The texture we're sampling
-uniform vec2 iResolution;    // Resolution of the window/viewport
-uniform vec4 iMouse;         // Mouse data (if needed)
-uniform float amp;           // Total amplitude
-uniform float uamp;          // Current amplitude * sensitivity
+uniform float time_f;     // Time (in seconds, typically)
+uniform sampler2D samp;   // The texture we're sampling
+uniform vec2 iResolution; // Resolution of the window/viewport
+uniform vec4 iMouse;      // Mouse data (if needed)
+uniform float amp;        // Total amplitude
+uniform float uamp;       // Current amplitude * sensitivity
 
 // Swirl function for more controlled “twisting”
 vec2 swirl(vec2 uv, float centerRadius, float swirlAmount) {
@@ -30,14 +30,14 @@ float pingPong(float x, float length) {
 vec3 rainbow(float t) {
     // Shift phases by 120° (2π/3 = 2.0943951)
     return vec3(
-       sin(2.0 * 3.14159 * t),
-       sin(2.0 * 3.14159 * t + 2.0943951),
-       sin(2.0 * 3.14159 * t + 4.18879)
-    ) * 0.5 + 0.5; // Remap from [-1,1] to [0,1]
+               sin(2.0 * 3.14159 * t),
+               sin(2.0 * 3.14159 * t + 2.0943951),
+               sin(2.0 * 3.14159 * t + 4.18879)) *
+               0.5 +
+           0.5; // Remap from [-1,1] to [0,1]
 }
 
-void main(void)
-{
+void main(void) {
     // Combine your amplitude inputs (adjust to taste)
     float A = uamp * amp / time_f;
 
@@ -61,7 +61,7 @@ void main(void)
     //------------------------------------------------------
     // Use uv, time, and amplitude to drive the hue
     float rainbowFactor = time_f * 0.2 + uv.x + uv.y + A * 2.0;
-    vec3 rainbowColor   = rainbow(fract(rainbowFactor));
+    vec3 rainbowColor = rainbow(fract(rainbowFactor));
 
     // Mix the texture color with a bright rainbow
     // Increase or decrease the mix factor to taste
@@ -87,5 +87,5 @@ void main(void)
     float time_t = pingPong(time_f, 6.0) + 1.0;
 
     color = sin(baseColor * time_t);
-    color.a = 1.0; 
+    color.a = 1.0;
 }

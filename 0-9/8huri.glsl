@@ -32,4 +32,3 @@ void main(void) {
     vec3 quantizedColor = vec3(rVals[idxR], gVals[idxG], bVals[idxB]);
     color = vec4(quantizedColor, texColor.a);
 }
-

@@ -35,9 +35,9 @@ vec3 palette(float t) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.18).r;
-    float hiMid  = texture(spectrum, 0.35).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.18).r;
+    float hiMid = texture(spectrum, 0.35).r;
     float treble = texture(spectrum, 0.55).r;
 
     vec2 uv = tc;

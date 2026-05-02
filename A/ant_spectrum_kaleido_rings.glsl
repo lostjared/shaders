@@ -33,10 +33,10 @@ vec2 mirror(vec2 uv) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.12).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
 
     float aspect = iResolution.x / iResolution.y;
@@ -57,7 +57,7 @@ void main() {
     // FIX 1: Remove fract() so the radius grows continuously.
     // Your custom mirror() function needs a continuous, unwrapped number to fold properly.
     float ringR = (r * ringDensity / (2.0 * PI)) + iTime * 0.2;
-    
+
     // FIX 2: Use abs(angle) to seamlessly bounce the polar wrap instead of letting it snap.
     // This prevents the GPU's mipmapper from tearing the texture when the angle resets.
     vec2 ringUV = vec2(abs(angle) / PI, ringR);
@@ -74,7 +74,7 @@ void main() {
         // Apply the same continuous radius and mirrored angle fixes here
         float eR = ((r + e * 0.05) * ringDensity / (2.0 * PI)) + iTime * 0.2;
         vec2 eUV = mirror(vec2(abs(angle) / PI, eR));
-        
+
         vec3 eSamp = texture(samp, eUV).rgb;
         // Rainbow per ring
         float specFreq = texture(spectrum, e * 0.08 + 0.05).r;

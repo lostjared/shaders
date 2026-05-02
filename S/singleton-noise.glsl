@@ -2,9 +2,9 @@
 out vec4 color;
 in vec2 tc; // Texture coordinates passed from vertex shader
 
-uniform sampler2D samp; // Single texture unit for all mappings and manipulations
+uniform sampler2D samp;   // Single texture unit for all mappings and manipulations
 uniform vec2 iResolution; // Screen resolution, useful for dynamic effects
-uniform float time_f; // Time factor for animations such as pulsation or expansion/contraction
+uniform float time_f;     // Time factor for animations such as pulsation or expansion/contraction
 uniform float alpha_r;
 
 const float PI = 3.1415926535897932384626433832795;
@@ -26,7 +26,7 @@ float pingPong(float x, float length) {
 
 void main() {
     vec2 uv = tc;
-    int OCTAVES = int(alpha_r * pingPong(time_f,10.0));
+    int OCTAVES = int(alpha_r * pingPong(time_f, 10.0));
     float detailNoise = 0.0;
     for (int i = 0; i < OCTAVES; ++i) {
         float freq = pow(2.0, float(i));

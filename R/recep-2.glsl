@@ -19,6 +19,6 @@ void main(void) {
     float stripe = step(0.5, fract(uv.y * 80.0 + time_f));
     texColor.rgb *= stripe;
     texColor.rgb += n * 0.2;
-    color = 1.0-texColor;
+    color = 1.0 - texColor;
     color.a = 1.0;
 }

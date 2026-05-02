@@ -92,7 +92,7 @@ void main(void) {
     vec2 spiralDirection = vec2(sin(time_f * 0.1), cos(time_f * 0.1));
     uv = mat2(cos(theta), -sin(theta), sin(theta), cos(theta)) * uv;
     uv += spiralDirection * time_f * 0.1;
-    
+
     vec3 rainbow_color = rainbow(uv.x + uv.y + time_f);
     vec4 blurred_color = blur(samp, tc, iResolution);
     vec3 blended_color = mix(blurred_color.rgb, rainbow_color, 0.5);

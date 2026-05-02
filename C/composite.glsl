@@ -16,7 +16,7 @@ vec3 compositeEffect(vec2 uv) {
     col += noise * 0.05;
     float scanline = sin(uv.y * iResolution.y * 1.5) * 0.1;
     col -= scanline;
-       float bleed = sin(uv.y * iResolution.y * 0.2 + time_f * 5.0) * 0.005;
+    float bleed = sin(uv.y * iResolution.y * 0.2 + time_f * 5.0) * 0.005;
     col.r += bleed * 0.002;
     col.b -= bleed * 0.002;
     return col;

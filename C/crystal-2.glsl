@@ -13,7 +13,7 @@ float pingPong(float x, float length) {
 
 void main(void) {
     float time_t = pingPong(time_f, 5.0) + 2.0;
-    float radius =  sin(0.5 * time_t);
+    float radius = sin(0.5 * time_t);
     vec2 center = vec2(iResolution.x / 2.0, iResolution.y / 2.0);
     vec2 texCoord = tc * iResolution;
     vec2 delta = texCoord - center;
@@ -29,6 +29,6 @@ void main(void) {
 
     newTexCoord = clamp(newTexCoord / iResolution, 0.0, 1.0);
     vec4 texColor = texture(samp, newTexCoord);
-    
+
     color = texColor;
 }

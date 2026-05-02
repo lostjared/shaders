@@ -12,26 +12,26 @@ void main(void) {
     // 1. Setup Base Coordinates
     vec2 uv = tc;
     float pulse = sin(time_f * 0.5) * 0.1 + 0.5;
-    
+
     // 2. Create the "Glass Warp" Offset
     // We sample the texture at a few points to find the "slope" (gradient)
     float delta = 0.01;
-    float h  = dot(texture(samp, uv).rgb, vec3(0.33)); 
+    float h = dot(texture(samp, uv).rgb, vec3(0.33));
     float h1 = dot(texture(samp, uv + vec2(delta, 0.0)).rgb, vec3(0.33));
     float h2 = dot(texture(samp, uv + vec2(0.0, delta)).rgb, vec3(0.33));
-    
+
     // Calculate the Normal (the direction the "glass" surface faces)
     vec2 normal = vec2(h1 - h, h2 - h);
-    
+
     // 3. Add the Spiral + Zoom from before, but influenced by the Glass Normal
     vec2 centeredUV = uv - 0.5;
     float dist = length(centeredUV);
     float angle = atan(centeredUV.y, centeredUV.x);
-    
+
     // The spiral is now "distorted" by the surface normals
     float spiral = angle + (dist * 8.0) + (time_f * 0.2) + (normal.x * 2.0 * amp);
     float zoom = dist * (0.8 + uamp * 0.2);
-    
+
     vec2 glassUV;
     glassUV.x = cos(spiral) * zoom + 0.5 + (normal.x * 0.05);
     glassUV.y = sin(spiral) * zoom + 0.5 + (normal.y * 0.05);

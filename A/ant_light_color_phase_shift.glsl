@@ -33,10 +33,10 @@ vec2 kaleidoscope(vec2 p, float seg) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 p = (tc - 0.5) * vec2(aspect, 1.0);
@@ -54,7 +54,9 @@ void main() {
     vec2 pG = kaleidoscope(rot(phaseG * 0.1) * p, seg);
     vec2 pB = kaleidoscope(rot(phaseB * 0.1) * p, seg);
 
-    pR.x /= aspect; pG.x /= aspect; pB.x /= aspect;
+    pR.x /= aspect;
+    pG.x /= aspect;
+    pB.x /= aspect;
 
     vec3 col;
     col.r = texture(samp, pR + 0.5).r;

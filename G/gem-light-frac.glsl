@@ -25,8 +25,8 @@ void main(void) {
     // 2. The Fractal Loop
     // This is where the magic happens. We iterate to create layers.
     for (float i = 0.0; i < 4.0; i++) {
-        
-        // FRACTAL FOLDING: 
+
+        // FRACTAL FOLDING:
         // This 'fract' creates the repetition. The '-0.5' re-centers each "tile".
         uv = fract(uv * 1.5) - 0.5;
 
@@ -54,7 +54,7 @@ void main(void) {
 
     // Mix the fractal neon with the texture
     vec3 composite = mix(texColor.rgb, finalColor, 0.6);
-    
+
     // Add a bit of your original "sin" madness for the finish
     color = vec4(composite, texColor.a);
 }

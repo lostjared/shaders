@@ -21,9 +21,9 @@ void main(void) {
     float angle = t * 2.0 + dist * (5.0 + 5.0 * aLow);
     float s = sin(angle), c = cos(angle);
     uv = vec2(
-        (uv.x - center.x) * c - (uv.y - center.y) * s,
-        (uv.x - center.x) * s + (uv.y - center.y) * c
-    ) + center;
+             (uv.x - center.x) * c - (uv.y - center.y) * s,
+             (uv.x - center.x) * s + (uv.y - center.y) * c) +
+         center;
     uv = fract(uv);
     vec4 tex = texture(samp, uv);
     float pulse = 0.5 + 0.5 * sin(t * 6.0) * aMid;

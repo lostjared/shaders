@@ -10,13 +10,19 @@ float glyph(vec2 p, float lum) {
     // p in [0,1] inside a cell; lum picks a different glyph mask shape.
     p = p * 2.0 - 1.0;
     float d = length(p);
-    if (lum < 0.15) return 0.0;
-    if (lum < 0.30) return step(0.85, 1.0 - d);                              // .
-    if (lum < 0.45) return step(abs(p.y), 0.15);                             // -
-    if (lum < 0.60) return max(step(abs(p.x), 0.15), step(abs(p.y), 0.15));  // +
-    if (lum < 0.75) return step(d, 0.7);                                     // o
-    if (lum < 0.90) return step(max(abs(p.x), abs(p.y)), 0.75);              // []
-    return 1.0;                                                              // #
+    if (lum < 0.15)
+        return 0.0;
+    if (lum < 0.30)
+        return step(0.85, 1.0 - d); // .
+    if (lum < 0.45)
+        return step(abs(p.y), 0.15); // -
+    if (lum < 0.60)
+        return max(step(abs(p.x), 0.15), step(abs(p.y), 0.15)); // +
+    if (lum < 0.75)
+        return step(d, 0.7); // o
+    if (lum < 0.90)
+        return step(max(abs(p.x), abs(p.y)), 0.75); // []
+    return 1.0;                                     // #
 }
 
 void main(void) {

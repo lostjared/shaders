@@ -20,28 +20,25 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform float restore_black;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+                         vec2(12.9898, 78.233))) *
+                 43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    
+
     vec4 color1x, color2x, color3x;
     vec4 color1, color2, color3;
-    
-    color1x = texture(mat_samp, tc/2);
-    color2x = texture(mat_samp, tc/4);
-    color3x = texture(mat_samp, tc/6);
-    
-    color1 = texture(samp, tc/2);
-    color2 = texture(samp, tc/4);
-    color3 = texture(samp, tc/6);
+
+    color1x = texture(mat_samp, tc / 2);
+    color2x = texture(mat_samp, tc / 4);
+    color3x = texture(mat_samp, tc / 6);
+
+    color1 = texture(samp, tc / 2);
+    color2 = texture(samp, tc / 4);
+    color3 = texture(samp, tc / 6);
 
     color = ((color1x * color1) * (color2x * color2)) * alpha * 8.0;
-    
 }
-

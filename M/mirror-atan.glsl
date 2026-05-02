@@ -13,8 +13,8 @@ float pingPong(float x, float length) {
 }
 
 void main(void) {
-  		vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
-    uv = uv - floor(uv);     
+    vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
+    uv = uv - floor(uv);
     vec2 center = vec2(0.5, 0.5);
     vec2 offset = uv - center;
     float maxRadius = length(vec2(0.5, 0.5));
@@ -37,4 +37,3 @@ void main(void) {
     warpedCoords.y = pingPong(rotatedTC.y + time_f * 0.1, 1.0);
     color = texture(samp, warpedCoords);
 }
-

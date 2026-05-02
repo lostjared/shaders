@@ -3,8 +3,8 @@
 in vec2 tc;
 out vec4 color;
 uniform sampler2D samp;
-uniform float time_f;      // global time
-uniform vec2 iResolution;  // resolution of the window
+uniform float time_f;     // global time
+uniform vec2 iResolution; // resolution of the window
 
 //--------------------------------------
 // Utility functions
@@ -58,8 +58,7 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
         2.0, 3.0, 3.5, 4.0, 4.5, 4.5, 4.0, 3.5, 3.0, 2.0,
         1.5, 2.5, 3.0, 3.5, 4.0, 4.0, 3.5, 3.0, 2.5, 1.5,
         1.0, 2.0, 2.5, 3.0, 3.5, 3.5, 3.0, 2.5, 2.0, 1.0,
-        0.5, 1.0, 1.5, 2.0, 2.5, 2.5, 2.0, 1.5, 1.0, 0.5
-    );
+        0.5, 1.0, 1.5, 2.0, 2.5, 2.5, 2.0, 1.5, 1.0, 0.5);
 
     for (int i = 0; i < 100; i++) {
         kernel[i] = kernelVals[i];
@@ -83,20 +82,19 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
 //--------------------------------------
 // Fractal function – now with infinite zoom logic
 //--------------------------------------
-float fractal(vec2 uv, vec2 c) 
-{
+float fractal(vec2 uv, vec2 c) {
     // We'll do a simple Julia-like iteration
     vec2 z = uv;
     const float maxIterations = 50.0;
     float iteration = 0.0;
-    
-    for (float i = 0.0; i < maxIterations; i++)
-    {
+
+    for (float i = 0.0; i < maxIterations; i++) {
         // z = z^2 + c
-        vec2 z_sq = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y);
+        vec2 z_sq = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y);
         z = z_sq + c;
 
-        if (length(z) > 2.0) break;
+        if (length(z) > 2.0)
+            break;
         iteration += 1.0;
     }
 
@@ -106,25 +104,24 @@ float fractal(vec2 uv, vec2 c)
 //--------------------------------------
 // Get a zoom + offset for “infinite” travel
 //--------------------------------------
-vec2 getFractalUV(vec2 uv, float t)
-{
+vec2 getFractalUV(vec2 uv, float t) {
     // How long each zoom cycle lasts
     float cycleDuration = 6.0;
     // Which "zoom cycle" are we in?
-    float cycleIndex    = floor(t / cycleDuration);
+    float cycleIndex = floor(t / cycleDuration);
     // Local time in [0..cycleDuration)
-    float cycleTime     = fract(t / cycleDuration) * cycleDuration;
+    float cycleTime = fract(t / cycleDuration) * cycleDuration;
 
     // Exponential zoom factor
-    float zoomSpeed     = 0.5; // tweak this for faster or slower zoom
-    float zoom          = pow(1.3, cycleTime * zoomSpeed);
+    float zoomSpeed = 0.5; // tweak this for faster or slower zoom
+    float zoom = pow(1.3, cycleTime * zoomSpeed);
 
     // Optionally pick a “center” each cycle so we jump around
     // For simplicity, pick some pseudorandom center:
     //   random2( cycleIndex ) returns something in [-1,1]
     vec2 randOffset = random2(vec2(cycleIndex * 37.1234));
     // Scale it down so it doesn’t jump too far from origin
-    randOffset *= 0.5;  
+    randOffset *= 0.5;
 
     // Move uv so that we zoom around randOffset
     // Step 1: shift uv relative to center
@@ -137,8 +134,7 @@ vec2 getFractalUV(vec2 uv, float t)
     return uv;
 }
 
-void main(void) 
-{
+void main(void) {
     //--------------------------------------
     // Normalize uv to [-1,1], correct aspect
     //--------------------------------------
@@ -153,7 +149,7 @@ void main(void)
     // Here, let’s revolve it with sine/cosine, but also include
     // cycle-based shifting so we pick different fractal shapes:
     float cycleIndex = floor(time_f / 6.0);
-    vec2 cShift  = random2(vec2(cycleIndex * 13.97)) * 1.0;
+    vec2 cShift = random2(vec2(cycleIndex * 13.97)) * 1.0;
     vec2 c = vec2(sin(time_f * 0.7), cos(time_f * 0.9)) + cShift;
 
     // Apply infinite zoom to uv
@@ -173,7 +169,7 @@ void main(void)
     //--------------------------------------
     // Blend fractal color with blurred texture
     //--------------------------------------
-    float blendFactor = 0.5;   
+    float blendFactor = 0.5;
     vec3 blended_color = mix(blurred_color.rgb, fractalColor, blendFactor);
 
     //--------------------------------------

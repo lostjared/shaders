@@ -12,7 +12,7 @@ void main(void) {
     float radius = length(uv);
 
     float spiralTime = mod(time_f, 4.0);
-    float maxRadius = sqrt(2.0); 
+    float maxRadius = sqrt(2.0);
     if (spiralTime < 2.0) {
         radius = mix(radius, maxRadius, spiralTime / 2.0);
     } else {

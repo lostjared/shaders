@@ -19,17 +19,15 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 color2;
     color2 = texture(mat_samp, tc);
-    color = ((0.5 * color) + (0.5 * color2))*alpha;
+    color = ((0.5 * color) + (0.5 * color2)) * alpha;
     ivec4 colori = ivec4(color * 255);
-    for(int i = 0; i < 3; ++i) {
-        if(colori[i] > 255)
-            colori[i] = colori[i]%255;
+    for (int i = 0; i < 3; ++i) {
+        if (colori[i] > 255)
+            colori[i] = colori[i] % 255;
         color[i] = float(colori[i]) / 255;
     }
 }
-

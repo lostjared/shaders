@@ -21,9 +21,7 @@ void main(void) {
     vec3 psychedelicColor = vec3(
         texColor.r * sin(time_f + uv.y * 10.0),
         texColor.g * cos(time_f + uv.x * 10.0),
-        texColor.b * sin(time_f + uv.y * 5.0)
-    );
+        texColor.b * sin(time_f + uv.y * 5.0));
     psychedelicColor = mix(texColor.rgb, psychedelicColor, modFactor);
     color = vec4(psychedelicColor, texColor.a);
 }
-

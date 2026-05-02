@@ -43,14 +43,7 @@ void main(void) {
     vec2 d7 = d1 * 8.3;
     vec2 d8 = d1 * 9.5;
 
-    vec4 ghost = texture(samp1, tc + d1) * w1
-               + texture(samp2, tc + d2) * w2
-               + texture(samp3, tc + d3) * w3
-               + texture(samp4, tc + d4) * w4
-               + texture(samp5, tc + d5) * w5
-               + texture(samp6, tc + d6) * w6
-               + texture(samp7, tc + d7) * w7
-               + texture(samp8, tc + d8) * w8;
+    vec4 ghost = texture(samp1, tc + d1) * w1 + texture(samp2, tc + d2) * w2 + texture(samp3, tc + d3) * w3 + texture(samp4, tc + d4) * w4 + texture(samp5, tc + d5) * w5 + texture(samp6, tc + d6) * w6 + texture(samp7, tc + d7) * w7 + texture(samp8, tc + d8) * w8;
 
     // Normalize the ghost accumulation
     float totalW = w1 + w2 + w3 + w4 + w5 + w6 + w7 + w8;

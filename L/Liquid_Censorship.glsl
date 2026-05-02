@@ -21,7 +21,7 @@ vec3 rainbow(float t) {
 void main(void) {
     // 1. Center UVs to -1.0 to 1.0
     vec2 uv = tc * 2.0 - 1.0;
-    
+
     // 2. Correct Aspect Ratio (assuming landscape)
     // This prevents the spiral from looking like an oval
     if (iResolution.x != 0.0) {
@@ -49,7 +49,7 @@ void main(void) {
     // 8. Output (FIXED)
     // Replaced the strobing sin() with a gentle pulse effect
     // This pulses the brightness between 0.5 and 1.0
-    float pulse = 0.75 + 0.25 * sin(time_f * 2.0); 
-    
+    float pulse = 0.75 + 0.25 * sin(time_f * 2.0);
+
     color = vec4(blended_color * pulse, original_color.a);
 }

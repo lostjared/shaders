@@ -24,4 +24,3 @@ void main(void) {
 
     color = texture(samp, warpedCoords + 0.5); //
 }
-

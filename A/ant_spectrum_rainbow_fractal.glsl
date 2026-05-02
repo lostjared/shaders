@@ -29,18 +29,19 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.10).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.55).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     vec2 uv = (tc - 0.5) * 2.5;
     uv.x *= iResolution.x / iResolution.y;
 
     // Mirror quad
     uv = abs(uv);
-    if (uv.y > uv.x) uv = uv.yx;
+    if (uv.y > uv.x)
+        uv = uv.yx;
 
     // Fractal attractor: Sierpinski-like fold
     vec2 p = uv;
@@ -48,11 +49,13 @@ void main() {
     vec3 iterColor = vec3(0.0);
     for (float i = 0.0; i < 30.0; i++) {
         p = abs(p);
-        if (p.y > p.x) p = p.yx;
+        if (p.y > p.x)
+            p = p.yx;
         p -= vec2(0.5 + bass * 0.2, 0.3 + lowMid * 0.2);
         p *= rot(0.5 + mid * 0.3 + sin(iTime * 0.2) * 0.1);
         p *= 1.1;
-        if (length(p) > 10.0) break;
+        if (length(p) > 10.0)
+            break;
         iters++;
         // Accumulate rainbow per iteration
         iterColor += rainbow(i * 0.1 + iTime * 0.1) * 0.03;

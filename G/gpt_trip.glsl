@@ -50,21 +50,20 @@ vec2 warp(vec2 uv) {
     p = vec2(cos(a), sin(a)) * r;
     uv = p * 0.5 + 0.5;
     uv += 0.004 * vec2(
-        sin(uv.y * 22.0 + time_f * 0.7),
-        cos(uv.x * 18.0 - time_f * 0.6)
-    );
+                      sin(uv.y * 22.0 + time_f * 0.7),
+                      cos(uv.x * 18.0 - time_f * 0.6));
     return uv;
 }
 
 float edgeSobel(vec2 uv, vec2 px) {
     float tl = lum(texture(samp, uv + px * vec2(-1.0, -1.0)).rgb);
-    float tc0 = lum(texture(samp, uv + px * vec2( 0.0, -1.0)).rgb);
-    float tr = lum(texture(samp, uv + px * vec2( 1.0, -1.0)).rgb);
-    float ml = lum(texture(samp, uv + px * vec2(-1.0,  0.0)).rgb);
-    float mr = lum(texture(samp, uv + px * vec2( 1.0,  0.0)).rgb);
-    float bl = lum(texture(samp, uv + px * vec2(-1.0,  1.0)).rgb);
-    float bc = lum(texture(samp, uv + px * vec2( 0.0,  1.0)).rgb);
-    float br = lum(texture(samp, uv + px * vec2( 1.0,  1.0)).rgb);
+    float tc0 = lum(texture(samp, uv + px * vec2(0.0, -1.0)).rgb);
+    float tr = lum(texture(samp, uv + px * vec2(1.0, -1.0)).rgb);
+    float ml = lum(texture(samp, uv + px * vec2(-1.0, 0.0)).rgb);
+    float mr = lum(texture(samp, uv + px * vec2(1.0, 0.0)).rgb);
+    float bl = lum(texture(samp, uv + px * vec2(-1.0, 1.0)).rgb);
+    float bc = lum(texture(samp, uv + px * vec2(0.0, 1.0)).rgb);
+    float br = lum(texture(samp, uv + px * vec2(1.0, 1.0)).rgb);
 
     float gx = -tl - 2.0 * ml - bl + tr + 2.0 * mr + br;
     float gy = -tl - 2.0 * tc0 - tr + bl + 2.0 * bc + br;

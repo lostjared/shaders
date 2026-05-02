@@ -9,7 +9,7 @@ uniform sampler1D spectrum;
 // Audio-driven kaleidoscopic mirroring on top of the twist.
 void main(void) {
     float bass = texture(spectrum, 0.05).r;
-    float mid  = texture(spectrum, 0.30).r;
+    float mid = texture(spectrum, 0.30).r;
 
     vec2 center = vec2(0.5);
     vec2 d = tc - center;

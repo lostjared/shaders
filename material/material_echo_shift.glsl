@@ -21,7 +21,7 @@ uniform float restore_black;
 
 vec4 shift_vec(vec4 inputv, int dir) {
     vec4 rev;
-    if(dir == 1) {
+    if (dir == 1) {
         rev[0] = inputv[2];
         rev[1] = inputv[0];
         rev[2] = inputv[1];
@@ -33,13 +33,11 @@ vec4 shift_vec(vec4 inputv, int dir) {
     return rev;
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 color2 = texture(samp, tc);
-    vec4 color3 = texture(mat_samp, tc/3);
-    vec4 color4 = texture(samp, tc/6);
-    vec4 color5 = texture(mat_samp, tc/6);
-    color = (color * 0.3) + (shift_vec(color3,1) * 0.3) + (color2 * 0.3) + (shift_vec(color4,0) * 0.3) + (color5 * 0.3);
+    vec4 color3 = texture(mat_samp, tc / 3);
+    vec4 color4 = texture(samp, tc / 6);
+    vec4 color5 = texture(mat_samp, tc / 6);
+    color = (color * 0.3) + (shift_vec(color3, 1) * 0.3) + (color2 * 0.3) + (shift_vec(color4, 0) * 0.3) + (color5 * 0.3);
 }
-

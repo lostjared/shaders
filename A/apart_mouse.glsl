@@ -7,11 +7,20 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
 
-mat3 rotX(float a){float s=sin(a),c=cos(a);return mat3(1,0,0, 0,c,-s, 0,s,c);}
-mat3 rotY(float a){float s=sin(a),c=cos(a);return mat3(c,0,s, 0,1,0,-s,0,c);}
-mat3 rotZ(float a){float s=sin(a),c=cos(a);return mat3(c,-s,0, s,c,0, 0,0,1);}
+mat3 rotX(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(1, 0, 0, 0, c, -s, 0, s, c);
+}
+mat3 rotY(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, 0, s, 0, 1, 0, -s, 0, c);
+}
+mat3 rotZ(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, -s, 0, s, c, 0, 0, 0, 1);
+}
 
-vec2 pseudoRandomDirection(float t){
+vec2 pseudoRandomDirection(float t) {
     vec2 v = vec2(sin(t * 1.3), cos(t * 1.7));
     return normalize(v);
 }
@@ -21,7 +30,6 @@ void main(void) {
     vec2 ar = vec2(aspect, 1.0);
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
 
-   
     float zoom = mix(0.1, 1.4, 0.5 + 0.5 * sin(time_f * 0.6));
     vec2 p = (tc - m) * ar / zoom;
     float ax = 0.3 * sin(time_f * 0.7);

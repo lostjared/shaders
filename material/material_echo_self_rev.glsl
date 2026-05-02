@@ -27,13 +27,11 @@ vec4 reverse_vec(vec4 inputv) {
     return rev;
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 color2 = texture(samp, tc);
-    vec4 color3 = texture(mat_samp, tc/3);
-    vec4 color4 = texture(samp, tc/6);
-    vec4 color5 = texture(mat_samp, tc/6);
+    vec4 color3 = texture(mat_samp, tc / 3);
+    vec4 color4 = texture(samp, tc / 6);
+    vec4 color5 = texture(mat_samp, tc / 6);
     color = (color * 0.3) + (reverse_vec(color2) * 0.3) + (color3 * 0.3) + (reverse_vec(color4) * 0.3) + (color5 * 0.3);
 }
-

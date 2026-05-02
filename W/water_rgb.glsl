@@ -38,7 +38,7 @@ void main(void) {
         vec3(1.0, 0.0, 0.0), // R mirrored
         vec3(0.0, 0.0, 1.0)  // B mirrored
     );
-    
+
     // Pattern cycling
     float patternSpeed = 4.0; // Changes per second
     int patternIndex = int(mod(time_f * patternSpeed, 4.0));

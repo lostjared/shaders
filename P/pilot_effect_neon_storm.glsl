@@ -90,7 +90,8 @@ vec3 palette(float t) {
 }
 
 float safeSpec(float x, float fallback, float reactive) {
-    if (reactive < 0.5) return fallback;
+    if (reactive < 0.5)
+        return fallback;
     return texture(spectrum, clamp(x, 0.0, 1.0)).r;
 }
 
@@ -135,9 +136,9 @@ void main(void) {
     vec2 pWarp = p;
     pWarp = rot((0.18 + 0.55 * CAT_SPIN) * t2 + CAT_WARP * TAU * 0.15) * pWarp;
     pWarp += vec2(
-        sin((p.y + CAT_WARP) * (3.0 + 7.0 * VAR_PULSE) + t2 * (0.5 + CAT_SPIN)),
-        cos((p.x - CAT_WARP) * (3.5 + 8.0 * VAR_GRID) - t2 * (0.45 + CAT_SPIN))
-    ) * (0.01 + 0.03 * CAT_WARP);
+                 sin((p.y + CAT_WARP) * (3.0 + 7.0 * VAR_PULSE) + t2 * (0.5 + CAT_SPIN)),
+                 cos((p.x - CAT_WARP) * (3.5 + 8.0 * VAR_GRID) - t2 * (0.45 + CAT_SPIN))) *
+             (0.01 + 0.03 * CAT_WARP);
     p = mix(p, pWarp, 0.30 + 0.45 * INSP_3);
     r = max(length(p), 1e-4);
     ang = atan(p.y, p.x);
@@ -206,7 +207,8 @@ void main(void) {
         // Diamond shatter facets
         vec2 q = p;
         q = abs(q);
-        if (q.y > q.x) q = q.yx;
+        if (q.y > q.x)
+            q = q.yx;
         float facet = q.x + q.y * 0.35;
         float crack = sin(facet * (30.0 + 20.0 * sHi) - t * (4.0 + 3.0 * aPk));
         vec2 dir = normalize(vec2(q.x + 1e-3, q.y + 1e-3));
@@ -291,9 +293,9 @@ void main(void) {
 
     // Per-shader inspiration blend adds variation while staying seam-safe.
     vec2 inspOff = vec2(
-        sin((uv.y + INSP_1) * (8.0 + 12.0 * INSP_2) + t2 * (0.6 + INSP_3)),
-        cos((uv.x + INSP_2) * (7.0 + 11.0 * INSP_1) - t2 * (0.5 + INSP_2))
-    ) * (0.004 + 0.02 * aSm + 0.01 * sHi);
+                       sin((uv.y + INSP_1) * (8.0 + 12.0 * INSP_2) + t2 * (0.6 + INSP_3)),
+                       cos((uv.x + INSP_2) * (7.0 + 11.0 * INSP_1) - t2 * (0.5 + INSP_2))) *
+                   (0.004 + 0.02 * aSm + 0.01 * sHi);
     vec3 inspTex = texture(samp, mirrorTile(uv + inspOff)).rgb;
     float inspMix = 0.12 + 0.32 * INSP_3 + 0.18 * aRms;
     if (INSP_MODE < 0.33) {
@@ -322,9 +324,9 @@ void main(void) {
 
     // Random donor fusion: this pilot blends with one random external shader signature.
     vec2 donorUV = uv + vec2(
-        sin((uv.y + DONOR_A) * (5.0 + 18.0 * DONOR_B) + t2 * (0.7 + DONOR_C)),
-        cos((uv.x + DONOR_C) * (6.0 + 16.0 * DONOR_D) - t2 * (0.6 + DONOR_A))
-    ) * (0.004 + 0.022 * aSm + 0.015 * aPk);
+                            sin((uv.y + DONOR_A) * (5.0 + 18.0 * DONOR_B) + t2 * (0.7 + DONOR_C)),
+                            cos((uv.x + DONOR_C) * (6.0 + 16.0 * DONOR_D) - t2 * (0.6 + DONOR_A))) *
+                            (0.004 + 0.022 * aSm + 0.015 * aPk);
     donorUV = mirrorTile(donorUV);
     vec3 donorCol = texture(samp, donorUV).rgb;
     float donorMask = 0.5 + 0.5 * sin((p.x + p.y) * (8.0 + 20.0 * DONOR_B) + t2 * (0.8 + DONOR_D));

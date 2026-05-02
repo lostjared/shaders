@@ -7,20 +7,19 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
 
-vec3 rainbow(float t){
+vec3 rainbow(float t) {
     float hue = mod(t, 1.0) * 6.0;
     float c = 1.0;
     float x = 1.0 - abs(mod(hue, 2.0) - 1.0);
-    vec3 rgb = (hue < 1.0) ? vec3(c, x, 0.0) :
-               (hue < 2.0) ? vec3(x, c, 0.0) :
-               (hue < 3.0) ? vec3(0.0, c, x) :
-               (hue < 4.0) ? vec3(0.0, x, c) :
-               (hue < 5.0) ? vec3(x, 0.0, c) :
-                             vec3(c, 0.0, x);
+    vec3 rgb = (hue < 1.0) ? vec3(c, x, 0.0) : (hue < 2.0) ? vec3(x, c, 0.0)
+                                           : (hue < 3.0)   ? vec3(0.0, c, x)
+                                           : (hue < 4.0)   ? vec3(0.0, x, c)
+                                           : (hue < 5.0)   ? vec3(x, 0.0, c)
+                                                           : vec3(c, 0.0, x);
     return rgb;
 }
 
-void main(void){
+void main(void) {
     float aspect = iResolution.x / iResolution.y;
     vec2 ar = vec2(aspect, 1.0);
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);

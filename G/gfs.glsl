@@ -19,8 +19,7 @@ void main() {
     float sinA = sin(angle);
     centeredUV = vec2(
         cosA * centeredUV.x - sinA * centeredUV.y,
-        sinA * centeredUV.x + cosA * centeredUV.y
-    );
+        sinA * centeredUV.x + cosA * centeredUV.y);
 
     float prismAngle = atan(centeredUV.y, centeredUV.x);
     float radius = length(centeredUV);
@@ -28,8 +27,7 @@ void main() {
     float prismEffect = sin(prismAngle * 3.0) * 0.1;
     vec2 refractedUV = vec2(
         centeredUV.x + prismEffect * cos(prismAngle),
-        centeredUV.y + prismEffect * sin(prismAngle)
-    );
+        centeredUV.y + prismEffect * sin(prismAngle));
 
     refractedUV = refractedUV * 0.5 + 0.5;
 

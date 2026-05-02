@@ -21,11 +21,10 @@ void main(void) {
     radius *= spiralFactor;
     float time_t = pingPong(time_f, 25.0) + 2.0;
     vec2 newUV = vec2(
-        center.x + radius * cos(angle * time_t),
-        center.y + radius * sin(angle * time_t)
-    ) / iResolution;
+                     center.x + radius * cos(angle * time_t),
+                     center.y + radius * sin(angle * time_t)) /
+                 iResolution;
     newUV = mod(newUV, 1.0);
     newUV = abs(newUV);
     color = texture(samp, newUV);
 }
-

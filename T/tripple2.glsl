@@ -18,7 +18,7 @@ void main(void) {
     float distance = length(uv - center);
     float time_t = pingPong(time_f, 15.0) + 2.0;
     distance = sin(distance * time_t);
-    
+
     uv.x += tan(distance * 20.0 - time_f * 2.0) * 0.02;
     uv.y += tan(distance * 20.0 - time_f * 2.0) * 0.02;
 

@@ -6,7 +6,7 @@ uniform sampler2D samp;
 uniform vec2 iResolution;
 
 void main(void) {
-    float radius = 0.5; // Example hardcoded radius
+    float radius = 0.5;                                           // Example hardcoded radius
     vec2 center = vec2(iResolution.x / 2.0, iResolution.y / 2.0); // Hardcoded center to the middle of the screen
 
     vec2 texCoord = tc * iResolution;
@@ -23,6 +23,6 @@ void main(void) {
 
     newTexCoord = clamp(newTexCoord / iResolution, 0.0, 1.0);
     vec4 texColor = texture(samp, newTexCoord);
-    
+
     color = texColor;
 }

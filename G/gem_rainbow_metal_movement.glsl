@@ -5,13 +5,13 @@ out vec4 color;
 uniform float time_f;
 uniform sampler2D samp;
 uniform vec2 iResolution;
-uniform float amp_peak; // peak absolute sample value in current audio buffer
-uniform float amp_rms; // RMS energy of current audio buffer
+uniform float amp_peak;   // peak absolute sample value in current audio buffer
+uniform float amp_rms;    // RMS energy of current audio buffer
 uniform float amp_smooth; // exponentially smoothed amplitude for gradual transitions
-uniform float amp_low; // bass energy (below ~300 Hz)
-uniform float amp_mid; // mid-range energy (~300-3000 Hz)
-uniform float amp_high; // treble energy (above ~3000 Hz)
-uniform float iamp; // estimated dominant frequency in Hz via zero-crossing rate
+uniform float amp_low;    // bass energy (below ~300 Hz)
+uniform float amp_mid;    // mid-range energy (~300-3000 Hz)
+uniform float amp_high;   // treble energy (above ~3000 Hz)
+uniform float iamp;       // estimated dominant frequency in Hz via zero-crossing rate
 // High-fidelity spectrum for the oily "fringe" colors
 vec3 spectrum(float t) {
     return vec3(0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67))));
@@ -29,14 +29,14 @@ void main(void) {
     // We combine multiple sine waves to get a jagged, non-uniform edge
     float ripple = sin(angle * 10.0 + time_f) * 0.03;
     ripple += sin(angle * 25.0 - time_f * 2.0) * 0.01; // Secondary fine detail
-    
+
     // 3. Radial Wave Logic
     float wave = sin(r * 20.0 - time_f * 4.0 + ripple * 10.0);
-    
+
     // 4. Chromatic Aberration Distortion
     // We sample the texture 3 times. The ripple intensity determines the "split".
     float shift = ripple * 0.5 + wave * 0.01;
-    
+
     float r_chan = texture(samp, tc + vec2(shift, 0.0)).r;
     float g_chan = texture(samp, tc).g;
     float b_chan = texture(samp, tc - vec2(shift, 0.0)).b;
@@ -46,7 +46,7 @@ void main(void) {
     // Only apply the rainbow where the "waves" are strongest
     vec3 rainbow = spectrum(r - (time_f * amp_low) * 0.5 + ripple);
     float glowMask = smoothstep(0.5, 1.0, wave); // Sharpen the color bands
-    
+
     // 6. Central Highlight
     // Replicating the bright white "eye" center
     float center = exp(-r * 6.0);
@@ -56,7 +56,7 @@ void main(void) {
     // Subtle blend to keep it recognizable but "electric"
     vec3 finalColor = mix(baseTex, rainbow, glowMask * 0.35);
     finalColor += coreGlow;
-    
+
     // Add a bit of metallic "sheen" to the edges of the ripples
     finalColor += (wave * ripple * 2.0);
 

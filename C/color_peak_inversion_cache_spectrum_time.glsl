@@ -46,33 +46,46 @@ vec3 acid(float t) {
 
 // Helper to fetch history frames
 vec4 sampleCache(int idx, vec2 uv) {
-    if (idx == 0) return texture(samp1, uv);
-    if (idx == 1) return texture(samp2, uv);
-    if (idx == 2) return texture(samp3, uv);
-    if (idx == 3) return texture(samp4, uv);
-    if (idx == 4) return texture(samp5, uv);
-    if (idx == 5) return texture(samp6, uv);
-    if (idx == 6) return texture(samp7, uv);
+    if (idx == 0)
+        return texture(samp1, uv);
+    if (idx == 1)
+        return texture(samp2, uv);
+    if (idx == 2)
+        return texture(samp3, uv);
+    if (idx == 3)
+        return texture(samp4, uv);
+    if (idx == 4)
+        return texture(samp5, uv);
+    if (idx == 5)
+        return texture(samp6, uv);
+    if (idx == 6)
+        return texture(samp7, uv);
     return texture(samp8, uv);
 }
 
 // Helper to fetch historical FFT data matching the cache depth
 float sampleSpectrumHistory(int idx, float freq) {
-    if (idx == 0) return texture(spectrum1, freq).r; 
-    if (idx == 1) return texture(spectrum2, freq).r; 
-    if (idx == 2) return texture(spectrum3, freq).r;
-    if (idx == 3) return texture(spectrum4, freq).r;
-    if (idx == 4) return texture(spectrum5, freq).r;
-    if (idx == 5) return texture(spectrum6, freq).r;
-    return texture(spectrum7, freq).r;               
+    if (idx == 0)
+        return texture(spectrum1, freq).r;
+    if (idx == 1)
+        return texture(spectrum2, freq).r;
+    if (idx == 2)
+        return texture(spectrum3, freq).r;
+    if (idx == 3)
+        return texture(spectrum4, freq).r;
+    if (idx == 4)
+        return texture(spectrum5, freq).r;
+    if (idx == 5)
+        return texture(spectrum6, freq).r;
+    return texture(spectrum7, freq).r;
 }
 
 void main() {
     // 1. Extract Current Audio Data (Live Frame)
-    float bass   = texture(spectrum0, 0.03).r;
-    float mid    = texture(spectrum0, 0.22).r;
+    float bass = texture(spectrum0, 0.03).r;
+    float mid = texture(spectrum0, 0.22).r;
     float treble = texture(spectrum0, 0.58).r;
-    float air    = texture(spectrum0, 0.80).r;
+    float air = texture(spectrum0, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -95,8 +108,7 @@ void main() {
     // UV distortion for the live feed
     vec2 distort = vec2(
         combined * 0.05 * (1.0 + bass * 2.0),
-        (wave1 - wave2) * 0.04 * (1.0 + mid * 2.0)
-    );
+        (wave1 - wave2) * 0.04 * (1.0 + mid * 2.0));
     vec2 sampUV = tc + distort;
 
     // Chromatic aberration on the live feed
@@ -109,23 +121,23 @@ void main() {
     // Add acid interference and crests
     float interference = combined * 0.5 + 0.5;
     current_col *= acid(interference + time_f * 0.1 + bass) * 1.5;
-    
+
     float crest = pow(max(combined, 0.0), 6.0);
     current_col += acid(r1 + time_f * 0.2) * crest * (1.0 + air * 2.0);
 
     // 3. Add Polar Spirals
     float r_center = length(uv);
     float theta = atan(uv.y, uv.x);
-    
+
     float spiralArms = 3.0 + floor(treble * 4.0);
     float spiralTwist = 15.0 - bass * 8.0;
     float spiralSpeed = time_f * (4.0 + amp_smooth * 8.0);
-    
+
     float spiralPhase = theta * spiralArms - r_center * spiralTwist - spiralSpeed;
     float spiralBeams = pow(max(sin(spiralPhase), 0.0), 5.0);
-    float spiralFalloff = exp(-r_center * (2.0 - mid)); 
+    float spiralFalloff = exp(-r_center * (2.0 - mid));
     vec3 spiralColor = acid(r_center * 0.8 - time_f * 0.5 + mid * 0.5);
-    
+
     current_col += spiralColor * spiralBeams * (0.6 + bass * 2.0) * spiralFalloff;
     current_col *= 0.85 + amp_smooth * 0.35;
 
@@ -139,14 +151,14 @@ void main() {
         float gen = float(i + 1);
 
         // Fetch historical data
-        float h_bass   = sampleSpectrumHistory(i, 0.03);
-        float h_mid    = sampleSpectrumHistory(i, 0.22);
+        float h_bass = sampleSpectrumHistory(i, 0.03);
+        float h_mid = sampleSpectrumHistory(i, 0.22);
         float h_treble = sampleSpectrumHistory(i, 0.58);
-        float h_air    = sampleSpectrumHistory(i, 0.80);
+        float h_air = sampleSpectrumHistory(i, 0.80);
 
         // EXTREME multipliers for historical data
         // Bass causes heavy inward/outward scaling pulses
-        float h_zoomPerLayer = 0.95 + 0.02 * sin(time_f * 0.5) - (h_bass * 0.12); 
+        float h_zoomPerLayer = 0.95 + 0.02 * sin(time_f * 0.5) - (h_bass * 0.12);
         // Treble causes violent rotation tearing
         float h_rotPerLayer = 0.03 * sin(time_f * 0.3) + (h_treble * 0.15);
 
@@ -178,7 +190,7 @@ void main() {
     // 5. Final Processing
     accum = (accum - 0.5) * 1.3 + 0.5; // Stronger contrast recovery
     accum = clamp(accum, 0.0, 1.0);
-    
+
     // Hard inversion glitch on absolute audio peaks
     accum = mix(accum, vec3(1.0) - accum, smoothstep(0.85, 1.0, amp_peak));
 

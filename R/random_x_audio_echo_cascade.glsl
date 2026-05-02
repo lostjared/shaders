@@ -22,7 +22,8 @@ void main(void) {
     float totalWeight = 0.0;
 
     for (int i = 0; i < 8; i++) {
-        if (i >= numLayers) break;
+        if (i >= numLayers)
+            break;
 
         float fi = float(i);
         float weight = 1.0 / (1.0 + fi * 0.5);

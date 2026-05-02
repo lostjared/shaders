@@ -36,24 +36,38 @@ vec3 acid(float t) {
 }
 
 vec4 cacheHist(int i, vec2 uv) {
-    if (i == 0) return texture(samp1, uv);
-    if (i == 1) return texture(samp2, uv);
-    if (i == 2) return texture(samp3, uv);
-    if (i == 3) return texture(samp4, uv);
-    if (i == 4) return texture(samp5, uv);
-    if (i == 5) return texture(samp6, uv);
-    if (i == 6) return texture(samp7, uv);
+    if (i == 0)
+        return texture(samp1, uv);
+    if (i == 1)
+        return texture(samp2, uv);
+    if (i == 2)
+        return texture(samp3, uv);
+    if (i == 3)
+        return texture(samp4, uv);
+    if (i == 4)
+        return texture(samp5, uv);
+    if (i == 5)
+        return texture(samp6, uv);
+    if (i == 6)
+        return texture(samp7, uv);
     return texture(samp8, uv);
 }
 
 float specHist(int i, float f) {
-    if (i == 0) return texture(spectrum0, f).r;
-    if (i == 1) return texture(spectrum1, f).r;
-    if (i == 2) return texture(spectrum2, f).r;
-    if (i == 3) return texture(spectrum3, f).r;
-    if (i == 4) return texture(spectrum4, f).r;
-    if (i == 5) return texture(spectrum5, f).r;
-    if (i == 6) return texture(spectrum6, f).r;
+    if (i == 0)
+        return texture(spectrum0, f).r;
+    if (i == 1)
+        return texture(spectrum1, f).r;
+    if (i == 2)
+        return texture(spectrum2, f).r;
+    if (i == 3)
+        return texture(spectrum3, f).r;
+    if (i == 4)
+        return texture(spectrum4, f).r;
+    if (i == 5)
+        return texture(spectrum5, f).r;
+    if (i == 6)
+        return texture(spectrum6, f).r;
     return texture(spectrum7, f).r;
 }
 
@@ -75,13 +89,14 @@ void main() {
     float air = texture(spectrum0, 0.90).r;
 
     float histCurtain = 0.0;
-    for (int i = 0; i < 8; i++) histCurtain += specHist(i, 0.60);
+    for (int i = 0; i < 8; i++)
+        histCurtain += specHist(i, 0.60);
     histCurtain /= 8.0;
 
     vec2 oldestWarp = vec2(
-        sin(time_f * 0.2 + uv.y * 10.0 + histCurtain * 8.0),
-        cos(time_f * 0.24 + uv.x * 7.0 - histCurtain * 5.0)
-    ) * (0.013 + histCurtain * 0.028 + bass * 0.012);
+                          sin(time_f * 0.2 + uv.y * 10.0 + histCurtain * 8.0),
+                          cos(time_f * 0.24 + uv.x * 7.0 - histCurtain * 5.0)) *
+                      (0.013 + histCurtain * 0.028 + bass * 0.012);
     vec3 oldest = texture(samp8, tc + oldestWarp).rgb;
 
     vec2 liveWarp = ribbonField(uv, bass, mid, treble, air, oldest, 0.0);

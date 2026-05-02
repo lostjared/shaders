@@ -23,7 +23,6 @@ void main() {
     vec2 localCoord = fract(uv / squareSize);
 
     float diag = mod(gridCoord.x + gridCoord.y, 2.0);
-    
 
     if (diag == 0.0) {
         float angle = time_f + gridCoord.x * 0.5 + gridCoord.y * 0.5;
@@ -34,4 +33,3 @@ void main() {
     vec4 texColor = texture(samp, uv);
     color = texColor;
 }
-

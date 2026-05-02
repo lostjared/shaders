@@ -64,13 +64,20 @@ vec2 fracture(vec2 uv, int layer) {
 }
 
 vec4 sampleCache(int idx, vec2 uv) {
-    if (idx == 0) return texture(samp1, uv);
-    if (idx == 1) return texture(samp2, uv);
-    if (idx == 2) return texture(samp3, uv);
-    if (idx == 3) return texture(samp4, uv);
-    if (idx == 4) return texture(samp5, uv);
-    if (idx == 5) return texture(samp6, uv);
-    if (idx == 6) return texture(samp7, uv);
+    if (idx == 0)
+        return texture(samp1, uv);
+    if (idx == 1)
+        return texture(samp2, uv);
+    if (idx == 2)
+        return texture(samp3, uv);
+    if (idx == 3)
+        return texture(samp4, uv);
+    if (idx == 4)
+        return texture(samp5, uv);
+    if (idx == 5)
+        return texture(samp6, uv);
+    if (idx == 6)
+        return texture(samp7, uv);
     return texture(samp8, uv);
 }
 
@@ -87,7 +94,8 @@ void main(void) {
         // Staggered visibility — each layer pulses in and out
         float phase = sin(time_f * 1.5 + float(i) * 0.785) * 0.5 + 0.5;
         float weight = phase * (1.0 - float(i) * 0.1);
-        if (weight < 0.05) continue;
+        if (weight < 0.05)
+            continue;
 
         vec2 fracturedUV = fracture(tc, (i + cycle) % 8);
         vec4 cached = sampleCache(i, fracturedUV);
@@ -97,14 +105,14 @@ void main(void) {
         vec3 tint = vec3(
             0.7 + 0.3 * cos(hue * 6.28),
             0.7 + 0.3 * cos((hue + 0.33) * 6.28),
-            0.7 + 0.3 * cos((hue + 0.66) * 6.28)
-        );
+            0.7 + 0.3 * cos((hue + 0.66) * 6.28));
 
         ghostAccum += cached.rgb * tint * weight;
         totalW += weight;
     }
 
-    if (totalW > 0.0) ghostAccum /= totalW;
+    if (totalW > 0.0)
+        ghostAccum /= totalW;
 
     // Screen blend: brightens without blowing out
     vec3 result = vec3(1.0) - (vec3(1.0) - current.rgb) * (vec3(1.0) - ghostAccum * 0.6);

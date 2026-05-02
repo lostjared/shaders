@@ -7,7 +7,7 @@ uniform float time_f;
 uniform vec2 iResolution;
 
 float random(vec2 st) {
-    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
 float noise(vec2 st) {
@@ -49,9 +49,9 @@ void main(void) {
     float time_z = pingPong(time_f, 5.0) + 2.0;
     brightness = sin(brightness * time_z);
     vec4 texColor = texture(samp, uv);
-    
+
     float time_t = pingPong(time_f, 10.0) + 2.0;
-    
+
     color = texColor + sin(vec4(vec3(brightness), 1.0) * time_t);
     color.a = 1.0;
 }

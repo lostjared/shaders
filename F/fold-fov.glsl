@@ -9,7 +9,7 @@ uniform vec2 iResolution;
 void main(void) {
     vec2 uv = tc;
     float foldAmount = sin(time_f * 3.14159);
-    
+
     if (foldAmount > 0.0) {
         if (uv.x < 0.5) {
             uv.x = mix(uv.x, 0.5, foldAmount);

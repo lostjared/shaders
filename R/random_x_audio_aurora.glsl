@@ -60,10 +60,10 @@ void main(void) {
 
     // Aurora colors from frequency bands
     vec3 auroraColor = vec3(0.0);
-    auroraColor += vec3(0.1, 1.0, 0.3) * amp_low * 1.5;     // Green from bass
-    auroraColor += vec3(0.1, 0.5, 1.0) * amp_mid * 1.2;     // Blue from mids
-    auroraColor += vec3(0.8, 0.2, 1.0) * amp_high * 1.5;    // Purple from treble
-    auroraColor = max(auroraColor, vec3(0.05, 0.2, 0.1));    // Minimum glow
+    auroraColor += vec3(0.1, 1.0, 0.3) * amp_low * 1.5;   // Green from bass
+    auroraColor += vec3(0.1, 0.5, 1.0) * amp_mid * 1.2;   // Blue from mids
+    auroraColor += vec3(0.8, 0.2, 1.0) * amp_high * 1.5;  // Purple from treble
+    auroraColor = max(auroraColor, vec3(0.05, 0.2, 0.1)); // Minimum glow
 
     // Blend with texture
     vec3 tex = texture(samp, tc).rgb;

@@ -9,14 +9,14 @@ out vec4 color;
 in vec2 tc;
 
 // Controls
-const float iAmplitude  = 1.0;
-const float iFrequency  = 1.0;
+const float iAmplitude = 1.0;
+const float iFrequency = 1.0;
 const float iBrightness = 1.0;
-const float iContrast   = 1.0;
+const float iContrast = 1.0;
 const float iSaturation = 1.0;
-const float iHueShift   = 0.0;
-const float iZoom       = 1.0;
-const float iRotation   = 0.0;
+const float iHueShift = 0.0;
+const float iZoom = 1.0;
+const float iRotation = 0.0;
 
 // --- Helper Functions ---
 
@@ -74,7 +74,8 @@ float fbm(vec2 p, bool ridges) {
     float a = 0.5;
     for (int i = 0; i < 4; i++) { // Reduced iterations for perf, increased visual complexity elsewhere
         float n = noise(p);
-        if (ridges) n = 1.0 - abs(n * 2.0 - 1.0); // Create sharp valleys
+        if (ridges)
+            n = 1.0 - abs(n * 2.0 - 1.0); // Create sharp valleys
         v += a * n;
         p *= 2.05;
         a *= 0.5;
@@ -101,7 +102,7 @@ mat2 rot(float a) {
 vec3 renderEnergy(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     float aspect = res.x / res.y;
     vec2 p = (uv - center) * vec2(aspect, 1.0);
-    
+
     // Zoom/Rotate Pre-pass
     p *= rot(iRotation + t * 0.1);
     float zoomLvl = max(iZoom, 0.1);
@@ -118,37 +119,37 @@ vec3 renderEnergy(vec2 uv, float t, float strength, vec2 center, vec2 res) {
 
     // Distort the UVs heavily for the kaleidoscope
     vec2 warpedUV = p + strength * r;
-    
+
     // Dynamic Kaleidoscope slices
     float slices = 6.0 + 10.0 * sin(t * 0.1) * iAmplitude;
     vec2 k = kaleido(warpedUV, max(3.0, slices));
-    
+
     // --- Texture Sampling ---
     // We sample the texture using the chaotic warped coordinates
     vec2 texUV = k / vec2(aspect, 1.0) + center;
     texUV += r * 0.1; // Add noise offset
-    
+
     vec3 texCol = mxTexture(samp, texUV).rgb;
-    
+
     // --- Energy Injection ---
     // Create a "glow" mask based on the magnitude of the distortion
     float warpLen = length(r);
-    
+
     // 1. Electric ridges: High values in 'r' create bright lines
-    float electric = pow(warpLen, 3.0) * iContrast; 
-    
+    float electric = pow(warpLen, 3.0) * iContrast;
+
     // 2. Color Palette injection
     // Mix the texture color with a procedural palette based on noise
     vec3 pal = palette(length(q) + t * 0.4);
-    
+
     // Composition
     vec3 finalCol = mix(texCol, pal, 0.5 * iSaturation); // Blend texture and palette
-    
+
     // Additive mixing for "Light" effect
-    finalCol += pal * electric * strength; 
-    
+    finalCol += pal * electric * strength;
+
     // Sharp white hot core
-    finalCol += vec3(smoothstep(0.8, 1.0, electric)) * 2.0; 
+    finalCol += vec3(smoothstep(0.8, 1.0, electric)) * 2.0;
 
     return finalCol;
 }
@@ -165,11 +166,11 @@ void main() {
         center = iMouse.xy / iResolution;
     }
 
-    // Single pass is usually enough with this level of complexity, 
+    // Single pass is usually enough with this level of complexity,
     // but we add a slight chromatic aberration for extra trippiness
     vec3 col;
     vec2 offset = vec2(0.005 * strength, 0.0);
-    
+
     col.r = renderEnergy(uv + offset, t, strength, center, iResolution).r;
     col.g = renderEnergy(uv, t, strength, center, iResolution).g;
     col.b = renderEnergy(uv - offset, t, strength, center, iResolution).b;
@@ -177,10 +178,10 @@ void main() {
     // Global adjustments
     col = adjustBrightness(col, iBrightness);
     // Contrast is handled partly inside renderEnergy for the glow lines
-    
+
     // Vignette (darkens corners to focus on the energy)
-    vec2 vUV = uv * (1.0 - uv.yx); 
-    float vig = vUV.x * vUV.y * 15.0; 
+    vec2 vUV = uv * (1.0 - uv.yx);
+    float vig = vUV.x * vUV.y * 15.0;
     vig = pow(vig, 0.25);
     col *= vig;
 

@@ -26,13 +26,13 @@ float hash(vec2 p) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
 
     // --- VHS JITTER & DISTORTION ---
     vec2 uv = tc;
-    
+
     // Horizontal "tape" wiggle
     float wiggle = sin(uv.y * 10.0 + time_f * 5.0) * 0.002;
     // Periodic tracking glitch based on bass
@@ -46,8 +46,8 @@ void main() {
     float scale = 1.0;
     float iter_sum = 0.0;
     const int iterations = 6;
-    for(int i = 0; i < iterations; i++) {
-        p = abs(p) - 0.5 - (mid * 0.05); 
+    for (int i = 0; i < iterations; i++) {
+        p = abs(p) - 0.5 - (mid * 0.05);
         p *= rot(time_f * 0.15 + float(i) * 0.4);
         float s = 1.6 + bass * 0.1;
         p *= s;
@@ -57,7 +57,7 @@ void main() {
 
     // --- TEXTURE SAMPLING (VHS COLOR FRINGING) ---
     vec2 sampUV = (p / scale) + 0.5;
-    
+
     // Increased Chromatic Aberration for VHS look
     float shift = 0.01 + (treble * 0.03);
     vec3 col;
@@ -81,7 +81,7 @@ void main() {
 
     // 3. Acutance/Sharpening (Mockup)
     // Slightly washing out the blacks for that faded tape look
-    col = pow(col, vec3(0.9)); // Gamma shift
+    col = pow(col, vec3(0.9));     // Gamma shift
     col += vec3(0.05, 0.02, 0.05); // Magnetic "noise floor" tint
 
     // 4. Signal Dropout (Horizontal white streaks)
@@ -90,8 +90,9 @@ void main() {
 
     // Final Mapping & Inversion Glitch
     col = clamp(col, 0.0, 1.0);
-    if (amp_peak > 0.96) col = 1.0 - col;
-    
+    if (amp_peak > 0.96)
+        col = 1.0 - col;
+
     col *= 0.8 + amp_smooth * 0.4;
     color = vec4(col, 1.0);
 }

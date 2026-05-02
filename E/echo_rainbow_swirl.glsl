@@ -20,7 +20,7 @@ void main(void) {
     uv.y *= iResolution.y / iResolution.x;
 
     float t = mod(time_f, 15);
-    
+
     float wave = sin(uv.x * 10.0 + t * 2.0) * 0.1;
     float expand = 0.5 + 0.5 * sin(t * 2.0);
     vec2 spiral_uv = uv * expand + vec2(cos(t), sin(t)) * 0.2;

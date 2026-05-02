@@ -21,8 +21,8 @@ void main(void) {
     float g = texture(spectrum, 0.40).r;
     float b = texture(spectrum, 0.75).r;
 
-    vec2 tR = twistAt(tc, 1.0 + r * 4.0,  0.0);
-    vec2 tG = twistAt(tc, 1.0 + g * 4.0,  0.7);
+    vec2 tR = twistAt(tc, 1.0 + r * 4.0, 0.0);
+    vec2 tG = twistAt(tc, 1.0 + g * 4.0, 0.7);
     vec2 tB = twistAt(tc, 1.0 + b * 4.0, -0.7);
 
     vec3 outc;

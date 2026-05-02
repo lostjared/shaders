@@ -63,8 +63,7 @@ void main(void) {
     vec3 nebulaColor = vec3(
         0.3 + 0.7 * sin(time_f * 0.2 + nebulaMask * 3.0),
         0.2 + 0.4 * sin(time_f * 0.3 + nebulaMask * 5.0 + 2.0),
-        0.5 + 0.5 * cos(time_f * 0.15 + nebulaMask * 4.0)
-    );
+        0.5 + 0.5 * cos(time_f * 0.15 + nebulaMask * 4.0));
 
     // RMS controls overlay intensity
     tex = mix(tex, nebulaColor, amp_rms * 0.35);

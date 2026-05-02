@@ -10,7 +10,7 @@ void main(void) {
     float loopDuration = 25.0;
     float t = mod(time_f, loopDuration);
     vec2 aspect = vec2(iResolution.x / iResolution.y, 1.0);
-  		vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
+    vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
     uv = uv - floor(uv);
     vec2 nc = (uv * 2.0 - 1.0) * sin(aspect * time_f);
     nc.x = abs(nc.x);

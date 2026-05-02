@@ -23,7 +23,7 @@ void main() {
     angle = mod(angle, 2.0 * 3.14159 / 5.0);
     float sharpness = 0.5;
     bool inStar = radius < (cos(sharpness) / cos(angle - sharpness));
-    
+
     if (inStar) {
         color = texture(samp, tc);
         color = color * (alpha * 0.5);

@@ -9,7 +9,7 @@ uniform vec4 iMouse;
 uniform float amp;
 uniform float uamp;
 uniform float iTime;
-uniform int iFrame; 
+uniform int iFrame;
 uniform float iTimeDelta;
 uniform vec4 iDate;
 uniform vec2 iMouseClick;
@@ -20,13 +20,13 @@ uniform float iSampleRate;
 
 const float PI = 3.1415926535897932384626433832795;
 
-vec3 hsv2rgb(vec3 c){
-    vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+vec3 hsv2rgb(vec3 c) {
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-void main(void){
+void main(void) {
     vec2 uvScreen = gl_FragCoord.xy / iResolution.xy;
     float aspect = iResolution.x / iResolution.y;
 

@@ -16,7 +16,7 @@ void main(void) {
             vec2 o = vec2(float(x), float(y)) * px * 2.0;
             vec3 s = texture(samp, tc + o).rgb;
             float bright = max(0.0, max(s.r, max(s.g, s.b)) - 0.65);
-            float w = exp(-float(x*x + y*y) * 0.3);
+            float w = exp(-float(x * x + y * y) * 0.3);
             acc += s * bright * w;
             total += w;
         }

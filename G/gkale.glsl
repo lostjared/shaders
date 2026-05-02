@@ -28,8 +28,7 @@ void main(void) {
     vec3 colorShift = vec3(
         0.5 + 0.5 * cos(pattern + time_t + 0.0),
         0.5 + 0.5 * cos(pattern + time_t + 2.094),
-        0.5 + 0.5 * cos(pattern + time_t + 4.188)
-    );
+        0.5 + 0.5 * cos(pattern + time_t + 4.188));
     vec3 finalColor = texColor.rgb * colorShift;
     color = vec4(finalColor, texColor.a);
     color = mix(color, texture(samp, tc), 0.5);

@@ -20,18 +20,17 @@ uniform vec2 iResolution;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    ivec4 source =ivec4(color * 255);
+    ivec4 source = ivec4(color * 255);
     color = color * alpha;
     color = color * texture(mat_samp, tc);
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * color[i]);
-        int_color[i] = int_color[i]^source[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        color[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ source[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        color[i] = float(int_color[i]) / 255;
     }
 }

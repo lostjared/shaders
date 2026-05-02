@@ -109,7 +109,8 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -134,7 +135,8 @@ void main(void) {
     kUV = diamondFold(kUV, m, aspect);
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
+    if (q.y > q.x)
+        q = q.yx;
     float base = 1.82 + 0.18 * sin(time_f * 0.2);
     float period = log(base);
     float tz = time_f * 0.65;

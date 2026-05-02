@@ -18,9 +18,9 @@ void main() {
 
     // 1. Sampling the Spectrum Data
     // We sample at specific points along the 1D texture (0.0 to 1.0)
-    float bass   = texture(spectrum, 0.02).r; // Deep Kick/Sub (~86 Hz)
-    float mid    = texture(spectrum, 0.15).r; // Vocals/Lead (~3.3 kHz)
-    float treble = texture(spectrum, 0.5).r;  // Snares/Cymbals (~11 kHz)
+    float bass = texture(spectrum, 0.02).r;  // Deep Kick/Sub (~86 Hz)
+    float mid = texture(spectrum, 0.15).r;   // Vocals/Lead (~3.3 kHz)
+    float treble = texture(spectrum, 0.5).r; // Snares/Cymbals (~11 kHz)
 
     // 2. Frequency-Driven Geometry Warp
     // Bass creates a 'breathing' scale effect
@@ -51,6 +51,6 @@ void main() {
     // 5. Final Tone Mapping
     // Use bass to 'blow out' the brightness on heavy hits
     result *= 1.0 + (bass * 1.2);
-    
+
     color = vec4(result, 1.0);
 }

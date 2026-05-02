@@ -13,10 +13,10 @@ uniform float amp_high;
 uniform float iamp;
 
 void main(void) {
-    float aLow  = clamp(amp_low,  0.0, 1.0);
-    float aMid  = clamp(amp_mid,  0.0, 1.0);
+    float aLow = clamp(amp_low, 0.0, 1.0);
+    float aMid = clamp(amp_mid, 0.0, 1.0);
     float aHigh = clamp(amp_high, 0.0, 1.0);
-    float aPk   = clamp(amp_peak, 0.0, 1.0);
+    float aPk = clamp(amp_peak, 0.0, 1.0);
 
     vec2 normPos = gl_FragCoord.xy / iResolution.xy;
     float cycle = sin(time_f * (0.3 + aLow * 0.5));

@@ -11,7 +11,7 @@ uniform float amp_peak;
 uniform float amp_smooth;
 
 // The Frequency Data (1D texture bound to unit 9)
-uniform sampler1D spectrum; 
+uniform sampler1D spectrum;
 
 const float PI = 3.141592653589;
 
@@ -20,13 +20,13 @@ void main() {
 
     // 1. Sample Frequency Data
     // Bass (bins 0-0.1), Mids (0.1-0.4), Treble (0.4-1.0)
-    float bass   = texture(spectrum, 0.05).r;
-    float mid    = texture(spectrum, 0.25).r;
+    float bass = texture(spectrum, 0.05).r;
+    float mid = texture(spectrum, 0.25).r;
     float treble = texture(spectrum, 0.70).r;
 
     // 2. The Bent Mirror Axis
     // We create a central mirror at x = 0.5, but use Bass to "wobble" it.
-    
+
     // Convert to centered coordinates (-0.5 to 0.5)
     vec2 centered_uv = uv - 0.5;
 
@@ -51,7 +51,7 @@ void main() {
     // 5. Sample the Texture and apply Treble effects
     // High Treble causes sharp color separation at the reflection point.
     float shift = smoothstep(0.2, 0.8, treble) * 0.08;
-    
+
     vec3 result;
     result.r = texture(samp, uv + vec2(shift, 0.0)).r;
     result.g = texture(samp, uv).g;

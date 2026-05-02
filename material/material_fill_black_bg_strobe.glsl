@@ -19,29 +19,27 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform float restore_black;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
+                         vec2(12.9898, 78.233))) *
                  43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 color21;
     color21 = texture(mat_samp, tc);
-    
-    if(color[0] < 0.1 && color[1] < 0.1 && color[2] < 0.1) {
+
+    if (color[0] < 0.1 && color[1] < 0.1 && color[2] < 0.1) {
         color = color21;
     } else {
         ivec3 source;
-        for(int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 3; ++i) {
             source[i] = int(255 * color[i]);
         }
         vec4 value = vec4(alpha_r, alpha_g, alpha_b, 1.0);
-        if(color21[0] < 0.7 && color21[1] < 0.7 && color21[2] < 0.7) {
-            color = color * (color21*alpha) * value * alpha;
+        if (color21[0] < 0.7 && color21[1] < 0.7 && color21[2] < 0.7) {
+            color = color * (color21 * alpha) * value * alpha;
         }
     }
 }
-

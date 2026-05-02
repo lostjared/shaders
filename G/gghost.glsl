@@ -14,9 +14,7 @@ void main() {
     vec3 shiftedColor = vec3(
         texture(samp, uv + vec2(0.01, 0.02) * sin(time_f)).r,
         texture(samp, uv + vec2(-0.02, 0.01) * cos(time_f)).g,
-        texture(samp, uv + vec2(0.02, -0.01) * sin(time_f)).b
-    );
+        texture(samp, uv + vec2(0.02, -0.01) * sin(time_f)).b);
     vec3 finalColor = mix(ghostColor, shiftedColor, 0.5);
     color = vec4(finalColor, texColor.a);
 }
-

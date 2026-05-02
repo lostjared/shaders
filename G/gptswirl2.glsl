@@ -33,4 +33,3 @@ void main(void) {
     vec3 rainbow = hue2rgb(hue);
     color = vec4(texColor.rgb * rainbow, 2.0);
 }
-

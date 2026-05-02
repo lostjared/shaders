@@ -9,7 +9,7 @@ uniform sampler1D spectrum;
 // On loud peaks the image collapses inward as the twist accelerates.
 void main(void) {
     float bass = texture(spectrum, 0.05).r;
-    float mid  = texture(spectrum, 0.35).r;
+    float mid = texture(spectrum, 0.35).r;
     float loud = clamp(bass + mid, 0.0, 1.0);
 
     vec2 center = vec2(0.5);

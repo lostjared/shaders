@@ -29,9 +29,9 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.60).r;
 
     vec2 uv = (tc - 0.5) * 2.0;
@@ -47,7 +47,8 @@ void main() {
     for (float i = 0.0; i < 36.0; i++) {
         p = abs(p) / dot(p, p) - c;
         p *= rot(0.02 * (1.0 + hiMid));
-        if (length(p) > 15.0) break;
+        if (length(p) > 15.0)
+            break;
         iters++;
     }
     float normIter = iters / 36.0;

@@ -27,13 +27,20 @@ vec3 neonRing(float t) {
 }
 
 vec4 sampleCache(int idx, vec2 uv) {
-    if (idx == 0) return texture(samp1, uv);
-    if (idx == 1) return texture(samp2, uv);
-    if (idx == 2) return texture(samp3, uv);
-    if (idx == 3) return texture(samp4, uv);
-    if (idx == 4) return texture(samp5, uv);
-    if (idx == 5) return texture(samp6, uv);
-    if (idx == 6) return texture(samp7, uv);
+    if (idx == 0)
+        return texture(samp1, uv);
+    if (idx == 1)
+        return texture(samp2, uv);
+    if (idx == 2)
+        return texture(samp3, uv);
+    if (idx == 3)
+        return texture(samp4, uv);
+    if (idx == 4)
+        return texture(samp5, uv);
+    if (idx == 5)
+        return texture(samp6, uv);
+    if (idx == 6)
+        return texture(samp7, uv);
     return texture(samp8, uv);
 }
 
@@ -41,9 +48,9 @@ void main() {
     // ==========================================
     // 1. AUDIO SENSING
     // ==========================================
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
 
     float aspect = iResolution.x / iResolution.y;
@@ -63,7 +70,7 @@ void main() {
 
     // Reconstruct the UV coordinates from the folded polar math
     vec2 kalUV = vec2(cos(angle), sin(angle)) * radius;
-    
+
     // Map back to 0.0 - 1.0 texture space
     vec2 baseUV = kalUV * 0.5 + 0.5;
     baseUV.x /= aspect; // Correct aspect stretch
@@ -85,13 +92,12 @@ void main() {
     // ==========================================
     // FIX 1: Zoom multiplier > 1.0 forces coordinates outward, making the rendered
     // history frames smaller on screen. This creates the deep receding tunnel.
-    float fbZoomPerLayer = 1.05 + (bass * 0.02); 
+    float fbZoomPerLayer = 1.05 + (bass * 0.02);
     float fbRotPerLayer = 0.04 * sin(iTime * 0.3);
 
     vec2 feedbackCenter = vec2(
         0.5 + 0.015 * sin(iTime * 0.4),
-        0.5 + 0.015 * cos(iTime * 0.35)
-    );
+        0.5 + 0.015 * cos(iTime * 0.35));
 
     vec3 accum = baseCol;
     float accWeight = 1.0;
@@ -105,14 +111,14 @@ void main() {
         float cs = cos(rot), sn = sin(rot);
 
         vec2 centered = tc - feedbackCenter;
-        
+
         // Apply receding zoom
-        centered *= fbZoomGen; 
-        
+        centered *= fbZoomGen;
+
         // Apply rotation
         centered = vec2(centered.x * cs - centered.y * sn,
                         centered.x * sn + centered.y * cs);
-                        
+
         vec2 fbUV = centered + feedbackCenter;
 
         // FIX 2: We removed the chaotic fractal vector 'p' from this step.

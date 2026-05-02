@@ -25,7 +25,7 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
                                     1.5, 2.5, 3.0, 3.5, 4.0, 4.0, 3.5, 3.0, 2.5, 1.5,
                                     1.0, 2.0, 2.5, 3.0, 3.5, 3.5, 3.0, 2.5, 2.0, 1.0,
                                     0.5, 1.0, 1.5, 2.0, 2.5, 2.5, 2.0, 1.5, 1.0, 0.5);
-    
+
     for (int i = 0; i < 100; i++) {
         kernel[i] = kernelVals[i];
     }
@@ -44,7 +44,6 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
 
     return result / kernelSum;
 }
-
 
 void main(void) {
     vec2 uv = tc;

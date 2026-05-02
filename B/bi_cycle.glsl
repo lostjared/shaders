@@ -19,6 +19,6 @@ void main(void) {
     float centerGlow = exp(-radius * 20.0);
     vec4 texColor = texture(samp, uv * 0.5 + 0.5);
     float glow = max(spoke, centerGlow);
-    
+
     color = texColor * vec4(glow, glow, glow, 1.0);
 }

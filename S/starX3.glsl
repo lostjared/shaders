@@ -21,6 +21,6 @@ void main(void) {
     float t = mod(a + 3.14159 / n, 2.0 * 3.14159 / n) * n / 2.0 / 3.14159;
     t = abs(t - 0.5);
     float time_t = mod(time_f, 10);
-    color = texture(samp, tc * r * time_t * t); //vec2(tc[0] * time_t * r, tc[1] * time_t * t));
-    //color = texture(samp, sin(tc * t));
+    color = texture(samp, tc * r * time_t *t); // vec2(tc[0] * time_t * r, tc[1] * time_t * t));
+    // color = texture(samp, sin(tc * t));
 }

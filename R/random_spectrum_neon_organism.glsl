@@ -14,7 +14,7 @@ uniform float amp_smooth;
 uniform sampler1D spectrum;
 
 vec3 hsv2rgb(vec3 c) {
-    vec3 p = abs(fract(c.xxx + vec3(0.0, 2.0/3.0, 1.0/3.0)) * 6.0 - 3.0);
+    vec3 p = abs(fract(c.xxx + vec3(0.0, 2.0 / 3.0, 1.0 / 3.0)) * 6.0 - 3.0);
     return c.z * mix(vec3(1.0), clamp(p - 1.0, 0.0, 1.0), c.y);
 }
 
@@ -32,10 +32,10 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.12).r;
-    float mid    = texture(spectrum, 0.25).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float mid = texture(spectrum, 0.25).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.60).r;
 
     float aspect = iResolution.x / iResolution.y;
@@ -71,7 +71,8 @@ void main() {
     float iters = 0.0;
     for (float j = 0.0; j < 24.0; j++) {
         fUV = abs(fUV) / dot(fUV, fUV) - c;
-        if (length(fUV) > 10.0) break;
+        if (length(fUV) > 10.0)
+            break;
         iters++;
     }
     float fractalMask = iters / 24.0;

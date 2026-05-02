@@ -86,7 +86,7 @@ void main(void) {
     float time_t = pingPong(time_f, 15.0) + 1.0;
     float r = length(uv);
     float theta = atan(uv.y, uv.x);
-   theta += time_f * 5.0 + r * 15.0;
+    theta += time_f * 5.0 + r * 15.0;
     uv = vec2(cos(theta), sin(theta)) * r;
     vec3 rainbow_color = rainbow(uv.x + uv.y + time_f);
     vec4 blurred_color = blur(samp, tc, iResolution);

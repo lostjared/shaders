@@ -20,7 +20,7 @@ vec4 blur5(sampler2D image, vec2 uv, vec2 res) {
     float wsum = 0.0;
     for (int j = -2; j <= 2; ++j) {
         for (int i = -2; i <= 2; ++i) {
-            float w = k1[i+2] * k1[j+2];
+            float w = k1[i + 2] * k1[j + 2];
             s += texture(image, uv + vec2(float(i), float(j)) * ts) * w;
             wsum += w;
         }

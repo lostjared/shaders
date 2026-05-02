@@ -26,4 +26,3 @@ void main(void) {
 
     color = vec4(cos(blended_color * mod(time_f, 25.0)), original_color.a);
 }
-

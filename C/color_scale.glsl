@@ -18,25 +18,23 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform float restore_black;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
+                         vec2(12.9898, 78.233))) *
                  43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    color = color * inc_value/255 * alpha;
+    color = color * inc_value / 255 * alpha;
     vec4 pos1 = vec4(0.2, 0.4, 0.6, 1.0);
-    
-    for(int i = 0; i < 3; ++i) {
-        if(color[i] * 255 > 200) {
+
+    for (int i = 0; i < 3; ++i) {
+        if (color[i] * 255 > 200) {
             color[i] /= 3;
             color[i] = color[i] * pos1[i];
         }
     }
-    
+
     color = color * 2.0;
 }
-

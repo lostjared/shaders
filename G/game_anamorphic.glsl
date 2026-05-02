@@ -14,7 +14,7 @@ void main(void) {
     for (int i = -8; i <= 8; ++i) {
         vec3 s = texture(samp, tc + vec2(float(i) * px.x * 3.0, 0.0)).rgb;
         float bright = max(0.0, max(s.r, max(s.g, s.b)) - 0.75);
-        float w = exp(-float(i*i) * 0.05);
+        float w = exp(-float(i * i) * 0.05);
         streak += s * bright * w;
         total += w;
     }

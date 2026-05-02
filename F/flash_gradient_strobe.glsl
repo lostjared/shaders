@@ -21,11 +21,9 @@ uniform vec2 iResolution;
 uniform float restore_black;
 in vec2 iResolution_;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec2 pos = gl_FragCoord.xy / iResolution_.xy;
-    vec4 l = vec4(alpha_r, alpha_g, alpha_b,1.0);
-    color = vec4(pos, random_value[0]/255, 1) * l * color * alpha;
+    vec4 l = vec4(alpha_r, alpha_g, alpha_b, 1.0);
+    color = vec4(pos, random_value[0] / 255, 1) * l * color * alpha;
 }
-

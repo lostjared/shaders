@@ -63,7 +63,10 @@ vec4 compoundSample(vec2 uv) {
             vec2 center = vec2(nb.x + sh + 0.5, nb.y + 0.5);
             vec2 lp = vec2(puv.x, puv.y) - center;
             float d = dot(lp, lp);
-            if (d < bestD) { bestD = d; bestC = nb; }
+            if (d < bestD) {
+                bestD = d;
+                bestC = nb;
+            }
         }
     }
 
@@ -78,13 +81,13 @@ vec4 compoundSample(vec2 uv) {
     vec2 cellId = bestC;
     vec2 jitter = (hash22(cellId) - 0.5) * 0.7;
     float tw = time_f * (1.0 + hash12(cellId) * 0.5);
-    vec2 micro = normalize(vec2(cos(tw + jitter.x*6.2831), sin(tw + jitter.y*6.2831)));
+    vec2 micro = normalize(vec2(cos(tw + jitter.x * 6.2831), sin(tw + jitter.y * 6.2831)));
     float r = clamp(1.0 - length(lp) * 2.0, 0.0, 1.0);
     float angleAmt = 0.02 + 0.02 * hash12(cellId + 3.7);
     vec2 baseOffset = micro * angleAmt * (0.15 + 0.85 * r * r);
 
     float disp = 0.003 + 0.004 * (1.0 - r);
-    vec2 offR = baseOffset + vec2( disp, 0.0);
+    vec2 offR = baseOffset + vec2(disp, 0.0);
     vec2 offG = baseOffset;
     vec2 offB = baseOffset + vec2(-disp, 0.0);
 

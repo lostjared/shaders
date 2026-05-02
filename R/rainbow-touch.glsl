@@ -11,13 +11,12 @@ vec3 rainbow(vec2 uv, float offset) {
     return vec3(
         sin(rainbowFactor * 3.0 + 0.0),
         sin(rainbowFactor * 3.0 + 2.0),
-        sin(rainbowFactor * 3.0 + 4.0)
-    );
+        sin(rainbowFactor * 3.0 + 4.0));
 }
 
 void main(void) {
     vec4 texColor = texture(samp, tc);
-    
+
     float phase = mod(time_f, 6.0);
     float t = fract(time_f / 2.0);
     vec2 uv = tc;
@@ -25,11 +24,9 @@ void main(void) {
 
     float angle = mix(0.0, 6.28318, t);
 
-
     uv += vec2(sin(angle + length(uv) * 10.0), cos(angle + length(uv) * 10.0)) * 0.1;
-    
-    
+
     rainbowColor = rainbow(uv, time_f);
-    
+
     color = vec4(texColor.rgb + rainbowColor * 0.5, texColor.a);
 }

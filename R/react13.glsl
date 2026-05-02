@@ -15,9 +15,8 @@ void main(void) {
 
     uv = vec2(
         uv.x * c - uv.y * s,
-        uv.x * s + uv.y * c
-    );
-    
+        uv.x * s + uv.y * c);
+
     uv += center;
 
     color = texture(samp, uv);

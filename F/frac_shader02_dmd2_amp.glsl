@@ -111,14 +111,16 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
 
 vec3 limitHighlights(vec3 c) {
     float m = max(c.r, max(c.g, c.b));
-    if (m > 0.95) c *= 0.95 / m;
+    if (m > 0.95)
+        c *= 0.95 / m;
     return c;
 }
 
@@ -131,9 +133,9 @@ void main(void) {
     float aspect = iResolution.x / iResolution.y;
     vec2 center = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5, 0.5);
 
-    float tSpin  = time_f * mix(0.3, 1.8, a01);
-    float tSlow  = time_f * mix(0.2, 0.9, a01);
-    float tFast  = time_f * mix(0.8, 3.2, a01);
+    float tSpin = time_f * mix(0.3, 1.8, a01);
+    float tSlow = time_f * mix(0.2, 0.9, a01);
+    float tFast = time_f * mix(0.8, 3.2, a01);
 
     vec2 offset = tc - center;
     float maxRadius = length(vec2(0.5, 0.5));
@@ -152,10 +154,8 @@ void main(void) {
     angle += modulatedTime;
 
     vec2 rotatedTC;
-    rotatedTC.x = cos(angle) * (distortedCoords.x - center.x)
-                - sin(angle) * (distortedCoords.y - center.y) + center.x;
-    rotatedTC.y = sin(angle) * (distortedCoords.x - center.x)
-                + cos(angle) * (distortedCoords.y - center.y) + center.y;
+    rotatedTC.x = cos(angle) * (distortedCoords.x - center.x) - sin(angle) * (distortedCoords.y - center.y) + center.x;
+    rotatedTC.y = sin(angle) * (distortedCoords.x - center.x) + cos(angle) * (distortedCoords.y - center.y) + center.y;
 
     float warpSpeed = 0.05 + 0.25 * a01 + 0.2 * (aInst / (aInst + 1.0));
     vec2 warpedCoords;
@@ -184,7 +184,8 @@ void main(void) {
 
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
+    if (q.y > q.x)
+        q = q.yx;
 
     float base = 1.82 + 0.18 * sin(tSlow * 0.2);
     float period = log(base);
@@ -207,7 +208,7 @@ void main(void) {
     vign = mix(0.9, 1.15, vign);
 
     vec3 rC = preBlendColor(u0 + off, tFast);
-    vec3 gC = preBlendColor(u1,       tFast);
+    vec3 gC = preBlendColor(u1, tFast);
     vec3 bC = preBlendColor(u2 - off, tFast);
     vec3 kaleidoRGB = vec3(rC.r, gC.g, bC.b);
 
@@ -218,8 +219,7 @@ void main(void) {
     vec3 outCol = kaleidoRGB;
     outCol *= (0.75 + 0.25 * ring) * (0.85 + 0.15 * pulse) * vign;
 
-    vec3 bloom = outCol * outCol * 0.10
-               + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * 0.06;
+    vec3 bloom = outCol * outCol * 0.10 + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * 0.06;
     outCol += bloom;
 
     outCol = mix(outCol, baseColBlur, 0.18 + 0.3 * a01);

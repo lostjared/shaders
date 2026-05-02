@@ -46,7 +46,8 @@ vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
     for (int i = 0; i < 8; i++) {
         p = abs((p - c) * (zoom + 0.15 * sin(t * 0.35 + float(i)))) - 0.5 + c;
-        if (i % 2 == 0) p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
+        if (i % 2 == 0)
+            p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
     }
     return p;
 }
@@ -77,8 +78,8 @@ void main() {
     float aspect = iResolution.x / iResolution.y;
     vec2 m = iMouse.xy / iResolution.xy;
 
-			 if(iMouse.z == 0.0)
-								m = uv / aspect;
+    if (iMouse.z == 0.0)
+        m = uv / aspect;
     // Initial fractal folding
     uv = fractalFold(uv, 1.45 + 0.55 * sin(time_f * 0.42), time_f, m, aspect);
 
@@ -88,9 +89,9 @@ void main() {
     // Transparency manipulation
     float alpha = 0.8 - 0.6 * abs(sin(time_f + length(uv - m) * 10.0));
 
-				vec3 fcol = texture(samp, tc).rgb;
+    vec3 fcol = texture(samp, tc).rgb;
 
-    col = sin(col * (1.0+pingPong(time_f, 10.0))) * fcol;
+    col = sin(col * (1.0 + pingPong(time_f, 10.0))) * fcol;
     col *= alpha;
 
     // Output color

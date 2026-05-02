@@ -17,9 +17,7 @@ uniform float time_f;
 uniform float restore_black;
 uniform vec4 inc_value;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    color = (0.5 * color) + (0.5 *  fract(inc_value/255 * time_f));
+    color = (0.5 * color) + (0.5 * fract(inc_value / 255 * time_f));
 }
-

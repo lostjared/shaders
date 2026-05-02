@@ -54,8 +54,7 @@ void main(void) {
 
     vec2 rotatedUV = vec2(
         cosAngle * uv.x - sinAngle * uv.y,
-        sinAngle * uv.x + cosAngle * uv.y
-    );
+        sinAngle * uv.x + cosAngle * uv.y);
 
     uv = rotatedUV;
 

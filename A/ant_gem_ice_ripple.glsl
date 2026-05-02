@@ -26,11 +26,11 @@ vec2 mirror(vec2 uv) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     // Moving center that drifts with spectrum
     float t = iTime * 0.4;
@@ -60,9 +60,8 @@ void main() {
     // Liquid ripple waves
     float rippleStr = 0.015 * (1.0 + mid * 2.0);
     warpedUV += rippleStr * vec2(
-        sin(tc.y * 12.0 + iTime * 3.0 + bass * 5.0),
-        cos(tc.x * 12.0 + iTime * 3.0 + mid * 5.0)
-    );
+                                sin(tc.y * 12.0 + iTime * 3.0 + bass * 5.0),
+                                cos(tc.x * 12.0 + iTime * 3.0 + mid * 5.0));
 
     // Mirror-wrap coordinates
     warpedUV = mirror(warpedUV);

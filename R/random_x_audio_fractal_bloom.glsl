@@ -14,7 +14,7 @@ uniform float amp_high;
 uniform float iamp;
 
 vec3 hsv2rgb(vec3 c) {
-    vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
@@ -27,7 +27,8 @@ void main(void) {
     int iters = 3 + int(amp_smooth * 5.0);
     vec2 z = p;
     for (int i = 0; i < 8; i++) {
-        if (i >= iters) break;
+        if (i >= iters)
+            break;
         float fi = float(i);
         z = abs(z * (1.5 + amp_low * 0.5 * sin(time_f + fi))) - 0.5;
         float ca = time_f * 0.1 + fi * 0.3 + amp_mid * 0.5;

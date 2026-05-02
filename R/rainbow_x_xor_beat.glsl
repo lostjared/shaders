@@ -29,9 +29,11 @@ vec4 xor_RGB(vec4 icolor, vec3 source) {
 
 vec2 smoothRandom2(float t) {
     vec2 r0 = -1.0 + 2.0 * fract(sin(vec2(dot(vec2(floor(t)), vec2(127.1, 311.7)),
-                                            dot(vec2(floor(t)), vec2(269.5, 183.3)))) * 43758.5453123);
+                                          dot(vec2(floor(t)), vec2(269.5, 183.3)))) *
+                                 43758.5453123);
     vec2 r1 = -1.0 + 2.0 * fract(sin(vec2(dot(vec2(floor(t) + 1.0), vec2(127.1, 311.7)),
-                                            dot(vec2(floor(t) + 1.0), vec2(269.5, 183.3)))) * 43758.5453123);
+                                          dot(vec2(floor(t) + 1.0), vec2(269.5, 183.3)))) *
+                                 43758.5453123);
     return mix(r0, r1, smoothstep(0.0, 1.0, fract(t)));
 }
 
@@ -49,10 +51,10 @@ float pingPong(float x, float length) {
 }
 
 void main(void) {
-    float aLow  = clamp(amp_low,  0.0, 1.0);
-    float aMid  = clamp(amp_mid,  0.0, 1.0);
+    float aLow = clamp(amp_low, 0.0, 1.0);
+    float aMid = clamp(amp_mid, 0.0, 1.0);
     float aHigh = clamp(amp_high, 0.0, 1.0);
-    float aPk   = clamp(amp_peak, 0.0, 1.0);
+    float aPk = clamp(amp_peak, 0.0, 1.0);
     float aSmth = clamp(amp_smooth, 0.0, 1.0);
 
     vec2 uv = tc * 2.0 - 1.0;

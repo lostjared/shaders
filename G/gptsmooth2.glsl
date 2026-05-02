@@ -41,13 +41,13 @@ vec4 enhancedBlur(sampler2D image, vec2 uv, vec2 resolution) {
 vec4 xor_RGB(vec4 icolor, vec4 source) {
     ivec3 int_color = ivec3(icolor.rgb * 255.0);
     ivec3 isource = ivec3(source.rgb * 255.0);
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int_color[i] ^ isource[i];
         int_color[i] = int_color[i] % 256;
         icolor[i] = float(int_color[i]) / 255.0;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 void main(void) {

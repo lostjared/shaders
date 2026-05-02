@@ -11,30 +11,28 @@ float rand(vec2 co) {
 vec4 xor_RGB(vec4 icolor, vec4 source) {
     ivec3 int_color;
     ivec4 isource = ivec4(source * 255);
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
-        int_color[i] = int_color[i]^isource[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        icolor[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ isource[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 void main(void) {
     vec2 uv = tc;
     vec2 warp = uv + vec2(
-        sin(uv.y * 10.0 + time_f) * 0.1,
-        sin(uv.x * 10.0 + time_f) * 0.1
-    );
+                         sin(uv.y * 10.0 + time_f) * 0.1,
+                         sin(uv.x * 10.0 + time_f) * 0.1);
     vec3 colorShift = vec3(
         0.5 * sin(time_f * 0.5) + 0.5,
         0.5 * sin(time_f * 0.7 + 2.0) + 0.5,
-        0.5 * sin(time_f * 0.3 + 4.0) + 0.5
-    );
+        0.5 * sin(time_f * 0.3 + 4.0) + 0.5);
     float feedback = rand(uv + time_f);
-    vec2 feedbackUv = tc;//warp /*+ feedback * 0.01*/;
+    vec2 feedbackUv = tc; // warp /*+ feedback * 0.01*/;
     float time_t = mod(time_f, 10);
     vec4 texColor = texture(samp, feedbackUv);
     vec3 finalColor = texColor.rgb + colorShift;

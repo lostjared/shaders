@@ -21,5 +21,5 @@ void main(void) {
     float t = mod(a + 3.14159 / n, 2.0 * 3.14159 / n) * n / 2.0 / 3.14159;
     t = abs(t - 0.5);
     float time_t = time_f;
-    color = texture(samp, sin(vec2(tc[0] * t *  time_t, tc[1] * a * time_t)));
+    color = texture(samp, sin(vec2(tc[0] * t * time_t, tc[1] * a * time_t)));
 }

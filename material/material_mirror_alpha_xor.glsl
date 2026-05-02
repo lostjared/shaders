@@ -22,28 +22,26 @@ in vec2 iResolution_;
 
 vec4 xor_RGB(vec4 icolor, ivec4 isource) {
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
-        int_color[i] = int_color[i]^isource[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        icolor[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ isource[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    vec2 pos = gl_FragCoord.xy/iResolution_.xy;
-    vec2 vpos = 1.0-tc;
+    vec2 pos = gl_FragCoord.xy / iResolution_.xy;
+    vec2 vpos = 1.0 - tc;
     vec4 color2 = texture(samp, vpos);
     vec4 color3 = texture(mat_samp, tc);
     vec4 color4 = texture(mat_samp, vpos);
-    color = (0.3 * color) + ((0.13*alpha) * color2) + (0.3 * color3) + ((0.13*alpha) * color4);
+    color = (0.3 * color) + ((0.13 * alpha) * color2) + (0.3 * color3) + ((0.13 * alpha) * color4);
     vec4 col = vec4(color[0] * pos[0], color[1] * pos[1], color[2] * vpos[0], 1);
     ivec4 source = ivec4(col * 255);
     color = xor_RGB(color, source);
 }
-

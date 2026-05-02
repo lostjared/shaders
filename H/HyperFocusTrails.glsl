@@ -10,9 +10,18 @@ uniform vec4 iMouse;
 // --- UTILITIES ---
 const float PI = 3.14159265359;
 
-mat3 rotX(float a){float s=sin(a),c=cos(a);return mat3(1,0,0, 0,c,-s, 0,s,c);}
-mat3 rotY(float a){float s=sin(a),c=cos(a);return mat3(c,0,s, 0,1,0, -s,0,c);}
-mat3 rotZ(float a){float s=sin(a),c=cos(a);return mat3(c,-s,0, s,c,0, 0,0,1);}
+mat3 rotX(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(1, 0, 0, 0, c, -s, 0, s, c);
+}
+mat3 rotY(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, 0, s, 0, 1, 0, -s, 0, c);
+}
+mat3 rotZ(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, -s, 0, s, c, 0, 0, 0, 1);
+}
 
 // --- NOISE ---
 float hash(vec2 p) {
@@ -53,13 +62,13 @@ vec3 renderLayer(vec2 uv, float t) {
     float aspect = iResolution.x / iResolution.y;
     vec2 ar = vec2(aspect, 1.0);
     vec2 center = vec2(0.5);
-    
+
     // Normalize coordinates
     vec2 p = (uv - center) * ar;
 
     // 1. DYNAMIC TWIST
     float len = length(p);
-    float twistStrength = 3.0 * sin(t * 0.3); 
+    float twistStrength = 3.0 * sin(t * 0.3);
     float angle = atan(p.y, p.x) + twistStrength / (len + 0.1) + t * 0.5;
     vec2 twistedP = vec2(cos(angle), sin(angle)) * len;
 
@@ -67,10 +76,10 @@ vec3 renderLayer(vec2 uv, float t) {
     float rippleWavelength = 8.0;
     float rippleSpeed = 4.0;
     float noiseVal = fbm(twistedP * 5.0 + t);
-    
+
     float rippleX = sin(twistedP.x * rippleWavelength + t * rippleSpeed + noiseVal * 2.0);
     float rippleY = cos(twistedP.y * rippleWavelength + t * rippleSpeed - noiseVal * 2.0);
-    
+
     float rippleAmp = 0.05 + 0.05 * noiseVal;
     vec2 rippledP = twistedP + vec2(rippleX, rippleY) * rippleAmp;
 
@@ -86,7 +95,7 @@ vec3 renderLayer(vec2 uv, float t) {
     tiledUV = tiledUV - floor(tiledUV);
 
     // 5. CHROMATIC ABERRATION
-    float aberrationStr = 0.01 + 0.04 * (1.0 / (len + 0.5)); 
+    float aberrationStr = 0.01 + 0.04 * (1.0 / (len + 0.5));
     vec2 offset = vec2(aberrationStr, 0.0);
 
     vec3 texR = texture(samp, clamp(tiledUV - offset, 0.0, 1.0)).rgb;
@@ -97,25 +106,25 @@ vec3 renderLayer(vec2 uv, float t) {
     // 6. GLOW
     float glowMask = smoothstep(0.6, 0.95, abs(rippleX * rippleY));
     vec3 palette = electricPalette(len - t);
-    
+
     return mix(layerColor, layerColor + palette, glowMask * 0.8);
 }
 
 void main(void) {
     // PASS 1: Current Frame (Brightest)
     vec3 col0 = renderLayer(tc, time_f);
-    
+
     // PASS 2: Past Frame 1 (Dimmer, delayed)
     // We delay the time by 0.1 seconds to create the "echo"
     vec3 col1 = renderLayer(tc, time_f - 0.1);
-    
+
     // PASS 3: Past Frame 2 (Faintest, further delayed)
     vec3 col2 = renderLayer(tc, time_f - 0.2);
-    
+
     // BLEND: Additive blending for a light-painting feel
     // col0 is full strength. col1 is 50%. col2 is 25%.
     vec3 finalColor = col0 + (col1 * 0.5) + (col2 * 0.25);
-    
+
     // Tone mapping to prevent the whites from blowing out too much
     finalColor = finalColor / (1.0 + finalColor * 0.4);
 

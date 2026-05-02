@@ -33,10 +33,9 @@ void main(void) {
     float r = sin(angle * 3.0 + modRadius * 8.0 + wave * 2.0) * cloudNoise;
     float g = sin(angle * 5.0 - modRadius * 6.0 + wave * 4.0) * cloudNoise;
     float b = sin(angle * 7.0 + modRadius * 10.0 - wave * 3.0) * cloudNoise;
-    
+
     vec3 col = vec3(r, g, b) * 0.5 + 0.5;
     vec3 texColor = texture(samp, tc).rgb;
     col = mix(col, texColor, 0.25);
     color = vec4(sin(col * pingPong(time_f * 1.5, 6.0) + 1.5), alpha);
 }
-

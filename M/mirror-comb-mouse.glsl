@@ -40,8 +40,8 @@ vec2 fractalZoom(vec2 uv, float zoom, float time, vec2 center) {
 
 void main() {
     vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
-    uv = uv - floor(uv);   
-		 uv = uv * iResolution / vec2(iResolution.y);
+    uv = uv - floor(uv);
+    uv = uv * iResolution / vec2(iResolution.y);
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
     vec2 center = m * iResolution / vec2(iResolution.y);
 

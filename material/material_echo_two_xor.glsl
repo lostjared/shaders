@@ -20,37 +20,35 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform float restore_black;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+                         vec2(12.9898, 78.233))) *
+                 43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     ivec3 source;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         source[i] = int(255 * color[i]);
     }
     vec4 color1x, color2x, color3x;
     vec4 mat_color;
-    color1x = texture(mat_samp, tc/2);
-    color2x = texture(mat_samp, tc/4);
-    color3x = texture(mat_samp, tc/6);
-    vec4 color2 = texture(samp, tc /0.9);
-    vec4 color3 = texture(samp, tc/ 1.5);
-    vec4 color4 = texture(samp, tc/ 2.0);
-    color = (color * 0.4) + (color2 * 0.4) + (color3 * 0.4) + (color4 * 0.4) ;
+    color1x = texture(mat_samp, tc / 2);
+    color2x = texture(mat_samp, tc / 4);
+    color3x = texture(mat_samp, tc / 6);
+    vec4 color2 = texture(samp, tc / 0.9);
+    vec4 color3 = texture(samp, tc / 1.5);
+    vec4 color4 = texture(samp, tc / 2.0);
+    color = (color * 0.4) + (color2 * 0.4) + (color3 * 0.4) + (color4 * 0.4);
     mat_color = (color1x * 0.4) + (color2x * 0.4) + (color3x * 0.4);
     color = color * mat_color;
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * color[i]);
-        int_color[i] = int_color[i]^source[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        color[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ source[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        color[i] = float(int_color[i]) / 255;
     }
 }
-

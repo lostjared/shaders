@@ -9,15 +9,15 @@ uniform vec2 iResolution;
 vec4 xor_RGB(vec4 icolor, vec4 isourcex) {
     ivec4 isource = ivec4(isourcex * 255);
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
         int_color[i] ^= isource[i];
-        if(int_color[i] > 255)
+        if (int_color[i] > 255)
             int_color[i] %= 255;
         icolor[i] = float(int_color[i]) / 255.0;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 float hash(float n) {
@@ -52,7 +52,7 @@ void main(void) {
     float phase = sin(dist * 10.0 - time_f * 4.0);
     vec2 tcAdjusted = tc + (normPos * 0.305 * phase);
     vec4 texColor = texture(samp, tcAdjusted);
-    
+
     vec2 uv = (tc - 0.5) * 2.0;
     uv.x *= iResolution.x / iResolution.y;
     float time = time_f * 0.5;
@@ -64,8 +64,7 @@ void main(void) {
     vec3 psychedelicColor = vec3(
         sin(colorIntensity * 6.28318 + 0.0) * 0.5 + 0.5,
         sin(colorIntensity * 6.28318 + 2.09439) * 0.5 + 0.5,
-        sin(colorIntensity * 6.28318 + 4.18879) * 0.5 + 0.5
-    );
+        sin(colorIntensity * 6.28318 + 4.18879) * 0.5 + 0.5);
     vec4 finalColor = vec4(psychedelicColor, 1.0);
     vec4 xorColor = xor_RGB(finalColor, texColor);
 

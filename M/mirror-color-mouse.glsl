@@ -26,8 +26,8 @@ float noise(vec2 p) {
 }
 
 void main(void) {
-		 vec2 cv = 1.0 - abs(1.0 - 2.0 * tc);
-    cv = cv - floor(cv);     
+    vec2 cv = 1.0 - abs(1.0 - 2.0 * tc);
+    cv = cv - floor(cv);
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
     vec2 uv = (cv - m) * vec2(iResolution.x / iResolution.y, 1.0);
 

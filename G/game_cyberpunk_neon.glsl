@@ -8,9 +8,9 @@ uniform vec2 iResolution;
 
 void main(void) {
     vec2 px = 1.0 / iResolution;
-    vec3 c  = texture(samp, tc).rgb;
-    vec3 b  = texture(samp, tc + px * 2.0).rgb;
-    vec3 d  = texture(samp, tc - px * 2.0).rgb;
+    vec3 c = texture(samp, tc).rgb;
+    vec3 b = texture(samp, tc + px * 2.0).rgb;
+    vec3 d = texture(samp, tc - px * 2.0).rgb;
     vec3 bloom = max(c, max(b, d)) - 0.6;
     bloom = max(bloom, 0.0);
     float lum = dot(c, vec3(0.299, 0.587, 0.114));

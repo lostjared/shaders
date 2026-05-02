@@ -18,12 +18,12 @@ void main(void) {
     // Resolution crunch (NES internal resolution)
     vec2 pixelSize = vec2(256.0, 240.0);
     vec2 coord = floor(tc * pixelSize) / pixelSize;
-    
+
     vec4 texColor = texture(samp, coord);
-    
-    // Applying a 4-level or 8-level posterization 
+
+    // Applying a 4-level or 8-level posterization
     // This keeps colors "normal" but removes the smooth gradients
     vec3 quantizedColor = NormalizePalette(texColor.rgb, 6.0);
-    
+
     color = vec4(quantizedColor, texColor.a);
 }

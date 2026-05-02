@@ -21,10 +21,11 @@ vec3 prism(float t) {
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p) {
-    vec2 i = floor(p); vec2 f = fract(p);
+    vec2 i = floor(p);
+    vec2 f = fract(p);
     vec2 u = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hash(i), hash(i + vec2(1,0)), u.x),
-               mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), u.x), u.y);
+    return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x),
+               mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y);
 }
 
 vec2 kaleido(vec2 p, float seg) {
@@ -41,11 +42,11 @@ vec2 mirror(vec2 u) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.60).r;
-    float air    = texture(spectrum, 0.82).r;
+    float air = texture(spectrum, 0.82).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0) * 2.0;
@@ -56,7 +57,8 @@ void main() {
     // Primary kaleidoscope sample
     vec2 k = kaleido(uv, seg);
     k = abs(k);
-    if (k.y > k.x) k = k.yx;
+    if (k.y > k.x)
+        k = k.yx;
     vec2 baseUV = mirror(k * 0.6 + 0.5);
     vec3 base = texture(samp, baseUV).rgb;
 
@@ -69,7 +71,8 @@ void main() {
         ef.y -= e * 0.02;
         vec2 ek = kaleido(ef, seg);
         ek = abs(ek);
-        if (ek.y > ek.x) ek = ek.yx;
+        if (ek.y > ek.x)
+            ek = ek.yx;
         vec3 s = texture(samp, mirror(ek * 0.6 + 0.5)).rgb;
         s *= prism(e * 0.15 + (uv.y * 0.5 + 0.5) + iTime * 0.2 + mid);
         echo += s * (0.3 / e);

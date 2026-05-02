@@ -21,7 +21,7 @@ void main(void) {
     } else {
         snake = tc + vec2(amplitude * sin(tc.y * frequency + time_f * speed), amplitude * sin((tc.x - 3.0 * columnWidth) * frequency + time_f * speed));
     }
-    
+
     vec4 texColor = texture(samp, snake);
     color = texColor;
 }

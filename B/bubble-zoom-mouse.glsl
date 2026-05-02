@@ -7,12 +7,12 @@ uniform float time_f;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
 
-float pingPong(float x, float length){
+float pingPong(float x, float length) {
     float m = mod(x, length * 2.0);
     return m <= length ? m : length * 2.0 - m;
 }
 
-void main(void){
+void main(void) {
     float aspect = iResolution.x / iResolution.y;
     vec2 ar = vec2(aspect, 1.0);
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);

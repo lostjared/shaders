@@ -19,11 +19,8 @@ uniform vec2 iResolution;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 l = vec4(0.8, 0.6, 1.0, 1.0);
     color = color * l * alpha;
-    
 }
-

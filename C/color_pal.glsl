@@ -1,20 +1,20 @@
 #version 330 core
 in vec2 tc;
 out vec4 color;
-uniform float time_f; // accumulated time value, affected by speed and audio when enabled
+uniform float time_f;     // accumulated time value, affected by speed and audio when enabled
 uniform float time_speed; // rate of change to time_f
-uniform sampler2D samp; // input video frame texture
+uniform sampler2D samp;   // input video frame texture
 uniform vec2 iResolution; // viewport resolution in pixels (width, height)
-uniform vec4 iMouse; // mouse position: xy = current, zw = click start (drag)
-uniform float amp; // audio amplitude scaled by sensitivity
-uniform float uamp; // raw audio amplitude before sensitivity scaling
-uniform float amp_peak; // peak absolute sample value in current audio buffer
-uniform float amp_rms; // RMS energy of current audio buffer
+uniform vec4 iMouse;      // mouse position: xy = current, zw = click start (drag)
+uniform float amp;        // audio amplitude scaled by sensitivity
+uniform float uamp;       // raw audio amplitude before sensitivity scaling
+uniform float amp_peak;   // peak absolute sample value in current audio buffer
+uniform float amp_rms;    // RMS energy of current audio buffer
 uniform float amp_smooth; // exponentially smoothed amplitude for gradual transitions
-uniform float amp_low; // bass energy (below ~300 Hz)
-uniform float amp_mid; // mid-range energy (~300-3000 Hz)
-uniform float amp_high; // treble energy (above ~3000 Hz)
-uniform float iamp; // estimated dominant frequency in Hz via zero-crossing rate
+uniform float amp_low;    // bass energy (below ~300 Hz)
+uniform float amp_mid;    // mid-range energy (~300-3000 Hz)
+uniform float amp_high;   // treble energy (above ~3000 Hz)
+uniform float iamp;       // estimated dominant frequency in Hz via zero-crossing rate
 
 // PAL analog video emulation.
 // Models the key visible artifacts of a composite PAL signal:
@@ -27,16 +27,14 @@ uniform float iamp; // estimated dominant frequency in Hz via zero-crossing rate
 //   - Soft vignette resembling a CRT phosphor mask
 
 const mat3 RGB_TO_YUV = mat3(
-    0.299,    0.587,    0.114,
-   -0.14713, -0.28886,  0.436,
-    0.615,   -0.51499, -0.10001
-);
+    0.299, 0.587, 0.114,
+    -0.14713, -0.28886, 0.436,
+    0.615, -0.51499, -0.10001);
 
 const mat3 YUV_TO_RGB = mat3(
-    1.0,  0.0,      1.13983,
+    1.0, 0.0, 1.13983,
     1.0, -0.39465, -0.58060,
-    1.0,  2.03211,  0.0
-);
+    1.0, 2.03211, 0.0);
 
 float hash21(vec2 p) {
     p = fract(p * vec2(123.34, 456.21));
@@ -65,9 +63,9 @@ void main(void) {
     float y =
         sampleYUV(uv + vec2(-2.0 * px.x, 0.0)).x * 0.10 +
         sampleYUV(uv + vec2(-1.0 * px.x, 0.0)).x * 0.22 +
-        sampleYUV(uv                          ).x * 0.36 +
-        sampleYUV(uv + vec2( 1.0 * px.x, 0.0)).x * 0.22 +
-        sampleYUV(uv + vec2( 2.0 * px.x, 0.0)).x * 0.10;
+        sampleYUV(uv).x * 0.36 +
+        sampleYUV(uv + vec2(1.0 * px.x, 0.0)).x * 0.22 +
+        sampleYUV(uv + vec2(2.0 * px.x, 0.0)).x * 0.10;
 
     // Slight high-frequency overshoot (composite ringing).
     float yHi = sampleYUV(uv).x - y;
@@ -110,9 +108,9 @@ void main(void) {
 
     // ----- Tone shaping (CRT-ish) -----
     float luma = dot(rgb, vec3(0.299, 0.587, 0.114));
-    rgb = mix(vec3(luma), rgb, 1.12);          // saturation lift
-    rgb *= vec3(1.03, 1.00, 0.97);             // mild warm tint
-    rgb = pow(max(rgb, 0.0), vec3(0.92));      // gamma mismatch
+    rgb = mix(vec3(luma), rgb, 1.12);     // saturation lift
+    rgb *= vec3(1.03, 1.00, 0.97);        // mild warm tint
+    rgb = pow(max(rgb, 0.0), vec3(0.92)); // gamma mismatch
 
     // ----- Scanlines + 50 Hz interlace shimmer -----
     float scan = 0.85 + 0.15 * cos(uv.y * iResolution.y * 3.14159);
@@ -137,5 +135,3 @@ void main(void) {
 
     color = vec4(clamp(rgb, 0.0, 1.0), 1.0);
 }
-
-

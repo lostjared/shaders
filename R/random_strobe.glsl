@@ -18,11 +18,9 @@ uniform float time_f;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    for(int i = 0; i < 3; ++i) {
-        color[i] += random_value[i]/255;
+    for (int i = 0; i < 3; ++i) {
+        color[i] += random_value[i] / 255;
     }
 }
-

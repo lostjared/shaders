@@ -33,11 +33,11 @@ vec2 mirror(vec2 uv) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.04).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.38).r;
+    float bass = texture(spectrum, 0.04).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.38).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -52,7 +52,8 @@ void main() {
     float seg = floor(6.0 + bass * 6.0);
     vec2 kUV = kaleidoscope(uv, seg);
     kUV = abs(kUV);
-    if (kUV.y > kUV.x) kUV = kUV.yx;
+    if (kUV.y > kUV.x)
+        kUV = kUV.yx;
 
     // Mirror-wrapped texture
     vec2 texUV = mirror(kUV * 0.7 + 0.5);
@@ -65,7 +66,8 @@ void main() {
         float rippleOff = ripple * 0.01 * (e + 1.0);
         vec2 eUV = kaleidoscope(uv + normalize(uv + 0.001) * rippleOff, seg);
         eUV = abs(eUV);
-        if (eUV.y > eUV.x) eUV = eUV.yx;
+        if (eUV.y > eUV.x)
+            eUV = eUV.yx;
 
         vec3 s = texture(samp, mirror(eUV * 0.7 + 0.5)).rgb;
         s *= rainbow(e * 0.15 + r + iTime * 0.25);

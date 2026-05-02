@@ -12,13 +12,12 @@ void main(void) {
     float spiralSpeed = 2.0;
     float inwardSpeed = 0.5;
     float drainRadius = 8.0;
-    
+
     float loopDuration = 20.0;
     float currentTime = mod(time_f, loopDuration);
 
-    
     angle += (1.0 - smoothstep(0.0, drainRadius, dist)) * currentTime * spiralSpeed;
-        dist *= mix(1.0, 0.0, currentTime * inwardSpeed);
+    dist *= mix(1.0, 0.0, currentTime * inwardSpeed);
     vec2 spiralCoord = vec2(cos(angle), sin(angle)) * dist;
     spiralCoord = (spiralCoord / vec2(iResolution.x / iResolution.y, 1.0) + 1.0) / 2.0;
     color = texture(samp, spiralCoord);

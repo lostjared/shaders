@@ -8,7 +8,7 @@ uniform float time_f;
 
 void main(void) {
     vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
-    uv = uv - floor(uv);     
+    uv = uv - floor(uv);
     color = texture(samp, uv);
     float radius = 1.0;
     vec2 center = iResolution * 0.5;
@@ -43,4 +43,3 @@ void main(void) {
         color = texture(samp, newTexCoord);
     }
 }
-

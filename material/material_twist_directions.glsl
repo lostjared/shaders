@@ -33,4 +33,3 @@ void main(void) {
 
     color = mix(texColorClockwise, texColorCounterClockwise, 0.5);
 }
-

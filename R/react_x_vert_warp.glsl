@@ -13,10 +13,10 @@ uniform float amp_high;
 uniform float iamp;
 
 void main(void) {
-    float aLow  = clamp(amp_low,  0.0, 1.0);
-    float aMid  = clamp(amp_mid,  0.0, 1.0);
-    float aPk   = clamp(amp_peak, 0.0, 1.0);
-    float aRms  = clamp(amp_rms,  0.0, 1.0);
+    float aLow = clamp(amp_low, 0.0, 1.0);
+    float aMid = clamp(amp_mid, 0.0, 1.0);
+    float aPk = clamp(amp_peak, 0.0, 1.0);
+    float aRms = clamp(amp_rms, 0.0, 1.0);
 
     float amplitude = aLow * 3.0 + 0.2;
     float distFromCenter = abs(tc.y - 0.5);

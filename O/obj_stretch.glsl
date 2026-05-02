@@ -13,17 +13,17 @@ void main(void) {
     vec2 mouseUV = iMouse.xy / iResolution.xy;
     vec2 clickUV = iMouse.zw / iResolution.xy;
     vec2 drag = mouseUV - clickUV;
-    
+
     // Calculate distance from current pixel to click position
     float dist = distance(tc, clickUV);
-    
+
     // Calculate falloff using smoothstep for better control
     float radius = uamp;
     float falloff = 1.0 - smoothstep(0.0, radius, dist);
-    
+
     // Apply displacement with amplitude control
     vec2 displacedTC = tc + drag * falloff * time_f;
-    
+
     // Sample texture with displaced coordinates
     color = texture(samp, displacedTC);
 }

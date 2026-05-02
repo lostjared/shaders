@@ -27,4 +27,3 @@ void main(void) {
     vec3 colorCycle = psychedelicColors(time_f + rippleDist);
     color = vec4(texColor.rgb * colorCycle, texColor.a);
 }
-

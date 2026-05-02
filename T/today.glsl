@@ -12,18 +12,18 @@ uniform float uamp;
 
 void main(void) {
     vec2 uv = tc - 0.5;
-    
+
     float radius = length(uv);
     float angle = atan(uv.y, uv.x);
-    
-    float audioEffect = uamp * 10.5;  // Control warp intensity with audio values
+
+    float audioEffect = uamp * 10.5; // Control warp intensity with audio values
     float wave = sin(radius * 10.0 + time_f * 2.0) * audioEffect;
-    
+
     angle += wave;
-    
+
     vec2 tunnelUV = vec2(cos(angle), sin(angle)) * radius + 0.5;
-    
-    tunnelUV = fract(tunnelUV);  // Wrap texture coordinates
+
+    tunnelUV = fract(tunnelUV); // Wrap texture coordinates
 
     color = texture(samp, tunnelUV);
 }

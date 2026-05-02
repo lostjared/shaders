@@ -20,4 +20,3 @@ void main(void) {
     vec4 texColor = texture(samp, uv);
     color = texColor;
 }
-

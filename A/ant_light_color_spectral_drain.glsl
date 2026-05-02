@@ -24,10 +24,10 @@ vec2 mirrorUV(vec2 uv) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -40,7 +40,7 @@ void main() {
     float drainAngle = angle + log(r + 0.01) * (5.0 + mid * 3.0) - iTime * drainSpeed;
 
     // FIX 1: Lock the angle multiplier to an integer (6.0) so the sine wave wraps.
-    // Move the audio reactivity (+ treble * 4.0) outside the parenthesis so it acts 
+    // Move the audio reactivity (+ treble * 4.0) outside the parenthesis so it acts
     // as a phase shift instead of a frequency multiplier.
     float bands = sin(drainAngle * 6.0 + treble * 4.0) * 0.5 + 0.5;
     bands = pow(bands, 2.0);
@@ -58,10 +58,10 @@ void main() {
     result /= 2.0;
 
     // FIX 2: Cancel out the 1.5 multiplier inside the spectral() function.
-    // By dividing the angle by 1.5 and multiplying by 2.0, the internal math 
+    // By dividing the angle by 1.5 and multiplying by 2.0, the internal math
     // resolves to exactly 2.0, which is an integer and wraps cleanly.
     float safeAngleForSpectral = (drainAngle / TAU) / 1.5 * 2.0;
-    
+
     // Band color overlay
     result += spectral(safeAngleForSpectral + r + iTime * 0.1) * bands * (0.3 + mid * 0.4);
 

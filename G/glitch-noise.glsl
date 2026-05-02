@@ -27,7 +27,7 @@ void main(void) {
     vec4 texColor = texture(samp, uv);
     vec4 colorShift = vec4(texColor.r, texColor.g * 0.5 + 0.5 * timeNoise, texColor.b * 0.5 + 0.5 * (1.0 - timeNoise), texColor.a);
     float glitchNoise = rand(uv + time_f);
-    vec4 glitchColor = vec4(vec3(sin(glitchNoise * time_f)), 1.0) * glitchStrength ;
+    vec4 glitchColor = vec4(vec3(sin(glitchNoise * time_f)), 1.0) * glitchStrength;
     color = mix(colorShift, glitchColor, glitchStrength * glitchNoise);
     color = sin(color * time_f);
     color.a = 1.0;

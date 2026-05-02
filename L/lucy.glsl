@@ -6,9 +6,7 @@ out vec4 color;
 uniform sampler2D samp;
 uniform float time_f;
 
-
-void main(void)
-{
+void main(void) {
     vec2 uv = tc * 2.0 - 1.0;
     float t = time_f * 0.5;
 

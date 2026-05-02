@@ -12,7 +12,8 @@ void main(void) {
     float bass = texture(spectrum, 0.05).r;
 
     vec2 uv = tc;
-    if (uv.x > 0.5) uv.x = 1.0 - uv.x;
+    if (uv.x > 0.5)
+        uv.x = 1.0 - uv.x;
     uv.x *= 2.0;
 
     vec2 center = vec2(0.5);

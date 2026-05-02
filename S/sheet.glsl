@@ -18,13 +18,11 @@ uniform float time_f;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec2 start = gl_FragCoord.xy / 64;
     vec2 val = fract(start);
-    for(int i = 0; i < 3; ++i) {
-        color[i] += color[i]*(val[0]+val[1]);
+    for (int i = 0; i < 3; ++i) {
+        color[i] += color[i] * (val[0] + val[1]);
     }
 }
-

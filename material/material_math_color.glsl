@@ -22,19 +22,18 @@ uniform float restore_black;
 uniform vec2 mat_size;
 uniform vec4 inc_valuex;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+                         vec2(12.9898, 78.233))) *
+                 43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 mat_color = texture(mat_samp, tc);
-    vec4 col1 = mat_color * sin((inc_valuex/255) * timeval);
-    
-    vec4 col2 = mat_color * cos((inc_valuex/255) * timeval);
-        
+    vec4 col1 = mat_color * sin((inc_valuex / 255) * timeval);
+
+    vec4 col2 = mat_color * cos((inc_valuex / 255) * timeval);
+
     color = (0.4 * color) + (0.4 * col1) + (0.4 * col2);
 }

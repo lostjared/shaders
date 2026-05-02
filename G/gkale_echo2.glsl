@@ -18,23 +18,23 @@ vec4 firstEffect(vec2 tc) {
     vec2 tc1 = tc;
     vec2 tc2 = (tc - center) * 0.9;
     tc2 = vec2(
-        tc2.x * cos(angle + 1.5) - tc2.y * sin(angle + 1.5),
-        tc2.x * sin(angle + 1.5) + tc2.y * cos(angle + 1.5)
-    ) + center;
+              tc2.x * cos(angle + 1.5) - tc2.y * sin(angle + 1.5),
+              tc2.x * sin(angle + 1.5) + tc2.y * cos(angle + 1.5)) +
+          center;
     tc2 = fract(tc2);
 
     vec2 tc3 = (tc - center) * 0.7;
     tc3 = vec2(
-        tc3.x * cos(angle + 3.0) - tc3.y * sin(angle + 3.0),
-        tc3.x * sin(angle + 3.0) + tc3.y * cos(angle + 3.0)
-    ) + center;
+              tc3.x * cos(angle + 3.0) - tc3.y * sin(angle + 3.0),
+              tc3.x * sin(angle + 3.0) + tc3.y * cos(angle + 3.0)) +
+          center;
     tc3 = fract(tc3);
 
     vec2 tc4 = (tc - center) * 0.5;
     tc4 = vec2(
-        tc4.x * cos(angle + 4.5) - tc4.y * sin(angle + 4.5),
-        tc4.x * sin(angle + 4.5) + tc4.y * cos(angle + 4.5)
-    ) + center;
+              tc4.x * cos(angle + 4.5) - tc4.y * sin(angle + 4.5),
+              tc4.x * sin(angle + 4.5) + tc4.y * cos(angle + 4.5)) +
+          center;
     tc4 = fract(tc4);
 
     vec4 color1 = texture(samp, tc1);
@@ -56,7 +56,7 @@ vec4 xor_RGB(vec4 icolor, vec4 source) {
         icolor[i] = float(int_color[i]) / 255.0;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
@@ -74,8 +74,7 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
         2.0, 3.0, 3.5, 4.0, 4.5, 4.5, 4.0, 3.5, 3.0, 2.0,
         1.5, 2.5, 3.0, 3.5, 4.0, 4.0, 3.5, 3.0, 2.5, 1.5,
         1.0, 2.0, 2.5, 3.0, 3.5, 3.5, 3.0, 2.5, 2.0, 1.0,
-        0.5, 1.0, 1.5, 2.0, 2.5, 2.5, 2.0, 1.5, 1.0, 0.5
-    );
+        0.5, 1.0, 1.5, 2.0, 2.5, 2.5, 2.0, 1.5, 1.0, 0.5);
 
     for (int i = 0; i < 100; i++) {
         kernel[i] = kernelVals[i];
@@ -113,8 +112,7 @@ void main(void) {
     vec3 colorShift = vec3(
         0.6 + 0.4 * cos(pattern + time_t1 * 1.5 + 0.0),
         0.6 + 0.4 * cos(pattern + time_t1 * 1.5 + 2.094),
-        0.6 + 0.4 * cos(pattern + time_t1 * 1.5 + 4.188)
-    );
+        0.6 + 0.4 * cos(pattern + time_t1 * 1.5 + 4.188));
 
     vec3 vibrantColor = texColor.rgb * colorShift * 1.5;
     vibrantColor = clamp(vibrantColor, 0.0, 1.0);
@@ -128,4 +126,3 @@ void main(void) {
     color = xor_RGB(color1, tcolor * time_t2);
     color.a = 1.0;
 }
-

@@ -13,7 +13,7 @@ float pingPong(float x, float length) {
     return m <= length ? m : length * 2.0 - m;
 }
 
-void main(void){
+void main(void) {
     float aspect = iResolution.x / iResolution.y;
     vec2 ar = vec2(aspect, 1.0);
 
@@ -31,7 +31,7 @@ void main(void){
 
     vec2 z = vec2(cos(a), sin(a)) * rw;
 
-    float swirl = sin(pingPong(time_f * PI,10.0) * 0.6 + r * 5.0) * 0.1;
+    float swirl = sin(pingPong(time_f * PI, 10.0) * 0.6 + r * 5.0) * 0.1;
     z += swirl * normalize(p);
 
     vec2 uv = z / ar + 0.5;
@@ -40,5 +40,3 @@ void main(void){
     vec4 tex = texture(samp, uv);
     color = tex;
 }
-
-

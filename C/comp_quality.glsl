@@ -6,9 +6,9 @@ uniform sampler2D samp;
 uniform float time_f;
 uniform vec2 iResolution;
 
-float hash12(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}
+float hash12(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
 
-vec3 tonemap(vec3 x){
+vec3 tonemap(vec3 x) {
     x = x / (x + vec3(1.0));
     return pow(x, vec3(1.0 / 2.2));
 }
@@ -38,9 +38,9 @@ void main(void) {
 
     vec2 px = 1.0 / iResolution;
     vec3 blur =
-        compositeEffect(uv + vec2( px.x,  px.y)) +
-        compositeEffect(uv + vec2(-px.x,  px.y)) +
-        compositeEffect(uv + vec2( px.x, -px.y)) +
+        compositeEffect(uv + vec2(px.x, px.y)) +
+        compositeEffect(uv + vec2(-px.x, px.y)) +
+        compositeEffect(uv + vec2(px.x, -px.y)) +
         compositeEffect(uv + vec2(-px.x, -px.y));
     blur *= 0.25;
 
@@ -52,5 +52,5 @@ void main(void) {
     col *= v;
 
     col = tonemap(col);
-    color = vec4(clamp(col,0.0,1.0), 1.0);
+    color = vec4(clamp(col, 0.0, 1.0), 1.0);
 }

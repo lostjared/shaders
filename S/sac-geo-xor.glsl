@@ -15,15 +15,15 @@ vec3 hsv2rgb(vec3 c) {
 vec4 xor_RGB(vec4 icolor, vec4 isourcex) {
     ivec4 isource = ivec4(isourcex * 255.0);
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255.0 * icolor[i]);
         int_color[i] ^= isource[i];
-        if(int_color[i] > 255)
+        if (int_color[i] > 255)
             int_color[i] %= 255;
         icolor[i] = float(int_color[i]) / 255.0;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 vec3 sacredGeometry(vec2 uv, float time) {
@@ -53,10 +53,6 @@ void main() {
     vec4 textureColor = texture(samp, tc);
     vec3 combinedColor = mix(sacredColor, complexColor, 0.5);
 
-    
-    
     color = vec4(mix(textureColor.rgb, combinedColor, 0.5), 1.0);
     color = xor_RGB(color, textureColor);
-    
-    
 }

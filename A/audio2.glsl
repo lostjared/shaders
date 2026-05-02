@@ -1,7 +1,7 @@
 #version 330 core
 
-in vec2 tc;               // Passed-in texture coordinates
-out vec4 color;           // Final pixel color
+in vec2 tc;     // Passed-in texture coordinates
+out vec4 color; // Final pixel color
 
 uniform float time_f;     // Current time (seconds)
 uniform sampler2D samp;   // Texture sampler
@@ -31,7 +31,7 @@ void main(void) {
     // -------------------------------------------------------------
     // length(uv) - distance from center
     // "amp" and "uamp" let you adjust swirl amount & swirl speed
-    float swirlAngle = (time_f/amp) * length(uv) + time_f * uamp;
+    float swirlAngle = (time_f / amp) * length(uv) + time_f * uamp;
     float amp_t = pingPong(amp, 8.0) + 1.0;
     swirlAngle = sin(swirlAngle * amp_t);
 
@@ -39,7 +39,7 @@ void main(void) {
     float s = sin(swirlAngle);
     float c = cos(swirlAngle);
     mat2 rotation = mat2(c, -s,
-                         s,  c);
+                         s, c);
 
     // Rotate around the origin
     uv = rotation * uv;
@@ -58,8 +58,7 @@ void main(void) {
     // This uses cosine waves with different phase shifts for R/G/B.
     // The factor "10.0" controls how many color bands appear;
     // increasing it intensifies the rainbow “frequency.”
-    vec3 rainbow = 0.5 + 0.5 * cos( (uv.xyx + time_f) * 10.0 
-                                   + vec3(0.0, 2.0, 4.0) );
+    vec3 rainbow = 0.5 + 0.5 * cos((uv.xyx + time_f) * 10.0 + vec3(0.0, 2.0, 4.0));
 
     // -------------------------------------------------------------
     // 5. Blend the base texture with the rainbow for a psychedelic effect.

@@ -12,7 +12,6 @@ float pingPong(float x, float length) {
     return modVal <= length ? modVal : length * 2.0 - modVal;
 }
 
-
 void main(void) {
     vec2 uv = tc;
     float maxTime = pingPong(time_f, 10.0);

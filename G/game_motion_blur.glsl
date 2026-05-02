@@ -11,7 +11,7 @@ void main(void) {
     vec3 acc = vec3(0.0);
     float total = 0.0;
     for (int i = -3; i <= 3; ++i) {
-        float w = exp(-float(i*i) * 0.3);
+        float w = exp(-float(i * i) * 0.3);
         acc += texture(samp, tc + vec2(float(i) * px.x * 1.2, 0.0)).rgb * w;
         total += w;
     }

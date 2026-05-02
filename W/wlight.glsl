@@ -40,11 +40,9 @@ void main(void) {
     vec3 rainbow = vec3(
         sin(time_f + 0.0) * 0.5 + 0.5,
         sin(time_f + 2.094) * 0.5 + 0.5,
-        sin(time_f + 4.188) * 0.5 + 0.5
-    );
+        sin(time_f + 4.188) * 0.5 + 0.5);
     vec4 rainbowLight = vec4(rainbow, 1.0) * lightEffect;
 
     color = mix(originalColor, mix(vortexColor, whirlColor, 0.5), 0.6 + 0.4 * sin(time_f));
     color += rainbowLight * (1.0 - lightEffect) * 0.3;
 }
-

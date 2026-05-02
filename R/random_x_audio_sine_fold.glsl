@@ -21,7 +21,8 @@ void main(void) {
     int iters = 2 + int(amp_rms * 4.0);
 
     for (int i = 0; i < 6; i++) {
-        if (i >= iters) break;
+        if (i >= iters)
+            break;
         float fi = float(i);
         float freq = 6.0 + fi * 2.3 + amp_mid * 4.0;
         float speed = 0.9 + fi * 0.4 + amp_mid * 1.0;

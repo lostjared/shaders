@@ -12,7 +12,7 @@ float pingPong(float x, float length) {
 
 void main(void) {
     float time_t = pingPong(time_f, 10.0);
-    
+
     float dist = sqrt(tc.x * tc.x + tc.y * tc.y);
     dist = sin(dist * time_t);
     float ripple = sin(dist * 10.0 - time_f * 5.0);

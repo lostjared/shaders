@@ -17,4 +17,3 @@ void main() {
     vec4 texColor = texture(samp, resizedUV);
     color = texColor;
 }
-

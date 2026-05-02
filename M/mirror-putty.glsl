@@ -14,21 +14,19 @@ float pingPong(float x, float length) {
 void main(void) {
 
     vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
-    uv = uv - floor(uv);  
+    uv = uv - floor(uv);
 
     float timeVar = time_f * 0.5;
     vec2 noise = vec2(
         pingPong(uv.x + timeVar, 1.0),
-        pingPong(uv.y + timeVar, 1.0)
-    );
+        pingPong(uv.y + timeVar, 1.0));
 
     float stretchFactorX = 1.0 + 0.3 * sin(time_f + uv.y * 10.0);
     float stretchFactorY = 1.0 + 0.3 * cos(time_f + uv.x * 10.0);
-    
+
     vec2 distortedUV = vec2(
         uv.x * stretchFactorX + noise.x * 0.1,
-        uv.y * stretchFactorY + noise.y * 0.1
-    );
+        uv.y * stretchFactorY + noise.y * 0.1);
 
     color = texture(samp, distortedUV);
 }

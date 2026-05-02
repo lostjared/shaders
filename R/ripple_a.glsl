@@ -42,7 +42,6 @@ void main(void) {
     vec3 finalColor = vec3(
         vortexEffect(uv + vec2(offset, 0.0), time_f).r,
         colorEffect.g,
-        vortexEffect(uv - vec2(offset, 0.0), time_f).b
-    );
+        vortexEffect(uv - vec2(offset, 0.0), time_f).b);
     color = vec4(finalColor, 1.0);
 }

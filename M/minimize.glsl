@@ -20,4 +20,3 @@ void main(void) {
     pos = (pos * x) + (pos * time_t);
     color = texture(samp, pos);
 }
-

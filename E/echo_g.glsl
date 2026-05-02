@@ -4,7 +4,6 @@ out vec4 color;
 uniform sampler2D samp;
 uniform float time_f;
 
-
 float pingPong(float x, float length) {
     float modVal = mod(x, length * 2.0);
     return modVal <= length ? modVal : length * 2.0 - modVal;
@@ -24,5 +23,4 @@ void main(void) {
     float totalWeight = weight1 + weight2 + weight3 + weight4;
     color = (color1 * weight1 + color2 * weight2 + color3 * weight3 + color4 * weight4) / sin(totalWeight * time_f);
     color.a = 1.0;
-    
 }

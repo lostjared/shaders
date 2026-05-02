@@ -15,9 +15,9 @@ void main(void) {
     float spiralFactor = sin(time_f + radius * 10.0) * 0.5 + 0.5;
     radius *= spiralFactor;
     vec2 newUV = vec2(
-        center.x + radius * cos(angle),
-        center.y + radius * sin(angle)
-    ) / iResolution;
+                     center.x + radius * cos(angle),
+                     center.y + radius * sin(angle)) /
+                 iResolution;
     newUV = mod(newUV, 1.0);
     newUV = abs(newUV);
     color = texture(samp, newUV);

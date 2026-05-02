@@ -13,13 +13,13 @@ const float SPEED = 2.0;
 
 // --- Uniforms (Kept exactly as requested) ---
 uniform float time_f;
-uniform sampler2D samp; 
+uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
-uniform float amp;  
-uniform float uamp; 
+uniform float amp;
+uniform float uamp;
 uniform float iTime;
-uniform int iFrame; 
+uniform int iFrame;
 uniform float iTimeDelta;
 uniform vec4 iDate;
 uniform vec2 iMouseClick;
@@ -32,7 +32,7 @@ uniform float iSampleRate;
 // How thick the edge check is (1.0 is standard pixel neighbor)
 #define THICKNESS 1.0
 // Minimum edge strength required to show color (filters out noise in black areas)
-#define THRESHOLD 0.1 
+#define THRESHOLD 0.1
 // How fast the neon colors cycle
 #define SPEED 2.0
 
@@ -58,15 +58,15 @@ void main(void) {
     // We sample the neighbors around the current pixel
     // Gx = Horizontal differences, Gy = Vertical differences
     float t00 = getGray(texture(samp, tc + vec2(-1, -1) * texel));
-    float t10 = getGray(texture(samp, tc + vec2( 0, -1) * texel));
-    float t20 = getGray(texture(samp, tc + vec2( 1, -1) * texel));
-    
-    float t01 = getGray(texture(samp, tc + vec2(-1,  0) * texel));
-    float t21 = getGray(texture(samp, tc + vec2( 1,  0) * texel));
-    
-    float t02 = getGray(texture(samp, tc + vec2(-1,  1) * texel));
-    float t12 = getGray(texture(samp, tc + vec2( 0,  1) * texel));
-    float t22 = getGray(texture(samp, tc + vec2( 1,  1) * texel));
+    float t10 = getGray(texture(samp, tc + vec2(0, -1) * texel));
+    float t20 = getGray(texture(samp, tc + vec2(1, -1) * texel));
+
+    float t01 = getGray(texture(samp, tc + vec2(-1, 0) * texel));
+    float t21 = getGray(texture(samp, tc + vec2(1, 0) * texel));
+
+    float t02 = getGray(texture(samp, tc + vec2(-1, 1) * texel));
+    float t12 = getGray(texture(samp, tc + vec2(0, 1) * texel));
+    float t22 = getGray(texture(samp, tc + vec2(1, 1) * texel));
 
     // Apply Sobel matrix
     float Gx = t00 + 2.0 * t10 + t20 - t02 - 2.0 * t12 - t22;

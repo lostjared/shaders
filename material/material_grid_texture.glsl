@@ -22,19 +22,16 @@ uniform vec4 inc_valuex;
 uniform vec4 inc_value;
 uniform sampler2D mat_samp;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+                         vec2(12.9898, 78.233))) *
+                 43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 txt = texture(mat_samp, tc);
-    vec2 pos = gl_FragCoord.xy / iResolution_.xy * (inc_valuex.xy*0.5);
+    vec2 pos = gl_FragCoord.xy / iResolution_.xy * (inc_valuex.xy * 0.5);
     float r = random(pos);
-    color = color * sin(fract(vec4(pos*2, 0, 1))) * txt * 6.0;
-    
+    color = color * sin(fract(vec4(pos * 2, 0, 1))) * txt * 6.0;
 }
-

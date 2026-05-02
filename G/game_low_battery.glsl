@@ -12,7 +12,8 @@ void main(void) {
     vec3 c = texture(samp, tc).rgb;
     float t = floor(time_f * 12.0);
     float flicker = 0.85 + 0.15 * hash(t);
-    if (hash(t * 0.3) > 0.96) flicker *= 0.4;
+    if (hash(t * 0.3) > 0.96)
+        flicker *= 0.4;
     c *= flicker;
     c *= vec3(0.95, 1.0, 0.78);
     float vig = smoothstep(1.0, 0.5, length(tc - 0.5));

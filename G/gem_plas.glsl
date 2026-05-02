@@ -27,7 +27,7 @@ void main(void) {
     // This creates the "liquid" flow effect
     float distortX = noise(uv * 4.0 + time_f * 0.5);
     float distortY = noise(uv * 4.0 - time_f * 0.5);
-    
+
     // 2. Offset the texture coordinates
     // 'amp' or a small constant determines how much the image "stretches"
     vec2 warpedUV = uv + vec2(distortX, distortY) * 0.05;
@@ -38,8 +38,8 @@ void main(void) {
     // 4. "Neon-ify" the colors
     // We boost the saturation and contrast to make the blues/oranges pop
     vec3 neon = pow(texColor.rgb, vec3(1.5)); // Increase contrast
-    neon *= vec3(1.2, 1.5, 2.0); // Shift slightly toward electric blue/cyan
-    
+    neon *= vec3(1.2, 1.5, 2.0);              // Shift slightly toward electric blue/cyan
+
     // 5. Add a glowing "edge" effect based on the noise
     float glow = smoothstep(0.4, 0.7, distortX) * 0.2;
     neon += glow * vec3(0.0, 0.8, 1.0); // Add a cyan neon shimmer

@@ -29,11 +29,11 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.04).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.04).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     vec2 uv = (tc - 0.5) * 2.0;
     uv.x *= iResolution.x / iResolution.y;
@@ -46,7 +46,8 @@ void main() {
 
     // Mirror within diamond tile
     tileUV = abs(tileUV - 0.5);
-    if (tileUV.y > tileUV.x) tileUV = tileUV.yx;
+    if (tileUV.y > tileUV.x)
+        tileUV = tileUV.yx;
 
     // Additional kaleidoscopic fold
     float kAngle = atan(tileUV.y, tileUV.x);
@@ -67,7 +68,8 @@ void main() {
         float scale = 1.0 + e * (0.1 + mid * 0.05);
         vec2 eUV = tileUV * scale;
         eUV = abs(eUV - 0.5 * scale);
-        if (eUV.y > eUV.x) eUV = eUV.yx;
+        if (eUV.y > eUV.x)
+            eUV = eUV.yx;
         vec3 s = texture(samp, mirror(eUV * 2.0 + tc * 0.5)).rgb;
         s *= rainbow(e * 0.16 + length(tileID) * 0.2 + iTime * 0.25);
         float w = 1.0 / (1.0 + e * 0.4);

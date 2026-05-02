@@ -21,11 +21,10 @@ void main() {
 
     if (diag == 0.0) {
         float shift = sin(time_f + gridCoord.x * 0.5) * 0.1;
-        localCoord.x += shift; 
+        localCoord.x += shift;
         uv = fract(gridCoord * squareSize + localCoord);
         texColor = texture(samp, uv);
     }
 
     color = texColor;
 }
-

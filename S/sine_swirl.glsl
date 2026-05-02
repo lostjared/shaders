@@ -10,12 +10,11 @@ vec3 rainbow(float t) {
     float hue = mod(t, 1.0) * 6.0;
     float c = 1.0;
     float x = 1.0 - abs(mod(hue, 2.0) - 1.0);
-    vec3 rgb = (hue < 1.0) ? vec3(c, x, 0.0) :
-               (hue < 2.0) ? vec3(x, c, 0.0) :
-               (hue < 3.0) ? vec3(0.0, c, x) :
-               (hue < 4.0) ? vec3(0.0, x, c) :
-               (hue < 5.0) ? vec3(x, 0.0, c) :
-                             vec3(c, 0.0, x);
+    vec3 rgb = (hue < 1.0) ? vec3(c, x, 0.0) : (hue < 2.0) ? vec3(x, c, 0.0)
+                                           : (hue < 3.0)   ? vec3(0.0, c, x)
+                                           : (hue < 4.0)   ? vec3(0.0, x, c)
+                                           : (hue < 5.0)   ? vec3(x, 0.0, c)
+                                                           : vec3(c, 0.0, x);
     return rgb;
 }
 
@@ -35,4 +34,3 @@ void main(void) {
     color = mix(sin(ctx * time_t), vec4(color_gradient, 1.0), 0.5);
     color.a = 1.0;
 }
-

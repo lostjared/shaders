@@ -19,23 +19,21 @@ uniform vec4 inc_value;
 
 vec4 xor_RGB(vec4 icolor, ivec4 isource) {
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
-        int_color[i] = int_color[i]^isource[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        icolor[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ isource[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     ivec4 source = ivec4(color * 255);
-    
-    color = (0.5 * color) + (0.5 *  fract(inc_value/255 * time_f));
+
+    color = (0.5 * color) + (0.5 * fract(inc_value / 255 * time_f));
     color = xor_RGB(color, source);
 }
-

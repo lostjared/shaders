@@ -20,19 +20,17 @@ uniform float restore_black;
 uniform vec4 inc_valuex;
 uniform vec4 inc_value;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    vec4 color_one = texture(samp, tc-0.01);
-    vec4 color_two = texture(samp, tc-0.02);
-    vec4 color_three = texture(samp, tc-0.03);
-    
+    vec4 color_one = texture(samp, tc - 0.01);
+    vec4 color_two = texture(samp, tc - 0.02);
+    vec4 color_three = texture(samp, tc - 0.03);
+
     vec4 color_off = color_one + color_two + color_three + color;
-    
+
     color_off = color_off / 4;
-    
+
     color = (color * 0.3) + (color_two * 0.5) + (color_one * 0.3);
 
     color = (0.5 * color) + (0.5 * color_off);
 }
-

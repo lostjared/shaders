@@ -21,6 +21,7 @@ void main(void) {
     vec3 gold = sum * vec3(2.4, 1.9, 0.4);
     float flick = 0.85 + 0.15 * hash(floor(gl_FragCoord.xy * 0.1) + floor(time_f * 25.0));
     c += gold * flick;
-    c.r += 0.05; c.g += 0.04;
+    c.r += 0.05;
+    c.g += 0.04;
     color = vec4(c, 1.0);
 }

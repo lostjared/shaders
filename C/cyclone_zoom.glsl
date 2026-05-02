@@ -5,7 +5,7 @@ uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform float time_f;
 
-void main(void){
+void main(void) {
     vec2 normCoord = gl_FragCoord.xy / iResolution.xy;
     float aspect = iResolution.x / iResolution.y;
 

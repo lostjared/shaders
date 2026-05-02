@@ -23,8 +23,7 @@ vec4 getColor(void) {
     return ctx;
 }
 
-void main(void)
-{
+void main(void) {
     vec4 color1 = getColor();
     vec2 uv = tc * 2.0 - 1.0;
     float t = time_f * 0.5;
@@ -39,9 +38,8 @@ void main(void)
 
     vec3 col = texture(samp, distorted_uv).rgb;
     col = mix(col, color1.rgb, 0.8);
-    
+
     col = mix(col, vec3(1.0, 0.0, 0.0), 0.5 * sin(t + length(uv) * 5.0));
 
     color = vec4(col, 1.0);
 }
-

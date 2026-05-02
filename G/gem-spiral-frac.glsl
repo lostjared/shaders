@@ -46,10 +46,10 @@ void main(void) {
     vec2 iterP = p;
     float zoom = 1.5 + 0.5 * sin(time_f * 0.5); // Ping-ponging zoom
 
-    for(int i = 0; i < 5; i++) {
-        iterP = abs(iterP) * zoom - 0.8; // Mirror fold and scale
+    for (int i = 0; i < 5; i++) {
+        iterP = abs(iterP) * zoom - 0.8;            // Mirror fold and scale
         iterP *= rotate2d(time_f * 0.2 + float(i)); // Rotate each layer
-        fractalLayer += exp(-length(iterP) * 2.0); // Accumulate "light"
+        fractalLayer += exp(-length(iterP) * 2.0);  // Accumulate "light"
     }
 
     // Spiral calculation
@@ -63,11 +63,11 @@ void main(void) {
 
     // --- Final Composition ---
     vec4 tex = texture(samp, distortedUV);
-    
+
     // Mix the base texture with the glowing fractal aura
     // The fractal appears stronger where the distortion is (falloff)
     vec3 finalRGB = mix(tex.rgb, fractalCol, falloff * 0.7);
-    
+
     // Add a little extra "strobe" punch to the highlights
     finalRGB += fractalCol * (0.5 + 0.5 * sin(time_f * 10.0)) * 0.2;
 

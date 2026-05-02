@@ -33,7 +33,7 @@ void main(void) {
 
     vec3 rainbow_color = rainbow(angle / (2.0 * 3.14159));
     vec4 original_color = texture(samp, tc);
-    
+
     if (original_color.rgb == vec3(0.0, 0.0, 0.0)) {
         discard;
     }

@@ -6,7 +6,7 @@ uniform vec2 iResolution;
 uniform float time_f;
 uniform vec4 iMouse;
 
-void main(void){
+void main(void) {
     vec2 normCoord = gl_FragCoord.xy / iResolution.xy;
     float aspect = iResolution.x / iResolution.y;
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);

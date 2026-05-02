@@ -11,5 +11,5 @@ void main(void) {
     float speed = 16.0;
     float offset = sin(time_f * speed + tc.x * scale) * 0.05;
     vec2 tcOffset = vec2(tc.x, tc.y + offset);
-   color = texture(samp, tcOffset);
+    color = texture(samp, tcOffset);
 }

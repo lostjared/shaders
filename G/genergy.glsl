@@ -11,7 +11,7 @@ void main() {
     vec4 texColor = texture(samp, uv);
 
     float pulse = 0.5 + 0.5 * sin(time_f * 4.0);
-    
+
     vec2 trailOffset1 = vec2(0.02, 0.03) * sin(time_f * 3.0 + length(uv - 0.5) * 15.0) * pulse;
     vec2 trailOffset2 = vec2(-0.03, 0.02) * cos(time_f * 2.0 + length(uv - 0.5) * 20.0) * pulse;
     vec2 trailOffset3 = vec2(0.01, -0.01) * sin(time_f * 5.0) * (1.0 - pulse);
@@ -23,12 +23,10 @@ void main() {
     vec3 energyGlow = vec3(
         0.5 + 0.5 * sin(time_f + uv.x * 25.0),
         0.5 + 0.5 * cos(time_f * 1.2 + uv.y * 25.0),
-        0.5 + 0.5 * sin(time_f * 0.8 + uv.x * uv.y * 25.0)
-    );
+        0.5 + 0.5 * sin(time_f * 0.8 + uv.x * uv.y * 25.0));
 
     vec3 finalColor = mix(trail1 + trail2 + trail3, energyGlow, 0.6);
     finalColor *= 0.8 + 0.2 * sin(time_f * 6.0 + length(uv - 0.5) * 10.0);
 
     color = vec4(finalColor, texColor.a);
 }
-

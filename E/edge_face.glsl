@@ -43,11 +43,11 @@ void main(void) {
 
     float dir0 = sign(rand(nR) - 0.5);
     float dir1 = sign(rand(nR + 1.0) - 0.5);
-    float dir = mix(dir0, dir1, ar*ar*(3.0-2.0*ar));
+    float dir = mix(dir0, dir1, ar * ar * (3.0 - 2.0 * ar));
 
     float ph0 = rand(nP) * 6.2831853;
     float ph1 = rand(nP + 1.0) * 6.2831853;
-    float phase = mix(ph0, ph1, ap*ap*(3.0-2.0*ap));
+    float phase = mix(ph0, ph1, ap * ap * (3.0 - 2.0 * ap));
 
     float rotA = dir * (phase + time_f * uRotateSpeed);
     mat2 rot = mat2(cos(rotA), -sin(rotA), sin(rotA), cos(rotA));

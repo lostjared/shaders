@@ -13,8 +13,8 @@ float pingPong(float x, float length) {
 
 void main(void) {
     float time_t = pingPong(time_f, 7.0);
-    vec3 neonPurple = vec3(199.0/255.0, 0.0, 1.0);
-    vec3 neonPink   = vec3(1.0, 0.0, 127.0/255.0);
+    vec3 neonPurple = vec3(199.0 / 255.0, 0.0, 1.0);
+    vec3 neonPink = vec3(1.0, 0.0, 127.0 / 255.0);
     vec3 gradientColor = mix(neonPink, neonPurple, tc.y);
     color = mix(vec4(sin(gradientColor * time_t), 1.0), texture(samp, tc), 0.5);
 }

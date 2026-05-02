@@ -5,13 +5,13 @@ out vec4 color;
 
 // --- Uniforms ---
 uniform float time_f;
-uniform sampler2D samp; 
+uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
-uniform float amp;  
-uniform float uamp; 
+uniform float amp;
+uniform float uamp;
 uniform float iTime;
-uniform int iFrame; 
+uniform int iFrame;
 uniform float iTimeDelta;
 uniform vec4 iDate;
 uniform vec2 iMouseClick;
@@ -21,10 +21,10 @@ uniform float iChannelTime[4];
 uniform float iSampleRate;
 
 // --- Configuration ---
-const float FLOW_SPEED = 0.5;   // How fast the liquid moves
-const float SWIRL_SCALE = 3.0;  // Size of the swirls (lower = bigger swirls)
-const float DISTORTION = 0.2;   // Intensity of the melt effect
-const float RGB_SPLIT = 0.02;   // How much the colors separate (0.0 = none)
+const float FLOW_SPEED = 0.5;  // How fast the liquid moves
+const float SWIRL_SCALE = 3.0; // Size of the swirls (lower = bigger swirls)
+const float DISTORTION = 0.2;  // Intensity of the melt effect
+const float RGB_SPLIT = 0.02;  // How much the colors separate (0.0 = none)
 
 // --- Noise Functions ---
 // Simple hash function to generate randomness
@@ -58,11 +58,11 @@ float pingPong(float x, float length) {
 float fbm(vec2 st) {
     float value = 0.0;
     float amplitude = 0.5;
-    
+
     // Loop to add layers (octaves)
     for (int i = 0; i < 3; i++) {
         value += amplitude * noise(st);
-        st *= 2.0;       // Double the frequency
+        st *= 2.0;        // Double the frequency
         amplitude *= 0.5; // Halve the amplitude
     }
     return value;
@@ -91,7 +91,7 @@ void main(void) {
     // 3. Chromatic Aberration (RGB Split)
     // Instead of sampling the texture once, we sample it 3 times at slightly different positions.
     // This adds that "cool" glitch/holographic fringe to the edges.
-    
+
     float rChannel = texture(samp, distortedUV + vec2(RGB_SPLIT, 0.0)).r;
     float gChannel = texture(samp, distortedUV).g; // Green stays center
     float bChannel = texture(samp, distortedUV - vec2(RGB_SPLIT, 0.0)).b;

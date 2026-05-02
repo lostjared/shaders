@@ -5,13 +5,13 @@ out vec4 color;
 uniform float time_f;
 uniform sampler2D samp;
 uniform vec2 iResolution;
-uniform float amp_peak; // peak absolute sample value in current audio buffer
-uniform float amp_rms; // RMS energy of current audio buffer
+uniform float amp_peak;   // peak absolute sample value in current audio buffer
+uniform float amp_rms;    // RMS energy of current audio buffer
 uniform float amp_smooth; // exponentially smoothed amplitude for gradual transitions
-uniform float amp_low; // bass energy (below ~300 Hz)
-uniform float amp_mid; // mid-range energy (~300-3000 Hz)
-uniform float amp_high; // treble energy (above ~3000 Hz)
-uniform float iamp; // estimated dominant frequency in Hz via zero-crossing rate
+uniform float amp_low;    // bass energy (below ~300 Hz)
+uniform float amp_mid;    // mid-range energy (~300-3000 Hz)
+uniform float amp_high;   // treble energy (above ~3000 Hz)
+uniform float iamp;       // estimated dominant frequency in Hz via zero-crossing rate
 uniform float time_speed;
 
 // High-fidelity spectrum for the oily "fringe" colors
@@ -52,8 +52,7 @@ void main(void) {
     // AUDIO: Mids distort UV coordinates — the geometry itself warps with the music
     vec2 warpOffset = vec2(
         sin(r * 8.0 - time_f * 2.0) * amp_mid * 0.06,
-        cos(r * 8.0 + time_f * 1.5) * amp_mid * 0.06
-    );
+        cos(r * 8.0 + time_f * 1.5) * amp_mid * 0.06);
     vec2 warpedTC = tc + warpOffset + vec2(ripple * amp_low * 0.3);
 
     // 4. Chromatic Aberration Distortion
@@ -80,10 +79,9 @@ void main(void) {
     float hueShift = amp_smooth * 2.0 + amp_mid * 1.2;
     float cosH = cos(hueShift), sinH = sin(hueShift);
     mat3 hueRot = mat3(
-        0.577 + 0.816*cosH + 0.057*sinH, 0.577 - 0.577*cosH - 0.577*sinH, 0.577 - 0.240*cosH + 0.520*sinH,
-        0.577 - 0.240*cosH + 0.520*sinH, 0.577 + 0.816*cosH + 0.057*sinH, 0.577 - 0.577*cosH - 0.577*sinH,
-        0.577 - 0.577*cosH - 0.577*sinH, 0.577 - 0.240*cosH + 0.520*sinH, 0.577 + 0.816*cosH + 0.057*sinH
-    );
+        0.577 + 0.816 * cosH + 0.057 * sinH, 0.577 - 0.577 * cosH - 0.577 * sinH, 0.577 - 0.240 * cosH + 0.520 * sinH,
+        0.577 - 0.240 * cosH + 0.520 * sinH, 0.577 + 0.816 * cosH + 0.057 * sinH, 0.577 - 0.577 * cosH - 0.577 * sinH,
+        0.577 - 0.577 * cosH - 0.577 * sinH, 0.577 - 0.240 * cosH + 0.520 * sinH, 0.577 + 0.816 * cosH + 0.057 * sinH);
     rainbow = hueRot * rainbow;
 
     // 6. Central Highlight

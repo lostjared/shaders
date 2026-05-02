@@ -21,24 +21,22 @@ uniform float restore_black;
 uniform vec4 inc_valuex;
 uniform vec4 inc_value;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
+                         vec2(12.9898, 78.233))) *
                  43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    ivec4 source =ivec4(color * 255);
+    ivec4 source = ivec4(color * 255);
     vec4 c = vec4(0.2, 0.5, 0.8, 1); // random_value/255;
     vec4 cval;
     color += 0.03;
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * color[i]);
-        int_color[i] = int_color[i]^source[3-i-1];
-        color[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ source[3 - i - 1];
+        color[i] = float(int_color[i]) / 255;
     }
 }
-

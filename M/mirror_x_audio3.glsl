@@ -15,8 +15,10 @@ void main(void) {
     vec2 uv = tc;
     float aLow = clamp(amp_low, 0.0, 1.0);
     float aMid = clamp(amp_mid, 0.0, 1.0);
-    if (uv.x < 0.5) uv.x = 1.0 - uv.x;
-    if (uv.y < 0.5) uv.y = 1.0 - uv.y;
+    if (uv.x < 0.5)
+        uv.x = 1.0 - uv.x;
+    if (uv.y < 0.5)
+        uv.y = 1.0 - uv.y;
     float dist = length(uv - 0.5);
     float wave = sin(dist * 20.0 - time_f * 3.0) * 0.02 * aLow;
     uv += wave;

@@ -14,11 +14,20 @@ uniform float amp_peak;
 uniform float amp_smooth;
 uniform sampler1D spectrum;
 
-mat3 rotX(float a){float s=sin(a),c=cos(a);return mat3(1,0,0, 0,c,-s, 0,s,c);}
-mat3 rotY(float a){float s=sin(a),c=cos(a);return mat3(c,0,s, 0,1,0, -s,0,c);}
-mat3 rotZ(float a){float s=sin(a),c=cos(a);return mat3(c,-s,0, s,c,0, 0,0,1);}
+mat3 rotX(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(1, 0, 0, 0, c, -s, 0, s, c);
+}
+mat3 rotY(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, 0, s, 0, 1, 0, -s, 0, c);
+}
+mat3 rotZ(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, -s, 0, s, c, 0, 0, 0, 1);
+}
 
-void main(void){
+void main(void) {
     float aspect = iResolution.x / iResolution.y;
     vec2 ar = vec2(aspect, 1.0);
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
@@ -26,21 +35,21 @@ void main(void){
     // 1. Audio Mapping for Depth
     // The "base" of our log-polar math determines the tunnel's density.
     // Bass hits will now physically "stretch" the tunnel.
-    float bass_kick = texture(spectrum, 0.02).r; 
-    float dynamic_base = 1.72 + (bass_kick * 2.0); 
+    float bass_kick = texture(spectrum, 0.02).r;
+    float dynamic_base = 1.72 + (bass_kick * 2.0);
     float period = log(dynamic_base);
 
     // 2. 3D Perspective Shift
     // amp_peak pushes the "Z" depth, making the tunnel look longer on loud transients.
     vec2 p = (tc - m) * ar;
     vec3 v = vec3(p, 1.0);
-    
+
     float ax = 0.25 * sin(time_f * 0.7);
     float ay = 0.25 * cos(time_f * 0.6);
     float az = 0.4 * time_f;
     mat3 R = rotZ(az) * rotY(ay) * rotX(ax);
     vec3 r = R * v;
-    
+
     // Perspective "warp" increases with overall smoothness
     float persp = 0.6 + (amp_smooth * 0.5);
     float zf = 1.0 / (1.0 + r.z * persp);
@@ -51,7 +60,7 @@ void main(void){
     float t = time_f * 0.5;
     float rad = length(q) + eps;
     float ang = atan(q.y, q.x) + t * 0.3;
-    
+
     // k is our "Z" position in the tunnel
     float k = fract((log(rad) - t) / period);
     float rw = exp(k * period);
@@ -65,14 +74,14 @@ void main(void){
     float a = atan(qwrap.y, qwrap.x) + time_f * 0.05;
     a = mod(a, stepA);
     a = abs(a - stepA * 0.5);
-    
+
     vec2 kdir = vec2(cos(a), sin(a));
     vec2 kaleido = kdir * length(qwrap);
 
     // 5. Final Output
     vec2 uv = fract(kaleido / ar + m);
     vec3 tex = texture(samp, uv).rgb;
-    
+
     // Add a subtle color shift on bass hits
     tex += vec3(bass_kick * 0.4, 0.0, bass_kick * 0.2);
 

@@ -13,18 +13,18 @@ float rand(vec2 co) {
 void main(void) {
     vec2 uv = tc;
     vec4 texColor = texture(samp, uv);
-    
+
     float starDensity = 0.01;
     float starSize = 0.03;
     vec2 gridPos = floor(uv * iResolution.xy * starDensity);
     vec2 starPos = fract(uv * iResolution.xy * starDensity);
-    
+
     float starNoise = rand(gridPos);
     float starIntensity = smoothstep(starSize, starSize * 0.5, distance(starPos, vec2(starNoise, fract(sin(time_f + starNoise) * 0.5 + 0.5))));
-    
+
     starIntensity *= 0.5 + 0.5 * sin(time_f * 10.0 + starNoise * 100.0);
-    
+
     vec4 starColor = vec4(vec3(starIntensity), starIntensity);
-    
+
     color = mix(texColor, starColor, starColor.a);
 }

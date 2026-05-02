@@ -12,15 +12,15 @@ uniform float alpha_b;
 vec4 xor_RGB(vec4 icolor, vec4 source) {
     ivec3 int_color;
     ivec4 isource = ivec4(source * 255);
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
-        int_color[i] = int_color[i]^isource[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        icolor[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ isource[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
@@ -37,7 +37,7 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
                                     1.5, 2.5, 3.0, 3.5, 4.0, 4.0, 3.5, 3.0, 2.5, 1.5,
                                     1.0, 2.0, 2.5, 3.0, 3.5, 3.5, 3.0, 2.5, 2.0, 1.0,
                                     0.5, 1.0, 1.5, 2.0, 2.5, 2.5, 2.0, 1.5, 1.0, 0.5);
-    
+
     for (int i = 0; i < 100; i++) {
         kernel[i] = kernelVals[i];
     }
@@ -62,12 +62,11 @@ float pingPong(float x, float length) {
     return modVal <= length ? modVal : length * 2.0 - modVal;
 }
 
-
 void main(void) {
     vec3 colorValue = blur(samp, tc, iResolution).rgb;
 
     float time_t = pingPong(time_f, 20.0) + 2.0;
-    
+
     float maxColorValue = 1.0;
     float timeCycle = mod(time_f, 6.0);
 

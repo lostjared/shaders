@@ -29,12 +29,12 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.12).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -50,14 +50,14 @@ void main() {
     // Mirror along spiral
     vec2 spiralUV = vec2(
         fract(spiralAngle / (2.0 * PI)),
-        fract(r * 3.0 + iTime * 0.3)
-    );
+        fract(r * 3.0 + iTime * 0.3));
     spiralUV = mirror(spiralUV);
 
     // Additional mirror folds
     vec2 centered = uv;
     centered = abs(centered);
-    if (centered.y > centered.x) centered = centered.yx;
+    if (centered.y > centered.x)
+        centered = centered.yx;
 
     // Blend spiral and mirror
     vec2 texUV = mix(spiralUV, mirror(centered + 0.5), 0.3 + bass * 0.2);
@@ -75,8 +75,7 @@ void main() {
         eSpiralAngle += iTime * 0.8;
         vec2 eUV = vec2(
             fract(eSpiralAngle / (2.0 * PI)),
-            fract((r + e * 0.05) * 3.0 + iTime * 0.3)
-        );
+            fract((r + e * 0.05) * 3.0 + iTime * 0.3));
         eUV = mirror(eUV);
         vec3 s = texture(samp, eUV).rgb;
         s *= rainbow(e * 0.2 + r * 2.0 + iTime * 0.2 + lowMid);

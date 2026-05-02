@@ -13,8 +13,8 @@ uniform float amp_high;
 uniform float iamp;
 
 void main(void) {
-    float aLow  = clamp(amp_low,  0.0, 1.0);
-    float aMid  = clamp(amp_mid,  0.0, 1.0);
+    float aLow = clamp(amp_low, 0.0, 1.0);
+    float aMid = clamp(amp_mid, 0.0, 1.0);
     float aSmth = clamp(amp_smooth, 0.0, 1.0);
 
     vec2 uv = tc - 0.5;

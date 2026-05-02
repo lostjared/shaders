@@ -10,17 +10,16 @@ uniform sampler2D samp;
 vec4 xor_RGB(vec4 icolor, vec4 isourcex) {
     ivec4 isource = ivec4(isourcex * 255);
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
         int_color[i] ^= isource[i];
-        if(int_color[i] > 255)
+        if (int_color[i] > 255)
             int_color[i] %= 255;
         icolor[i] = float(int_color[i]) / 255.0;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
-
 
 void main() {
     vec2 uv = (tc - 0.5) * 2.0;
@@ -38,5 +37,3 @@ void main() {
     color = vec4(col, 1.0);
     color = xor_RGB(color, texture(samp, tc));
 }
-
-

@@ -28,10 +28,10 @@ float noise(vec2 p) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.10).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
 
     vec2 uv = (tc - 0.5) * 2.0;
@@ -53,7 +53,7 @@ void main() {
     float hy = noise((swirlUV + vec2(0.0, eps)) * 6.0 + iTime * 0.5);
     vec2 normal = vec2(hx - h, hy - h) / eps;
 
-    float eta = 0.7 + treble * 0.6;  // 0.7 to 1.3 IOR range
+    float eta = 0.7 + treble * 0.6; // 0.7 to 1.3 IOR range
     vec2 refracted = normalize(vec2(uv) + normal * eta);
 
     // Convert back to texture coordinates

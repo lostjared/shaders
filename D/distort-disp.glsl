@@ -15,8 +15,7 @@ void main() {
     float displacement = pingPong(tc.x * iResolution.x + time_f * 50.0, 20.0);
     vec2 distortedTC = vec2(
         atan(tc.y - 0.5, tc.x - 0.5) / 3.14159 + 0.5,
-        tc.y + sin(time_f * 2.0) * 0.02
-    );
+        tc.y + sin(time_f * 2.0) * 0.02);
     distortedTC.x += displacement / iResolution.x;
     color = texture(samp, sin(distortedTC * time_f));
 }

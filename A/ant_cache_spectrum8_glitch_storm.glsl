@@ -31,28 +31,43 @@ uniform float amp_peak;
 uniform float amp_smooth;
 
 const float TAU = 6.28318530718;
-const float PI  = 3.14159265359;
+const float PI = 3.14159265359;
 
 float specHist(int i, float f) {
-    if (i == 0) return texture(spectrum0, f).r;
-    if (i == 1) return texture(spectrum1, f).r;
-    if (i == 2) return texture(spectrum2, f).r;
-    if (i == 3) return texture(spectrum3, f).r;
-    if (i == 4) return texture(spectrum4, f).r;
-    if (i == 5) return texture(spectrum5, f).r;
-    if (i == 6) return texture(spectrum6, f).r;
+    if (i == 0)
+        return texture(spectrum0, f).r;
+    if (i == 1)
+        return texture(spectrum1, f).r;
+    if (i == 2)
+        return texture(spectrum2, f).r;
+    if (i == 3)
+        return texture(spectrum3, f).r;
+    if (i == 4)
+        return texture(spectrum4, f).r;
+    if (i == 5)
+        return texture(spectrum5, f).r;
+    if (i == 6)
+        return texture(spectrum6, f).r;
     return texture(spectrum7, f).r;
 }
 
 vec4 cacheHist(int i, vec2 uv) {
-    if (i == 0) return texture(samp,  uv);
-    if (i == 1) return texture(samp1, uv);
-    if (i == 2) return texture(samp2, uv);
-    if (i == 3) return texture(samp3, uv);
-    if (i == 4) return texture(samp4, uv);
-    if (i == 5) return texture(samp5, uv);
-    if (i == 6) return texture(samp6, uv);
-    if (i == 7) return texture(samp7, uv);
+    if (i == 0)
+        return texture(samp, uv);
+    if (i == 1)
+        return texture(samp1, uv);
+    if (i == 2)
+        return texture(samp2, uv);
+    if (i == 3)
+        return texture(samp3, uv);
+    if (i == 4)
+        return texture(samp4, uv);
+    if (i == 5)
+        return texture(samp5, uv);
+    if (i == 6)
+        return texture(samp6, uv);
+    if (i == 7)
+        return texture(samp7, uv);
     return texture(samp8, uv);
 }
 
@@ -75,25 +90,27 @@ float energy() {
 void main() {
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
-    float bass   = texture(spectrum0, 0.03).r;
-    float mid    = texture(spectrum0, 0.22).r;
+    float bass = texture(spectrum0, 0.03).r;
+    float mid = texture(spectrum0, 0.22).r;
     float treble = texture(spectrum0, 0.58).r;
-    float air    = texture(spectrum0, 0.85).r;
-    float e      = energy();
+    float air = texture(spectrum0, 0.85).r;
+    float e = energy();
 
     vec3 acc = vec3(0.0);
     for (int i = 0; i < 8; i++) {
         float band = floor(tc.y * (8.0 + float(i) * 2.0)) / (8.0 + float(i) * 2.0);
         float h = specHist(i, fract(band * 3.7 + float(i) * 0.13));
         float jitter = (h - 0.3) * 0.6;
-        if (h > 0.4) jitter *= 3.0;
+        if (h > 0.4)
+            jitter *= 3.0;
         vec2 suv = tc + vec2(jitter, 0.0);
         float chroma = h * 0.1;
         vec3 c;
         c.r = cacheHist(i, suv + vec2(chroma, 0.0)).r;
         c.g = cacheHist(i, suv - vec2(0.0, chroma)).g;
         c.b = cacheHist(i, suv - vec2(chroma, 0.0)).b;
-        if (h > 0.6) c = 1.0 - c;
+        if (h > 0.6)
+            c = 1.0 - c;
         acc += c * pow(0.85, float(i)) * (1.0 + h * 4.0);
     }
     acc /= 3.5;

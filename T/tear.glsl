@@ -4,7 +4,7 @@ in vec2 tc;
 uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform float time_f;
-void main(void){
+void main(void) {
     vec2 normCoord = tc;
     float tearLine = sin(time_f) * 0.5 + 0.5;
     float distFromTear = abs(normCoord.x - tearLine);

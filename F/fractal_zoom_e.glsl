@@ -7,12 +7,12 @@ uniform vec2 iResolution;
 uniform float time_f;
 uniform vec4 iMouse;
 
-float pingPong(float x, float length){
-    float m = mod(x, length*2.0);
-    return m <= length ? m : length*2.0 - m;
+float pingPong(float x, float length) {
+    float m = mod(x, length * 2.0);
+    return m <= length ? m : length * 2.0 - m;
 }
 
-vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect){
+vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect) {
     float s = sin(angle), cc = cos(angle);
     vec2 p = uv - c;
     p.x *= aspect;
@@ -21,7 +21,7 @@ vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect){
     return p + c;
 }
 
-vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect){
+vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
     vec2 p = uv - c;
     p.x *= aspect;
     float ang = atan(p.y, p.x);
@@ -34,16 +34,16 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect){
     return r + c;
 }
 
-vec2 fractalZoom(vec2 uv, float zoom, float t, vec2 c, float aspect){
+vec2 fractalZoom(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
-    for(int i=0;i<5;i++){
+    for (int i = 0; i < 5; i++) {
         p = abs((p - c) * zoom) - 0.5 + c;
-        p = rotateUV(p, t*0.1, c, aspect);
+        p = rotateUV(p, t * 0.1, c, aspect);
     }
     return p;
 }
 
-void main(){
+void main() {
     float aspect = iResolution.x / iResolution.y;
     vec2 ar = vec2(aspect, 1.0);
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);

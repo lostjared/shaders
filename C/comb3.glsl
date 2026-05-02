@@ -39,7 +39,7 @@ vec2 fractalZoom(vec2 uv, float zoom, float time) {
 
 void main() {
     vec2 uv = tc * iResolution / vec2(iResolution.y);
-vec4 originalTexture = texture(samp, tc);
+    vec4 originalTexture = texture(samp, tc);
     vec2 kaleidoUV = reflectUV(uv, 6.0);
     float zoom = 1.5 + 0.5 * sin(time_f * 0.5);
     kaleidoUV = fractalZoom(kaleidoUV, zoom, time_f);

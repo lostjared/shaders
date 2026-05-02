@@ -21,28 +21,26 @@ uniform vec2 iResolution;
 uniform float restore_black;
 in vec2 iResolution_;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     ivec3 source;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         source[i] = int(255 * color[i]);
     }
 
     vec2 pos = iResolution_.xy;
     vec3 st = gl_FragCoord.zyx;
-    
-    for(int i = 0; i < 3; ++i) {
-        float f = (1024/st[i]);
-        color[i] = color[i]*f;
+
+    for (int i = 0; i < 3; ++i) {
+        float f = (1024 / st[i]);
+        color[i] = color[i] * f;
     }
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * color[i]);
-        int_color[i] = int_color[i]^source[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        color[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ source[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        color[i] = float(int_color[i]) / 255;
     }
 }
-

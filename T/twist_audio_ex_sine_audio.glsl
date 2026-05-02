@@ -16,9 +16,7 @@ void main(void) {
     vec2 d = tc - center;
     float radius = length(d);
 
-    float wave = sin(time_f * 2.0) * lo
-               + sin(time_f * 3.7 + 1.3) * md
-               + sin(time_f * 5.5 + 2.1) * hi;
+    float wave = sin(time_f * 2.0) * lo + sin(time_f * 3.7 + 1.3) * md + sin(time_f * 5.5 + 2.1) * hi;
 
     float twistStrength = 1.0 + wave * 4.0;
     float angle = twistStrength * (radius - 1.0) + time_f;

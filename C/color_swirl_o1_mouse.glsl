@@ -23,7 +23,7 @@ void main(void) {
     float radMod = pingPong(radius + t * 0.5, 0.5);
     float wave = sin(radius * 10.0 - t * 5.0) * 0.5 + 0.5;
     float r = sin(angle * 3.0 + radMod * 10.0 + wave * 6.2831);
-    float g = sin(angle * 4.0 - radMod * 8.0  + wave * 4.1230);
+    float g = sin(angle * 4.0 - radMod * 8.0 + wave * 4.1230);
     float b = sin(angle * 5.0 + radMod * 12.0 - wave * 3.4560);
     vec3 col = vec3(r, g, b) * 0.5 + 0.5;
     vec3 texColor = texture(samp, tc).rgb;

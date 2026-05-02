@@ -15,7 +15,7 @@ void main(void) {
     for (int i = -2; i <= 2; ++i) {
         for (int j = -2; j <= 2; ++j) {
             vec2 o = vec2(float(i), float(j)) * px * (1.5 + 4.0 * k);
-            float w = exp(-(float(i*i + j*j)) * 0.4);
+            float w = exp(-(float(i * i + j * j)) * 0.4);
             sum += texture(samp, tc + o).rgb * w;
             total += w;
         }

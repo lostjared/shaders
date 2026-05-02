@@ -41,10 +41,10 @@ float fbm(vec2 p) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -55,9 +55,9 @@ void main() {
     // Spiral arm warp
     // It's safe to multiply the log(r) by a float because it doesn't wrap radially.
     float spiral = angle + log(r + 0.01) * (3.0 + bass * 4.0) - iTime * 0.8;
-    
+
     // FIX 1: Lock the spiral multiplier to an integer (3.0) for 3 distinct arms.
-    // Move the `mid * 2.0` audio reactivity outside the multiplication so it 
+    // Move the `mid * 2.0` audio reactivity outside the multiplication so it
     // shifts the phase (rotates the arms) rather than changing the frequency.
     float armDensity = sin(spiral * 3.0 + mid * 2.0) * 0.5 + 0.5;
     armDensity = pow(armDensity, 1.5);
@@ -66,11 +66,11 @@ void main() {
     float cloud = fbm(uv * 4.0 + iTime * 0.2 + bass * 0.5);
     cloud = mix(cloud, armDensity, 0.5 + mid * 0.3);
 
-    // FIX 2: Remove the 0.3 multiplier inside cos/sin. 
-    // The angle multiplier is now implicitly 1.0, ensuring a perfect 2*PI wrap 
+    // FIX 2: Remove the 0.3 multiplier inside cos/sin.
+    // The angle multiplier is now implicitly 1.0, ensuring a perfect 2*PI wrap
     // for the texture coordinates.
     vec2 spiralUV = vec2(cos(spiral), sin(spiral)) * r * 0.6 + 0.5;
-    
+
     float chroma = treble * 0.04;
     vec3 col;
     col.r = texture(samp, spiralUV + vec2(chroma, 0.0)).r;

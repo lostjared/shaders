@@ -15,10 +15,10 @@ void main(void) {
 
     float newAngle1 = angle + spin;
     float newAngle2 = angle - spin;
-    
+
     vec2 distorted_tc1 = center + vec2(cos(newAngle1), sin(newAngle1)) * distance;
     vec2 distorted_tc2 = center + vec2(cos(newAngle2), sin(newAngle2)) * distance;
-    
+
     distorted_tc1 = clamp(distorted_tc1, vec2(0.0), vec2(1.0));
     distorted_tc2 = clamp(distorted_tc2, vec2(0.0), vec2(1.0));
 

@@ -7,7 +7,6 @@ uniform vec2 iResolution;
 float PI = 3.1415926535897932384626433832795;
 uniform sampler2D samp;
 
-
 void main() {
     vec2 uv = (tc - 0.5) * 2.0;
     uv.x *= iResolution.x / iResolution.y;
@@ -24,4 +23,3 @@ void main() {
     color = vec4(col, 1.0);
     color = mix(color, texture(samp, tc), 0.5);
 }
-

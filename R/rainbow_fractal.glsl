@@ -78,7 +78,8 @@ float fractal(vec2 uv, float time) {
     const float maxIterations = 50.0;
     for (float i = 0.0; i < maxIterations; i++) {
         z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + vec2(sin(time), cos(time));
-        if (length(z) > 2.0) break;
+        if (length(z) > 2.0)
+            break;
         iterations += 1.0;
     }
     return iterations / maxIterations;

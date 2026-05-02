@@ -9,7 +9,7 @@ uniform sampler1D spectrum;
 // Logarithmic spiral zoom whose pitch is set by the spectrum's mid-band.
 void main(void) {
     float mid = texture(spectrum, 0.30).r;
-    float hi  = texture(spectrum, 0.65).r;
+    float hi = texture(spectrum, 0.65).r;
 
     vec2 center = vec2(0.5);
     vec2 d = tc - center;
@@ -17,7 +17,7 @@ void main(void) {
     float a = atan(d.y, d.x);
 
     float pitch = 0.3 + mid * 1.2;
-    float zoom  = 1.0 + hi * 0.4;
+    float zoom = 1.0 + hi * 0.4;
     float lr = log(r) - time_f * 0.3 * (1.0 + mid);
     a += pitch * lr;
     r = exp(lr) / zoom;

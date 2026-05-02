@@ -16,7 +16,7 @@ void main() {
     // 1. Audio Data (Signal Interference Strength)
     float bass = texture(spectrum, 0.05).r;
     float treble = texture(spectrum, 0.60).r;
-    
+
     // Signal strength inversely tied to audio intensity
     float signalLoss = clamp(bass + treble * 0.5, 0.0, 1.0);
 
@@ -32,7 +32,7 @@ void main() {
     vec3 col = texture(samp, uv).rgb;
     vec3 ghost1 = texture(samp, uv + vec2(0.015, 0.005)).rgb;
     vec3 ghost2 = texture(samp, uv + vec2(0.03, -0.01)).rgb;
-    
+
     // Mix ghosts in with low opacity
     col = mix(col, ghost1, 0.2 * signalLoss);
     col = mix(col, ghost2, 0.1 * signalLoss);

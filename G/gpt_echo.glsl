@@ -13,4 +13,3 @@ void main(void) {
     vec4 color4 = texture(samp, mirrored_tc * 0.125);
     color = (color1 * 0.4) + (color2 * 0.3) + (color3 * 0.2) + (color4 * 0.1);
 }
-

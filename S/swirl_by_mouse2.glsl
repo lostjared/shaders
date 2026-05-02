@@ -8,26 +8,26 @@ uniform vec2 iResolution;
 uniform float alpha;
 uniform vec4 iMouse;
 
-float pingPong(float x, float length){
-    float m = mod(x, length*2.0);
-    return m <= length ? m : length*2.0 - m;
+float pingPong(float x, float length) {
+    float m = mod(x, length * 2.0);
+    return m <= length ? m : length * 2.0 - m;
 }
 
-float hash(vec2 p){
-    return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453123);
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
 }
 
-float noise(vec2 p){
+float noise(vec2 p) {
     vec2 i = floor(p), f = fract(p);
-    vec2 u = f*f*(3.0-2.0*f);
-    float a = hash(i+vec2(0.0,0.0));
-    float b = hash(i+vec2(1.0,0.0));
-    float c = hash(i+vec2(0.0,1.0));
-    float d = hash(i+vec2(1.0,1.0));
-    return mix(mix(a,b,u.x), mix(c,d,u.x), u.y);
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    float a = hash(i + vec2(0.0, 0.0));
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
 }
 
-void main(void){
+void main(void) {
     vec2 uv = tc;
     vec2 center = vec2(0.5, 0.5);
     float distanceC = length(uv - center);

@@ -19,9 +19,8 @@ void main(void) {
     float time_t = pingPong(time_f, 20.0);
     float wave = sin(dist * 10.0 - time_f * 5.0 + angle * 5.0);
     wave = sin(wave * time_t);
-    
+
     vec4 texColor = texture(samp, tc);
-    
+
     color = texColor * (0.5 + 0.5 * wave);
 }
-

@@ -43,7 +43,8 @@ void main(void) {
     uv = abs(uv * 2.0 - 1.0);
     uv.x = abs(uv.x);
     uv.y = abs(uv.y);
-    if (uv.x > uv.y) uv = uv.yx;
+    if (uv.x > uv.y)
+        uv = uv.yx;
 
     float zoom = 1.4 + 0.5 * aLow;
     uv = fractalFold(uv, zoom, t, ctr, aspect, 5);
@@ -51,7 +52,8 @@ void main(void) {
     uv = abs(uv * 2.0 - 1.0);
     uv.x = abs(uv.x);
     uv.y = abs(uv.y);
-    if (uv.y > uv.x) uv = uv.yx;
+    if (uv.y > uv.x)
+        uv = uv.yx;
     uv = fract(uv);
 
     vec4 tex = texture(samp, uv);

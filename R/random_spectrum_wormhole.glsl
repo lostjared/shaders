@@ -30,14 +30,14 @@ vec3 palette(float t) {
 
 void main() {
     // Dense 8-band spectrum sampling
-    float sub    = texture(spectrum, 0.01).r;
-    float bass   = texture(spectrum, 0.04).r;
+    float sub = texture(spectrum, 0.01).r;
+    float bass = texture(spectrum, 0.04).r;
     float lowMid = texture(spectrum, 0.10).r;
-    float mid    = texture(spectrum, 0.20).r;
-    float hiMid  = texture(spectrum, 0.32).r;
-    float pres   = texture(spectrum, 0.45).r;
+    float mid = texture(spectrum, 0.20).r;
+    float hiMid = texture(spectrum, 0.32).r;
+    float pres = texture(spectrum, 0.45).r;
     float treble = texture(spectrum, 0.60).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);

@@ -13,16 +13,15 @@ float pingPong(float x, float length) {
     return modVal <= length ? modVal : length * 2.0 - modVal;
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec2 pos = gl_FragCoord.xy / iResolution;
     vec4 s = color * sin(inc_valuex / 255.0 * time_f);
     color[0] += s[0] * pos[0];
     color[1] += s[1] * pos[1];
- 
+
     float time_t = pingPong(time_f, 20) + 2.0;
-    
+
     color = sin(color * time_t);
     color.a = 1.0;
 }

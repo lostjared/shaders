@@ -23,10 +23,10 @@ vec3 acid(float t) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -49,8 +49,7 @@ void main() {
     // Feedback-style UV distortion
     vec2 distort = vec2(
         combined * 0.03 * (1.0 + bass),
-        (wave1 - wave2) * 0.02 * (1.0 + mid)
-    );
+        (wave1 - wave2) * 0.02 * (1.0 + mid));
     vec2 sampUV = tc + distort;
 
     float chroma = abs(combined) * 0.04 + treble * 0.02;
@@ -72,38 +71,39 @@ void main() {
     // ---------------------------------------------------------
     float r_center = length(uv);
     float theta = atan(uv.y, uv.x);
-    
+
     // Dynamic parameters driven by frequency bands
     float spiralArms = 3.0 + floor(treble * 4.0);         // More arms on high treble
     float spiralTwist = 15.0 - bass * 8.0;                // Bass unwinds the spiral slightly
     float spiralSpeed = iTime * (4.0 + amp_smooth * 8.0); // Overall volume drives rotation speed
-    
+
     // The core spiral equation
     float spiralPhase = theta * spiralArms - r_center * spiralTwist - spiralSpeed;
     float spiralForm = sin(spiralPhase);
-    
+
     // Sharpen the sine wave into distinct beams of light
     float spiralBeams = pow(max(spiralForm, 0.0), 5.0);
-    
+
     // Fade out towards the edges to integrate better with the glitch effect
-    float spiralFalloff = exp(-r_center * (2.0 - mid)); 
-    
+    float spiralFalloff = exp(-r_center * (2.0 - mid));
+
     // Apply acid palette to the spiral, shifted by time and audio
     vec3 spiralColor = acid(r_center * 0.8 - iTime * 0.5 + mid * 0.5);
-    
+
     // Additive blend the spiral light into the main color
     col += spiralColor * spiralBeams * (0.6 + bass * 2.0) * spiralFalloff;
     // ---------------------------------------------------------
 
     // Source point glow
     for (int i = 0; i < 3; i++) {
-        vec2 src = (i == 0) ? src1 : (i == 1) ? src2 : src3;
+        vec2 src = (i == 0) ? src1 : (i == 1) ? src2
+                                              : src3;
         float glow = exp(-length(uv - src) * (5.0 - bass * 2.0));
         col += acid(float(i) * 0.33 + iTime * 0.3) * glow * (0.5 + amp_peak);
     }
 
     col *= 0.85 + amp_smooth * 0.35;
-    
+
     // Peak inversion glitch
     col = mix(col, vec3(1.0) - col, smoothstep(0.92, 1.0, amp_peak));
 

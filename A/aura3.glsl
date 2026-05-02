@@ -7,12 +7,12 @@ uniform vec2 iResolution;
 uniform float time_f;
 const float PI = 3.1415926535897932384626433832795;
 
-float pingPong(float x, float length){
-    float m = mod(x, length*2.0);
-    return m <= length ? m : length*2.0 - m;
+float pingPong(float x, float length) {
+    float m = mod(x, length * 2.0);
+    return m <= length ? m : length * 2.0 - m;
 }
 
-void main(void){
+void main(void) {
     vec2 uv = tc * 2.0 - 1.0;
     uv.x *= iResolution.x / iResolution.y;
 

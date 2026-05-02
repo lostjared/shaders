@@ -6,7 +6,7 @@ uniform sampler2D samp;
 uniform float time_f;
 
 void main() {
-    
+
     color = texture(samp, tc);
     vec2 uv = tc;
     uv.x -= 0.05;

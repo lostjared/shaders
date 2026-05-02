@@ -5,8 +5,7 @@ uniform float time_f;
 uniform sampler2D samp;
 uniform sampler2D mat_samp;
 uniform vec2 iResolution;
-void main(void)
-{
+void main(void) {
     vec2 normCoord = ((gl_FragCoord.xy / iResolution.xy) * 2.0 - 1.0) * vec2(iResolution.x / iResolution.y, 1.0);
 
     float distanceFromCenter = length(normCoord);
@@ -16,8 +15,6 @@ void main(void)
 
     vec4 textureColor = texture(samp, tcAdjusted);
     vec4 mainColor = texture(mat_samp, tcAdjusted);
-    
+
     color = mix(textureColor, mainColor, 0.5);
 }
-
-

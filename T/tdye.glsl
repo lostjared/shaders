@@ -17,13 +17,12 @@ uniform float amp;
  *   4. Transform back, sample the texture, and output it.
  */
 
-void main(void)
-{
+void main(void) {
     // Shift the texture coords so (0.5, 0.5) is the center
     vec2 uv = tc - 0.5;
 
     // Compute polar coordinates
-    float r     = length(uv);
+    float r = length(uv);
     float angle = atan(uv.y, uv.x);
 
     // ---- Tie-dye swirl offset ----
@@ -31,9 +30,9 @@ void main(void)
     // swirlFreq controls how many "rings" or swirl arms you see
     // swirlAmp  controls how strong the swirl distortion is
     // timeMult  controls how fast the animation evolves
-    float swirlFreq = 12.0;   // Number of sinusoidal "bands"
-    float swirlAmp  = 25.0 * uamp;    // Amplitude of the swirl
-    float timeMult  = 1.5;    // Speed of tie dye motion
+    float swirlFreq = 12.0;       // Number of sinusoidal "bands"
+    float swirlAmp = 25.0 * uamp; // Amplitude of the swirl
+    float timeMult = 1.5;         // Speed of tie dye motion
 
     // Create a sinusoidal swirl that depends on both radius and time
     float swirl = sin(r * swirlFreq - time_f * timeMult) * swirlAmp * r;

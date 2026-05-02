@@ -23,10 +23,10 @@ vec3 aurora(float t) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -50,8 +50,7 @@ void main() {
     float barY = abs(barPhase - 0.5) * 2.0;
     float inBar = step(barY, 0.1);
     float barX = mix(strand1X, strand2X, fract(scroll * 0.5));
-    float betweenStrands = smoothstep(min(strand1X, strand2X) - 0.01, min(strand1X, strand2X), uv.x)
-                         * smoothstep(max(strand1X, strand2X) + 0.01, max(strand1X, strand2X), uv.x);
+    float betweenStrands = smoothstep(min(strand1X, strand2X) - 0.01, min(strand1X, strand2X), uv.x) * smoothstep(max(strand1X, strand2X) + 0.01, max(strand1X, strand2X), uv.x);
     // Simplified bar: glow between strands at intervals
     float barInterval = abs(sin(scroll * 3.0));
     float bar = (1.0 - betweenStrands) * step(0.9, barInterval) * smoothstep(0.05, 0.0, abs(uv.x - (strand1X + strand2X) * 0.5));

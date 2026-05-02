@@ -19,13 +19,11 @@ uniform float time_f;
 uniform float restore_black;
 in vec2 iResolution_;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     ivec4 source = ivec4(255 * color);
-    vec2 pos = gl_FragCoord.xy/iResolution_.xy;
-    vec2 vpos = 1.0-tc;
+    vec2 pos = gl_FragCoord.xy / iResolution_.xy;
+    vec2 vpos = 1.0 - tc;
     vec4 color2 = texture(samp, vpos);
     color = (0.8 * color) + (0.8 * color2);
 }
-

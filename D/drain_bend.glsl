@@ -27,7 +27,7 @@ void main(void) {
     float t = time_f;
     float k1 = 0.25 * sin(t * 0.6);
     float k2 = 0.10 * cos(t * 0.4);
-    float rd = 1.0 + k1 * r*r + k2 * r*r*r*r;
+    float rd = 1.0 + k1 * r * r + k2 * r * r * r * r;
     c *= rd;
     c.x += 0.015 * sin(8.0 * c.y + t * 1.3);
     c.y += 0.015 * sin(8.0 * c.x - t * 1.1);

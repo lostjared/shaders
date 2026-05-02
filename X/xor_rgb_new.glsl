@@ -2,13 +2,13 @@
 in vec2 tc;
 out vec4 color;
 uniform float time_f;
-uniform sampler2D samp; 
+uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
-uniform float amp;  
+uniform float amp;
 uniform float uamp;
 uniform float iTime;
-uniform int iFrame; 
+uniform int iFrame;
 uniform float iTimeDelta;
 uniform vec4 iDate;
 uniform vec2 iMouseClick;
@@ -25,7 +25,7 @@ float pingPong(float x, float length) {
 }
 
 vec3 hsv2rgb(vec3 c) {
-    vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }

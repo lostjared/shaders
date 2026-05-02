@@ -40,6 +40,6 @@ void main(void) {
     vec3 blended_color = mix(original_color.rgb, rainbow_color, 0.5);
 
     color = vec4(rainbow_color, 1.0);
-    
-    //color = vec4(blended_color, original_color.a);
+
+    // color = vec4(blended_color, original_color.a);
 }

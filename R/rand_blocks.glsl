@@ -29,4 +29,3 @@ void main() {
     vec3 glitchColor = texColor * (1.0 + 0.5 * sin(time_f * 10.0 + randomSeed * 6.28));
     color = mix(vec4(texColor, 1.0), vec4(glitchColor, 1.0), 0.5);
 }
-

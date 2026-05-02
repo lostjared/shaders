@@ -17,19 +17,19 @@ vec4 adjustHue(vec4 c, float angle) {
     float U = cos(angle);
     float W = sin(angle);
     mat3 rotationMatrix = mat3(
-        0.299,  0.587,  0.114,
-        0.299,  0.587,  0.114,
-        0.299,  0.587,  0.114
-    ) + mat3(
-        0.701, -0.587, -0.114,
-       -0.299,  0.413, -0.114,
-       -0.300, -0.588,  0.886
-    ) * U
-      + mat3(
-         0.168,  0.330, -0.497,
-        -0.328,  0.035,  0.292,
-         1.250, -1.050, -0.203
-    ) * W;
+                              0.299, 0.587, 0.114,
+                              0.299, 0.587, 0.114,
+                              0.299, 0.587, 0.114) +
+                          mat3(
+                              0.701, -0.587, -0.114,
+                              -0.299, 0.413, -0.114,
+                              -0.300, -0.588, 0.886) *
+                              U +
+                          mat3(
+                              0.168, 0.330, -0.497,
+                              -0.328, 0.035, 0.292,
+                              1.250, -1.050, -0.203) *
+                              W;
     return vec4(rotationMatrix * c.rgb, c.a);
 }
 
@@ -48,17 +48,17 @@ void main() {
     kaleidoUV += ripple * 0.01;
     vec2 scale = vec2(1.0) / (iResolution / min(iResolution.x, iResolution.y));
     vec2 sampleTC = kaleidoUV * scale + 0.5;
-    
+
     float offsetAmount = 0.003 * sin(time_f * 0.5);
     vec4 col = texture(samp, sampleTC);
     col += texture(samp, sampleTC + vec2(offsetAmount, 0.0));
     col += texture(samp, sampleTC + vec2(-offsetAmount, offsetAmount));
     col += texture(samp, sampleTC + vec2(offsetAmount * 0.5, -offsetAmount));
     col /= 4.0;
-    
+
     float hueSpeed = 2.0;
     float hueShift = (time_f * hueSpeed + ripple * 2.0);
-    
+
     color = adjustHue(col, hueShift);
     float saturationBoost = 1.5;
     float brightnessBoost = 1.1;
@@ -71,4 +71,3 @@ void main() {
     color = sin(color * pingPong(time_f, 10.0) + 2.0);
     color.a = 1.0;
 }
-

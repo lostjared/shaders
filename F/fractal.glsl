@@ -17,11 +17,12 @@ vec2 screenToComplex(vec2 screenPos, vec2 center, float zoom) {
 const int maxIterations = 300;
 
 int mandelbrot(vec2 c) {
-     vec2 z = vec2(0.0);
+    vec2 z = vec2(0.0);
     int n = 0;
     for (int i = 0; i < maxIterations; i++) {
-        z = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y) + c;
-        if (dot(z, z) > 4.0) break;
+        z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
+        if (dot(z, z) > 4.0)
+            break;
         n++;
     }
     return n;
@@ -30,17 +31,16 @@ int mandelbrot(vec2 c) {
 vec4 xor_RGB(vec4 icolor, vec4 isourcex) {
     ivec4 isource = ivec4(isourcex * 255);
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
         int_color[i] ^= isource[i];
-        if(int_color[i] > 255)
+        if (int_color[i] > 255)
             int_color[i] %= 255;
         icolor[i] = float(int_color[i]) / 255.0;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
-
 
 void main() {
     float zoomCycleSpeed = 0.3;
@@ -58,5 +58,4 @@ void main() {
     color = n == maxIterations ? vec4(0.0, 0.0, 0.0, 1.0) : vec4(col, 1.0);
 
     color = xor_RGB(color, texture(samp, tc));
-    
 }

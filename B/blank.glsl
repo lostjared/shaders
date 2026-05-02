@@ -20,7 +20,7 @@ float rand(vec2 pos) {
 // Draw Julia fractal at a given position with an animated seed
 // --------------------------------------------------------
 vec4 drawRandomJulia(vec2 uv, vec2 center, vec2 seed) {
-    uv = (uv - center) * 3.0;  // Zoom in and center
+    uv = (uv - center) * 3.0; // Zoom in and center
     vec2 z = uv;
     const int MAX_ITER = 100;
     float brightness = 0.0;
@@ -34,7 +34,7 @@ vec4 drawRandomJulia(vec2 uv, vec2 center, vec2 seed) {
     }
 
     vec3 col = vec3(sin(brightness * 6.2831), brightness, 1.0 - brightness);
-    return vec4(col, brightness);  // Alpha based on brightness
+    return vec4(col, brightness); // Alpha based on brightness
 }
 
 // --------------------------------------------------------
@@ -63,7 +63,7 @@ void main(void) {
 
     // Draw the fractal
     vec4 juliaColor = drawRandomJulia(uv, randomPos, juliaSeed);
-    juliaColor.a *= alpha;  // Apply alpha fade
+    juliaColor.a *= alpha; // Apply alpha fade
 
     // Blend with the base texture
     color = mix(color, juliaColor, juliaColor.a);

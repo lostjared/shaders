@@ -15,15 +15,15 @@ vec3 hash3(vec2 p) {
 vec4 xor_RGB(vec4 icolor, vec4 source) {
     ivec3 int_color;
     ivec4 isource = ivec4(source * 255);
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
-        int_color[i] = int_color[i]^isource[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        icolor[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ isource[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 void main(void) {
@@ -39,5 +39,4 @@ void main(void) {
     vec3 diamondColor = hash3(c);
     vec3 finalColor = isEvenDiamond ? diamondColor * 0.8 : diamondColor * 0.5;
     color = xor_RGB(vec4(finalColor, 1.0), texture(samp, tc));
-    
 }

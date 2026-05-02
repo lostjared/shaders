@@ -1,12 +1,77 @@
 #version 330 core
 // Fast photon jets with chromatic streak splitting.
-in vec2 tc; out vec4 color;
-uniform sampler2D samp,samp1,samp2,samp3,samp4,samp5,samp6,samp7,samp8;
-uniform sampler1D spectrum0,spectrum1,spectrum2,spectrum3,spectrum4,spectrum5,spectrum6,spectrum7;
-uniform float time_f,amp_peak,amp_smooth; uniform vec2 iResolution;
-const float TAU=6.28318530718;
-vec3 acid(float t){return 0.5+0.5*cos(TAU*(vec3(1.0,0.95,0.65)*t+vec3(0.00,0.18,0.30)));}
-vec4 cacheHist(int i, vec2 uv){if(i==0)return texture(samp1,uv);if(i==1)return texture(samp2,uv);if(i==2)return texture(samp3,uv);if(i==3)return texture(samp4,uv);if(i==4)return texture(samp5,uv);if(i==5)return texture(samp6,uv);if(i==6)return texture(samp7,uv);return texture(samp8,uv);} 
-float specHist(int i,float f){if(i==0)return texture(spectrum0,f).r;if(i==1)return texture(spectrum1,f).r;if(i==2)return texture(spectrum2,f).r;if(i==3)return texture(spectrum3,f).r;if(i==4)return texture(spectrum4,f).r;if(i==5)return texture(spectrum5,f).r;if(i==6)return texture(spectrum6,f).r;return texture(spectrum7,f).r;}
-vec2 jetField(vec2 uv,float bass,float mid,float treble,float air,vec3 oldest,float layer){vec2 dir=normalize(vec2(1.0+0.4*sin(uv.y*8.0+time_f*2.0+layer),uv.y*0.3+0.2*cos(time_f*1.5-layer))+0.0001); dir+=vec2(oldest.r-oldest.g,oldest.b-oldest.r)*0.8; return dir*(0.012+treble*0.030+air*0.014)+vec2(0.0,cos(uv.x*15.0-time_f*2.4))*(0.004+bass*0.012);} 
-void main(){float aspect=iResolution.x/iResolution.y; vec2 uv=(tc-0.5)*vec2(aspect,1.0); float bass=texture(spectrum0,0.01).r,mid=texture(spectrum0,0.16).r,treble=texture(spectrum0,0.63).r,air=texture(spectrum0,0.96).r; float hist=0.0; for(int i=0;i<8;i++) hist+=specHist(i,0.63); hist/=8.0; vec3 oldest=texture(samp8,tc+vec2(sin(time_f*0.24+uv.y*6.0),cos(time_f*0.26+uv.x*4.0))*(0.011+hist*0.033)).rgb; vec2 liveWarp=jetField(uv,bass,mid,treble,air,oldest,0.0); float chroma=0.004+treble*0.024; vec3 live=vec3(texture(samp,tc+liveWarp+vec2(chroma,0)).r,texture(samp,tc+liveWarp).g,texture(samp,tc+liveWarp-vec2(chroma,0)).b); live*=acid(time_f*0.08+uv.y*0.12+treble); vec3 accum=live; float wsum=1.0; for(int i=0;i<8;i++){float layer=float(i+1); float hB=specHist(i,0.01),hM=specHist(i,0.16),hT=specHist(i,0.63),hA=specHist(i,0.96); vec3 cached=cacheHist(i,tc+jetField(uv,hB,hM,hT,hA,oldest,layer)).rgb; float w=pow(0.78,layer)*(1.0+hT*1.4+hA*0.5); accum+=cached*acid(layer*0.12+hT*0.9)*w; wsum+=w;} accum/=wsum; float beam=smoothstep(0.5,1.0,abs(sin(uv.y*30.0-time_f*3.0+hist*10.0))); accum+=vec3(1.0,0.9,0.6)*beam*(0.05+amp_smooth*0.20); color=vec4(clamp(accum,0.0,1.0),1.0);} 
+in vec2 tc;
+out vec4 color;
+uniform sampler2D samp, samp1, samp2, samp3, samp4, samp5, samp6, samp7, samp8;
+uniform sampler1D spectrum0, spectrum1, spectrum2, spectrum3, spectrum4, spectrum5, spectrum6, spectrum7;
+uniform float time_f, amp_peak, amp_smooth;
+uniform vec2 iResolution;
+const float TAU = 6.28318530718;
+vec3 acid(float t) { return 0.5 + 0.5 * cos(TAU * (vec3(1.0, 0.95, 0.65) * t + vec3(0.00, 0.18, 0.30))); }
+vec4 cacheHist(int i, vec2 uv) {
+    if (i == 0)
+        return texture(samp1, uv);
+    if (i == 1)
+        return texture(samp2, uv);
+    if (i == 2)
+        return texture(samp3, uv);
+    if (i == 3)
+        return texture(samp4, uv);
+    if (i == 4)
+        return texture(samp5, uv);
+    if (i == 5)
+        return texture(samp6, uv);
+    if (i == 6)
+        return texture(samp7, uv);
+    return texture(samp8, uv);
+}
+float specHist(int i, float f) {
+    if (i == 0)
+        return texture(spectrum0, f).r;
+    if (i == 1)
+        return texture(spectrum1, f).r;
+    if (i == 2)
+        return texture(spectrum2, f).r;
+    if (i == 3)
+        return texture(spectrum3, f).r;
+    if (i == 4)
+        return texture(spectrum4, f).r;
+    if (i == 5)
+        return texture(spectrum5, f).r;
+    if (i == 6)
+        return texture(spectrum6, f).r;
+    return texture(spectrum7, f).r;
+}
+vec2 jetField(vec2 uv, float bass, float mid, float treble, float air, vec3 oldest, float layer) {
+    vec2 dir = normalize(vec2(1.0 + 0.4 * sin(uv.y * 8.0 + time_f * 2.0 + layer), uv.y * 0.3 + 0.2 * cos(time_f * 1.5 - layer)) + 0.0001);
+    dir += vec2(oldest.r - oldest.g, oldest.b - oldest.r) * 0.8;
+    return dir * (0.012 + treble * 0.030 + air * 0.014) + vec2(0.0, cos(uv.x * 15.0 - time_f * 2.4)) * (0.004 + bass * 0.012);
+}
+void main() {
+    float aspect = iResolution.x / iResolution.y;
+    vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
+    float bass = texture(spectrum0, 0.01).r, mid = texture(spectrum0, 0.16).r, treble = texture(spectrum0, 0.63).r, air = texture(spectrum0, 0.96).r;
+    float hist = 0.0;
+    for (int i = 0; i < 8; i++)
+        hist += specHist(i, 0.63);
+    hist /= 8.0;
+    vec3 oldest = texture(samp8, tc + vec2(sin(time_f * 0.24 + uv.y * 6.0), cos(time_f * 0.26 + uv.x * 4.0)) * (0.011 + hist * 0.033)).rgb;
+    vec2 liveWarp = jetField(uv, bass, mid, treble, air, oldest, 0.0);
+    float chroma = 0.004 + treble * 0.024;
+    vec3 live = vec3(texture(samp, tc + liveWarp + vec2(chroma, 0)).r, texture(samp, tc + liveWarp).g, texture(samp, tc + liveWarp - vec2(chroma, 0)).b);
+    live *= acid(time_f * 0.08 + uv.y * 0.12 + treble);
+    vec3 accum = live;
+    float wsum = 1.0;
+    for (int i = 0; i < 8; i++) {
+        float layer = float(i + 1);
+        float hB = specHist(i, 0.01), hM = specHist(i, 0.16), hT = specHist(i, 0.63), hA = specHist(i, 0.96);
+        vec3 cached = cacheHist(i, tc + jetField(uv, hB, hM, hT, hA, oldest, layer)).rgb;
+        float w = pow(0.78, layer) * (1.0 + hT * 1.4 + hA * 0.5);
+        accum += cached * acid(layer * 0.12 + hT * 0.9) * w;
+        wsum += w;
+    }
+    accum /= wsum;
+    float beam = smoothstep(0.5, 1.0, abs(sin(uv.y * 30.0 - time_f * 3.0 + hist * 10.0)));
+    accum += vec3(1.0, 0.9, 0.6) * beam * (0.05 + amp_smooth * 0.20);
+    color = vec4(clamp(accum, 0.0, 1.0), 1.0);
+}

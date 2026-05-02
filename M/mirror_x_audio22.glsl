@@ -17,7 +17,8 @@ void main(void) {
     float aHigh = clamp(amp_high, 0.0, 1.0);
     float t = time_f;
     vec2 uv = tc;
-    if (uv.x < 0.5) uv.x = 1.0 - uv.x;
+    if (uv.x < 0.5)
+        uv.x = 1.0 - uv.x;
     vec2 p = uv - 0.5;
     float r = length(p);
     float lens = 1.0 + (0.5 + 0.5 * aLow) * (1.0 - smoothstep(0.0, 0.4, r));

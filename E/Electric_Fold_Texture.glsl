@@ -9,14 +9,14 @@ out vec4 color;
 in vec2 tc;
 
 // Controls
-const float iAmplitude  = 1.0;
-const float iFrequency  = 1.0;
+const float iAmplitude = 1.0;
+const float iFrequency = 1.0;
 const float iBrightness = 1.0;
-const float iContrast   = 1.0;
+const float iContrast = 1.0;
 const float iSaturation = 1.0;
-const float iHueShift   = 0.0;
-const float iZoom       = 1.0;
-const float iRotation   = 0.0;
+const float iHueShift = 0.0;
+const float iZoom = 1.0;
+const float iRotation = 0.0;
 
 // --- COLOR HELPERS ---
 
@@ -27,12 +27,12 @@ vec3 adjustSaturation(vec3 col, float s) {
     return mix(vec3(gray), col, s);
 }
 vec3 rotateHue(vec3 col, float angle) {
-    float U = cos(angle); float W = sin(angle);
+    float U = cos(angle);
+    float W = sin(angle);
     mat3 R = mat3(
-        0.299+0.701*U+0.168*W, 0.587-0.587*U+0.330*W, 0.114-0.114*U-0.497*W,
-        0.299-0.299*U-0.328*W, 0.587+0.413*U+0.035*W, 0.114-0.114*U+0.292*W,
-        0.299-0.300*U+1.250*W, 0.587-0.588*U-1.050*W, 0.114+0.886*U-0.203*W
-    );
+        0.299 + 0.701 * U + 0.168 * W, 0.587 - 0.587 * U + 0.330 * W, 0.114 - 0.114 * U - 0.497 * W,
+        0.299 - 0.299 * U - 0.328 * W, 0.587 + 0.413 * U + 0.035 * W, 0.114 - 0.114 * U + 0.292 * W,
+        0.299 - 0.300 * U + 1.250 * W, 0.587 - 0.588 * U - 1.050 * W, 0.114 + 0.886 * U - 0.203 * W);
     return clamp(R * col, 0.0, 1.0);
 }
 vec3 applyColorAdjustments(vec3 col) {
@@ -48,14 +48,15 @@ vec3 palette(float t) {
     vec3 a = vec3(0.5, 0.5, 0.5);
     vec3 b = vec3(0.5, 0.5, 0.5);
     vec3 c = vec3(1.0, 1.0, 1.0);
-    vec3 d = vec3(0.263, 0.416, 0.557); 
+    vec3 d = vec3(0.263, 0.416, 0.557);
     return a + b * cos(6.28318 * (c * t + d + iHueShift));
 }
 
 // --- COORDINATE HELPERS ---
 
 vec2 rotate2D(vec2 p, float a) {
-    float c = cos(a); float s = sin(a);
+    float c = cos(a);
+    float s = sin(a);
     return mat2(c, -s, s, c) * p;
 }
 
@@ -95,7 +96,8 @@ float fbm(vec2 p, bool ridges) {
     float a = 0.5;
     for (int i = 0; i < 4; i++) {
         float n = noise(p);
-        if (ridges) n = 1.0 - abs(n * 2.0 - 1.0);
+        if (ridges)
+            n = 1.0 - abs(n * 2.0 - 1.0);
         v += a * n;
         p *= 2.1;
         a *= 0.55;
@@ -118,7 +120,7 @@ vec2 kaleido(vec2 p, float slices) {
 vec3 sampleMerged(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     float aspect = res.x / res.y;
     vec2 p = (uv - center) * vec2(aspect, 1.0);
-    
+
     // Initial Rotation
     p = rotate2D(p, iRotation);
     float zoom = max(iZoom, 0.001);
@@ -127,10 +129,10 @@ vec3 sampleMerged(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     // --- STAGE 1: FLUID SWIRL ---
     float f1 = fbm(p * 2.0 + t * 0.2, false);
     float f2 = fbm(p * 2.5 - t * 0.3, false);
-    
+
     float rLen = length(p);
     float ang = atan(p.y, p.x);
-    ang += (f1 * 3.0 + f2) * strength * 0.5; 
+    ang += (f1 * 3.0 + f2) * strength * 0.5;
     p = vec2(cos(ang), sin(ang)) * rLen;
 
     // --- STAGE 2: ELECTRIC DOMAIN WARP ---
@@ -139,7 +141,7 @@ vec3 sampleMerged(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     q.y = fbm(p + vec2(5.2, 1.3) - t * 0.1, false);
 
     vec2 r = vec2(0.0);
-    r.x = fbm(p + 4.0 * q + vec2(t * 0.2, 9.2), true); 
+    r.x = fbm(p + 4.0 * q + vec2(t * 0.2, 9.2), true);
     r.y = fbm(p + 4.0 * q + vec2(8.3, 2.8), false);
 
     // Apply warp
@@ -148,43 +150,43 @@ vec3 sampleMerged(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     // --- STAGE 3: FRACTAL FOLDING ---
     float slices = 8.0 + 4.0 * sin(t * 0.2);
     p = kaleido(p, slices);
-    
+
     int iterations = 4 + int(iAmplitude * 1.5);
     float scale = 1.2 + (iFrequency * 0.2);
     float shift = 0.1 * strength;
-    float rotAng = t * 0.2 + (f1 * 0.5); 
-    
-    for(int i = 0; i < iterations; i++) {
+    float rotAng = t * 0.2 + (f1 * 0.5);
+
+    for (int i = 0; i < iterations; i++) {
         p = abs(p);
         p -= shift;
         p *= scale;
-        p = rotate2D(p, rotAng + float(i)*0.4);
+        p = rotate2D(p, rotAng + float(i) * 0.4);
     }
 
     // --- COMPOSITION ---
 
     vec2 finalUV = p * 0.5 + center;
-    
+
     // Chromatic Aberration on Texture
     vec2 chroma = vec2(0.005 * strength * f2, 0.0);
     float red = mxTexture(samp, finalUV + chroma).r;
     float grn = mxTexture(samp, finalUV).g;
     float blu = mxTexture(samp, finalUV - chroma).b;
-    
+
     vec3 texCol = vec3(red, grn, blu);
-    
+
     // --- NO MIXING: ADDITIVE ONLY ---
-    
+
     // 1. Calculate Glow Energy
     float energy = (length(r) * 0.5 + f1 * 0.5);
-    
+
     // Sharpen the curve: high power means black background, bright sparks
     // This prevents the "fog" effect
-    float glow = pow(energy, 4.0) * iContrast; 
-    
+    float glow = pow(energy, 4.0) * iContrast;
+
     // 2. Calculate Palette
     vec3 pal = palette(length(p) + t * 0.5);
-    
+
     // 3. Final Composite: Texture + Light
     // The texture is passed through purely. The glow is added on top.
     vec3 finalCol = texCol + (pal * glow * strength);

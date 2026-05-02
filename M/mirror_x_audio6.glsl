@@ -15,7 +15,8 @@ void main(void) {
     vec2 uv = tc;
     float aLow = clamp(amp_low, 0.0, 1.0);
     float aHigh = clamp(amp_high, 0.0, 1.0);
-    if (uv.x < 0.5) uv.x = 1.0 - uv.x;
+    if (uv.x < 0.5)
+        uv.x = 1.0 - uv.x;
     float chromaOff = 0.005 + 0.015 * aHigh;
     vec3 col;
     col.r = texture(samp, uv + vec2(chromaOff, 0.0)).r;

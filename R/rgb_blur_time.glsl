@@ -21,16 +21,14 @@ uniform float restore_black;
 uniform vec4 inc_valuex;
 uniform vec4 inc_value;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec2 pos1 = tc;
     vec2 pos2 = tc;
-    pos1 += (fract(timeval)+0.01)*0.02;
-    pos2 += (fract(timeval)+0.02)*0.03;
+    pos1 += (fract(timeval) + 0.01) * 0.02;
+    pos2 += (fract(timeval) + 0.02) * 0.03;
     vec4 color2 = texture(samp, pos1);
     vec4 color3 = texture(samp, pos2);
     color[1] = color2[1];
     color[2] = color3[2];
 }
-

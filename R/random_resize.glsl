@@ -34,4 +34,3 @@ void main() {
     vec3 glitchColor = texColor.rgb * (1.0 + 0.3 * sin(time_f * 10.0 + uv.y * 50.0));
     color = mix(texColor, vec4(glitchColor, texColor.a), 0.5);
 }
-

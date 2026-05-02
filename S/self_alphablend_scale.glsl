@@ -16,15 +16,13 @@ uniform float index_value;
 uniform float time_f;
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    color = color*alpha;
+    color = color * alpha;
     ivec4 colori = ivec4(color * 255);
-    for(int i = 0; i < 3; ++i) {
-        if(colori[i] > 255)
-            colori[i] = colori[i]%255;
-        color[i] = float(colori[i])/255;
+    for (int i = 0; i < 3; ++i) {
+        if (colori[i] > 255)
+            colori[i] = colori[i] % 255;
+        color[i] = float(colori[i]) / 255;
     }
 }
-

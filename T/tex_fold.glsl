@@ -14,8 +14,9 @@ void main(void) {
     float cosAngle = cos(angle);
     float sinAngle = sin(angle);
     vec2 rotatedTc = vec2(
-        cosAngle * dir.x - sinAngle * dir.y,
-        sinAngle * dir.x + cosAngle * dir.y
-    ) * zoomFactor + center;
+                         cosAngle * dir.x - sinAngle * dir.y,
+                         sinAngle * dir.x + cosAngle * dir.y) *
+                         zoomFactor +
+                     center;
     color = texture(samp, rotatedTc);
 }

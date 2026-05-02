@@ -28,4 +28,3 @@ void main() {
     vec2 texCoord = (uv + 0.5) * sectionSize / iResolution + center;
     color = texture(samp, texCoord);
 }
-

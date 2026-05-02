@@ -19,18 +19,19 @@ void main(void) {
     vec2 texel = 1.0 / iResolution;
     vec2 o = texel * spread;
 
-    vec4 cN  = texture(samp, tc + vec2(0.0,  o.y));
-    vec4 cS  = texture(samp, tc + vec2(0.0, -o.y));
-    vec4 cE  = texture(samp, tc + vec2( o.x, 0.0));
-    vec4 cW  = texture(samp, tc + vec2(-o.x, 0.0));
-    vec4 cNE = texture(samp, tc + vec2( o.x,  o.y));
-    vec4 cNW = texture(samp, tc + vec2(-o.x,  o.y));
-    vec4 cSE = texture(samp, tc + vec2( o.x, -o.y));
+    vec4 cN = texture(samp, tc + vec2(0.0, o.y));
+    vec4 cS = texture(samp, tc + vec2(0.0, -o.y));
+    vec4 cE = texture(samp, tc + vec2(o.x, 0.0));
+    vec4 cW = texture(samp, tc + vec2(-o.x, 0.0));
+    vec4 cNE = texture(samp, tc + vec2(o.x, o.y));
+    vec4 cNW = texture(samp, tc + vec2(-o.x, o.y));
+    vec4 cSE = texture(samp, tc + vec2(o.x, -o.y));
     vec4 cSW = texture(samp, tc + vec2(-o.x, -o.y));
 
     vec4 tent = (c0 * 4.0 +
                  (cN + cS + cE + cW) * 2.0 +
-                 (cNE + cNW + cSE + cSW)) / 16.0;
+                 (cNE + cNW + cSE + cSW)) /
+                16.0;
 
     color = mix(c0, tent, strength);
 }

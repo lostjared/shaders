@@ -17,8 +17,7 @@ void main(void) {
 
     vec2 noise = vec2(
         sin(time_f + uv.y * 50.0) * 0.05,
-        cos(time_f + uv.x * 50.0) * 0.05
-    );
+        cos(time_f + uv.x * 50.0) * 0.05);
 
     uv += noise;
 

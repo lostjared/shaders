@@ -18,8 +18,8 @@ void main(void) {
     float speed = 2.0;
 
     float ripple = sin((r / waveLength - time_f * speed) * 6.2831853);
-		 vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
-    uv = uv - floor(uv);     
-		 uv = uv + dir * ripple * amplitude;
+    vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
+    uv = uv - floor(uv);
+    uv = uv + dir * ripple * amplitude;
     color = texture(samp, uv);
 }

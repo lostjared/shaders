@@ -109,7 +109,8 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -134,7 +135,8 @@ void main(void) {
     kUV = diamondFold(kUV, m, aspect);
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
+    if (q.y > q.x)
+        q = q.yx;
     float base = 1.82 + 0.18 * sin(time_f * 0.2);
     float period = log(base);
     float tz = time_f * 0.65;
@@ -157,13 +159,13 @@ void main(void) {
     float ring = smoothstep(0.0, 0.7, sin(log(rD + 1e-3) * 9.5 + time_f * 1.2));
     float pulse = 0.5 + 0.5 * sin(time_f * 2.0 + rD * 28.0 + k * 12.0);
 
-    pulse = (pulse * PI) *  pingPong(time_f, 5.0);
+    pulse = (pulse * PI) * pingPong(time_f, 5.0);
 
     vec3 outCol = kaleidoRGB;
     outCol *= (0.75 + 0.25 * ring) * (0.85 + 0.15 * pulse) * vign;
     vec3 bloom = outCol * outCol * 0.18 + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * 0.12;
     outCol += bloom;
-    outCol = mix(outCol, baseCol, pingPong(pulse *  PI, 5.0) * 0.18);
+    outCol = mix(outCol, baseCol, pingPong(pulse * PI, 5.0) * 0.18);
     outCol = clamp(outCol, vec3(0.05), vec3(0.97));
     vec3 finalRGB = mix(baseTex.rgb, outCol, pingPong(glow * PI, 5.0) * 0.8);
     color = vec4(finalRGB, baseTex.a);

@@ -19,9 +19,3 @@ void main(void) {
     vec4 baseColor = texture(samp, tcAdjusted);
     color = mix(baseColor, glitchColor, 0.5);
 }
-
-
-
-
-
-

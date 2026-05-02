@@ -20,13 +20,13 @@ vec2 mirror(vec2 uv) {
 void main() {
     vec2 uv = tc;
 
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.18).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.18).r;
     float treble = texture(spectrum, 0.55).r;
 
     // Glass normal from texture gradient
     float delta = 0.008;
-    float h  = dot(texture(samp, uv).rgb, vec3(0.33));
+    float h = dot(texture(samp, uv).rgb, vec3(0.33));
     float h1 = dot(texture(samp, uv + vec2(delta, 0.0)).rgb, vec3(0.33));
     float h2 = dot(texture(samp, uv + vec2(0.0, delta)).rgb, vec3(0.33));
     vec2 normal = vec2(h1 - h, h2 - h);

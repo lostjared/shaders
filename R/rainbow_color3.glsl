@@ -26,4 +26,3 @@ void main(void) {
 
     color = vec4(blended_color, original_color.a);
 }
-

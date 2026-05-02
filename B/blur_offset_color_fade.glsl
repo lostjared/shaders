@@ -23,39 +23,38 @@ uniform vec4 inc_value;
 vec4 color_blend(vec4 color) {
     vec4 color2 = color;
     ivec4 color_source = ivec4(color * 255);
-    color = color*alpha;
+    color = color * alpha;
     ivec4 colori = ivec4(color * 255);
-    for(int i = 0; i < 3; ++i) {
-        if(colori[i] >= 255)
-            colori[i] = colori[i]%255;
-        
-        if(color_source[i] >= 255)
-            color_source[i] = color_source[i]%255;
-        
+    for (int i = 0; i < 3; ++i) {
+        if (colori[i] >= 255)
+            colori[i] = colori[i] % 255;
+
+        if (color_source[i] >= 255)
+            color_source[i] = color_source[i] % 255;
+
         colori[i] = colori[i] ^ color_source[i];
-        color[i] = float(colori[i])/255;
+        color[i] = float(colori[i]) / 255;
     }
-    
-    for(int i = 0; i < 3; ++i)
-        if(color[i] < 0.2) color[i] = color2[i];
+
+    for (int i = 0; i < 3; ++i)
+        if (color[i] < 0.2)
+            color[i] = color2[i];
     return color;
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    vec4 color_one = texture(samp, tc-0.01);
-    vec4 color_two = texture(samp, tc-0.02);
-    vec4 color_three = texture(samp, tc-0.03);
-    
+    vec4 color_one = texture(samp, tc - 0.01);
+    vec4 color_two = texture(samp, tc - 0.02);
+    vec4 color_three = texture(samp, tc - 0.03);
+
     vec4 color_off = color_one + color_two + color_three + color;
-    
+
     color_off = color_off / 4;
-    
+
     color = (color * 0.3) + (color_two * 0.5) + (color_one * 0.3);
 
     color = (0.5 * color) + (0.5 * color_off);
-    
+
     color = color_blend(color);
 }
-

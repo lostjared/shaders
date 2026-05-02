@@ -26,8 +26,7 @@ void main(void) {
     float sinAngle = sin(angle);
     vec2 rotatedDelta = vec2(
         cosAngle * delta.x - sinAngle * delta.y,
-        sinAngle * delta.x + cosAngle * delta.y
-    );
+        sinAngle * delta.x + cosAngle * delta.y);
 
     vec2 newTexCoord = texCoord;
 
@@ -38,6 +37,6 @@ void main(void) {
 
     newTexCoord = clamp(newTexCoord / iResolution, 0.0, 1.0);
     vec4 texColor = texture(samp, newTexCoord);
-    
+
     color = texColor;
 }

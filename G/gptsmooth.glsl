@@ -8,14 +8,14 @@ uniform vec2 iResolution;
 vec4 xor_RGB(vec4 icolor, vec4 source) {
     ivec3 int_color = ivec3(icolor.rgb * 255.0);
     ivec3 isource = ivec3(source.rgb * 255.0);
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int_color[i] ^ isource[i];
         int_color[i] = int_color[i] % 256; // Ensure value stays within 0-255
         icolor[i] = float(int_color[i]) / 255.0;
     }
     icolor.a = 1.0;
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 float pingPong(float x, float length) {
@@ -59,8 +59,7 @@ void main(void) {
         tcolor.r * (0.5 + 0.5 * sin(time_f + uv.x * 10.0)),
         tcolor.g * (0.5 + 0.5 * sin(time_f + uv.y * 10.0)),
         tcolor.b * (0.5 + 0.5 * sin(time_f + (uv.x + uv.y) * 5.0)),
-        tcolor.a
-    );
+        tcolor.a);
 
     color = xor_RGB(sin(tcolor * time_f), modColor);
 

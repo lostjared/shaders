@@ -7,9 +7,18 @@ uniform vec2 iResolution;
 uniform float time_f;
 uniform vec4 iMouse;
 
-mat3 rotX(float a){float s=sin(a),c=cos(a);return mat3(1,0,0, 0,c,-s, 0,s,c);}
-mat3 rotY(float a){float s=sin(a),c=cos(a);return mat3(c,0,s, 0,1,0, -s,0,c);}
-mat3 rotZ(float a){float s=sin(a),c=cos(a);return mat3(c,-s,0, s,c,0, 0,0,1);}
+mat3 rotX(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(1, 0, 0, 0, c, -s, 0, s, c);
+}
+mat3 rotY(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, 0, s, 0, 1, 0, -s, 0, c);
+}
+mat3 rotZ(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, -s, 0, s, c, 0, 0, 0, 1);
+}
 
 void main(void) {
     float aspect = iResolution.x / iResolution.y;
@@ -19,7 +28,7 @@ void main(void) {
     vec2 p2 = (tc - m) * ar;
     float ax = 0.25 * sin(time_f * 0.7 + tc.x * 10.0); // Rotate around X-axis with ping pong effect and direction based on texture coordinate x
     float ay = 0.25 * cos(time_f * 0.6 - tc.y * 10.0); // Rotate around Y-axis with ping pong effect and direction based on texture coordinate y
-    float az = time_f * 0.5; // Rotate around Z-axis over time
+    float az = time_f * 0.5;                           // Rotate around Z-axis over time
 
     vec3 p3 = vec3(p2, 1.0);
     mat3 R = rotZ(az) * rotY(ay) * rotX(ax);

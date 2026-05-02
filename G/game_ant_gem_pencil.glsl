@@ -12,7 +12,6 @@ void main(void) {
     vec2 px = tc * iResolution;
     float h1 = sin((px.x + px.y) * 0.6);
     float h2 = sin((px.x - px.y) * 0.6);
-    float hatch = (smoothstep(0.5, 0.0, lum) * smoothstep(0.0, 0.4, h1)
-                 + smoothstep(0.7, 0.2, lum) * smoothstep(0.0, 0.4, h2));
+    float hatch = (smoothstep(0.5, 0.0, lum) * smoothstep(0.0, 0.4, h1) + smoothstep(0.7, 0.2, lum) * smoothstep(0.0, 0.4, h2));
     color = vec4(c * (1.0 - hatch * 0.55), 1.0);
 }

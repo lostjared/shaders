@@ -1,14 +1,14 @@
 #version 330 core
 
-in vec2 tc;                  // Texcoords passed from vertex shader
-out vec4 color;              // Final color output of the fragment
+in vec2 tc;     // Texcoords passed from vertex shader
+out vec4 color; // Final color output of the fragment
 
-uniform float time_f;        // Time (in seconds, typically)
-uniform sampler2D samp;      // The texture we're sampling
-uniform vec2 iResolution;    // Resolution of the window/viewport
-uniform vec4 iMouse;         // Mouse data (if needed)
-uniform float amp;           // Total amplitude
-uniform float uamp;          // Current amplitude * sensitivity
+uniform float time_f;     // Time (in seconds, typically)
+uniform sampler2D samp;   // The texture we're sampling
+uniform vec2 iResolution; // Resolution of the window/viewport
+uniform vec4 iMouse;      // Mouse data (if needed)
+uniform float amp;        // Total amplitude
+uniform float uamp;       // Current amplitude * sensitivity
 
 // (Optional) swirl function for more controlled “twisting”
 vec2 swirl(vec2 uv, float centerRadius, float swirlAmount) {
@@ -26,8 +26,7 @@ float pingPong(float x, float length) {
     return modVal <= length ? modVal : length * 2.0 - modVal;
 }
 
-void main(void)
-{
+void main(void) {
     // Combine your amplitude inputs (adjust to taste)
     float A = uamp * amp / time_f;
 
@@ -66,5 +65,5 @@ void main(void)
     // Output the final color
     float t_amp = pingPong(amp, 8.0);
     color = sin(baseColor * (t_amp + uamp));
-    color.a = 1.0;  // Opaque, or adjust if needed
+    color.a = 1.0; // Opaque, or adjust if needed
 }

@@ -47,14 +47,14 @@ vec4 blur5(sampler2D image, vec2 uv, vec2 resolution, float strength) {
 }
 
 void main(void) {
-    float aLow  = clamp(amp_low,  0.0, 1.0);
-    float aMid  = clamp(amp_mid,  0.0, 1.0);
+    float aLow = clamp(amp_low, 0.0, 1.0);
+    float aMid = clamp(amp_mid, 0.0, 1.0);
     float aHigh = clamp(amp_high, 0.0, 1.0);
-    float aPk   = clamp(amp_peak, 0.0, 1.0);
-    float aRms  = clamp(amp_rms,  0.0, 1.0);
+    float aPk = clamp(amp_peak, 0.0, 1.0);
+    float aRms = clamp(amp_rms, 0.0, 1.0);
 
     float amplitude = aRms * 0.8 + 0.1;
-    vec3 gradLow  = vec3(0.0, 0.2, 1.0) * (0.5 + aLow * 0.5);
+    vec3 gradLow = vec3(0.0, 0.2, 1.0) * (0.5 + aLow * 0.5);
     vec3 gradHigh = vec3(1.0, 0.1, 0.2) * (0.5 + aHigh * 0.5);
     vec3 gradientColor = mix(gradLow, gradHigh, amplitude);
 

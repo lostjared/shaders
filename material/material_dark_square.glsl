@@ -19,22 +19,21 @@ uniform float time_f;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     ivec3 source;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         source[i] = int(255 * color[i]);
     }
     color = color * texture(mat_samp, tc);
-    color[0] = color[0]*sin(tc[0] * timeval);
-    color[1] = color[1]*cos(tc[1] * timeval);
-    color[2] = color[2]*tan(tc[0] * timeval);
+    color[0] = color[0] * sin(tc[0] * timeval);
+    color[1] = color[1] * cos(tc[1] * timeval);
+    color[2] = color[2] * tan(tc[0] * timeval);
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * color[i]);
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        color[i] = float(int_color[i])/255;
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        color[i] = float(int_color[i]) / 255;
     }
 }

@@ -9,13 +9,14 @@ uniform vec4 iMouse;
 
 const float PI = 3.1415926535897932384626433832795;
 
-vec4 xor_RGB(vec4 icolor, vec4 source){
+vec4 xor_RGB(vec4 icolor, vec4 source) {
     ivec3 int_color;
     ivec4 isource = ivec4(source * 255.0);
-    for(int i=0;i<3;++i){
-        int_color[i] = int(255.0*icolor[i]);
+    for (int i = 0; i < 3; ++i) {
+        int_color[i] = int(255.0 * icolor[i]);
         int_color[i] = int_color[i] ^ isource[i];
-        if(int_color[i]>255) int_color[i] = int_color[i] % 255;
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
         icolor[i] = float(int_color[i]) / 255.0;
     }
     icolor.a = 1.0;
@@ -122,7 +123,8 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -166,7 +168,8 @@ void main(void) {
 
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
+    if (q.y > q.x)
+        q = q.yx;
 
     float base = 1.82 + 0.18 * pingPong(sin(time_f * 0.2) * (PI * time_f), 5.0);
     float period = log(base) * pingPong(time_f * PI, 5.0);

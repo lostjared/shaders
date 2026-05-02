@@ -29,7 +29,7 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
                                     1.5, 2.5, 3.0, 3.5, 4.0, 4.0, 3.5, 3.0, 2.5, 1.5,
                                     1.0, 2.0, 2.5, 3.0, 3.5, 3.5, 3.0, 2.5, 2.0, 1.0,
                                     0.5, 1.0, 1.5, 2.0, 2.5, 2.5, 2.0, 1.5, 1.0, 0.5);
-    
+
     for (int i = 0; i < 100; i++) {
         kernel[i] = kernelVals[i];
     }
@@ -50,9 +50,9 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
 }
 
 void main(void) {
-    
+
     float time_t = pingPong(time_f, 10.0) + 2.0;
-    
+
     vec2 uv = tc;
     float glitchStrength = 0.001;
     uv.x += (rand(uv + time_f) - 0.5) * glitchStrength;

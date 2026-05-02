@@ -10,12 +10,12 @@ uniform vec2 iResolution;
 vec4 xor_RGB(vec4 icolor, vec4 source) {
     ivec3 int_color;
     ivec4 isource = ivec4(source * 255);
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
-        int_color[i] = int_color[i]^isource[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        icolor[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ isource[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
     return icolor;
@@ -26,7 +26,7 @@ float pingPong(float x, float length) {
     return modVal <= length ? modVal : length * 2.0 - modVal;
 }
 
-// Optimization: Using textureLod or a smaller kernel for performance if needed, 
+// Optimization: Using textureLod or a smaller kernel for performance if needed,
 // but keeping your specific blur logic here.
 vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
     vec2 texelSize = 1.0 / resolution;
@@ -62,12 +62,12 @@ void main(void) {
 
     float t_spiral = pingPong(time_f * 0.5, 5.0);
     float t_zoom = 1.0 + 0.5 * sin(time_f * 0.3);
-    
+
     // Iterative Fractal folding
-    for(int i = 0; i < 4; i++) {
-        uv = abs(uv) - 0.5; // Mirror fold
+    for (int i = 0; i < 4; i++) {
+        uv = abs(uv) - 0.5;                        // Mirror fold
         uv *= rotate2d(t_spiral * 0.2 + float(i)); // Rotate each fold
-        uv *= t_zoom; // Iterative zoom
+        uv *= t_zoom;                              // Iterative zoom
     }
 
     // Convert to spiral polar coordinates
@@ -82,17 +82,16 @@ void main(void) {
 
     // 3. Color Logic
     float time_t = pingPong(time_f, 10.0) + 2.0;
-    
+
     // Cycle rainbow through the spiral
-    vec3 rainbow_color = 0.5 + 0.5 * cos(6.28318 * (spiral + time_f * 0.5 + vec3(0,2,4)/3.0));
+    vec3 rainbow_color = 0.5 + 0.5 * cos(6.28318 * (spiral + time_f * 0.5 + vec3(0, 2, 4) / 3.0));
     vec3 blended_color = mix(tcolor.rgb, rainbow_color, 0.6);
 
     // 4. XOR Post-Processing
     // Applying your XOR logic to the fractalized rainbow colors
     vec4 xorColor = xor_RGB(
-        vec4(sin(blended_color * time_t), 1.0), 
-        vec4(cos(blended_color * time_t), 1.0)
-    );
+        vec4(sin(blended_color * time_t), 1.0),
+        vec4(cos(blended_color * time_t), 1.0));
 
     // Adding a subtle vignette based on original distance
     float vign = smoothstep(1.5, 0.2, length(tc * 2.0 - 1.0));

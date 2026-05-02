@@ -105,7 +105,7 @@ vec3 tentBlur3(sampler2D img, vec2 uv, vec2 res) {
     s += texture(img, uv + ts * vec2(-1.0, -1.0)).rgb;
     s += texture(img, uv + ts * vec2(-1.0, 1.0)).rgb;
     s += texture(img, uv + ts * vec2(1.0, -1.0)).rgb;
-    return s / 8.0; 
+    return s / 8.0;
 }
 
 vec3 preBlendColor(vec2 uv) {
@@ -130,7 +130,8 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -138,7 +139,7 @@ vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
 void main(void) {
     // 1. Capture the Original Texture cleanly
     vec4 baseTex = texture(samp, tc);
-    
+
     // Setup Context
     vec2 uv = tc * 2.0 - 1.0;
     float aspect = iResolution.x / iResolution.y;
@@ -148,7 +149,7 @@ void main(void) {
 
     // --- FRACTAL GENERATION ---
     float seg = 4.0 + 2.0 * sin(time_f * 0.33);
-    
+
     // Initial folding (Your original logic)
     vec2 kUV = reflectUV(tc, seg, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
@@ -156,14 +157,15 @@ void main(void) {
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
     kUV = rotateUV(kUV, time_f * 0.23, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    
+
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
-    
+    if (q.y > q.x)
+        q = q.yx;
+
     // --- INJECTING ELECTRICITY ---
     // We generate an electric noise field based on the folded coordinates
-    float electricity = fbm(p * 5.0 - time_f); 
+    float electricity = fbm(p * 5.0 - time_f);
     float electricPulse = pow(electricity, 3.0); // Sharpen the ridges
 
     // Log Polar Tunnel Logic
@@ -171,22 +173,22 @@ void main(void) {
     float period = log(base) * pingPong(time_f * PI, 5.0);
     float tz = time_f * 0.65;
     float rD = diamondRadius(p) + 1e-6;
-    
+
     // We disturb the tunnel angle with the electric noise
     float ang = atan(q.y, q.x) + tz * 0.35 + 0.35 * sin(rD * 18.0 + time_f * 0.6);
     ang += electricPulse * 0.2; // Warp the tunnel with electricity
 
     float k = fract((log(rD) - tz) / period);
     float rw = exp(k * period);
-    
+
     vec2 pwrap = vec2(cos(ang), sin(ang)) * rw;
 
     // --- COLOR SAMPLING ---
     vec2 u0 = fract(pwrap / ar + m);
     // Chromatic aberration spread modulated by electricity
-    float spread = 1.045 + (0.05 * electricPulse); 
+    float spread = 1.045 + (0.05 * electricPulse);
     vec2 u1 = fract((pwrap * spread) / ar + m);
-    vec2 u2 = fract((pwrap * (1.0/spread)) / ar + m);
+    vec2 u2 = fract((pwrap * (1.0 / spread)) / ar + m);
 
     vec2 dir = normalize(pwrap + 1e-6);
     vec2 off = dir * (0.0015 + 0.001 * sin(time_f * 1.3)) * vec2(1.0, 1.0 / aspect);
@@ -198,27 +200,27 @@ void main(void) {
     vec3 kaleidoRGB = vec3(rC.r, gC.g, bC.b);
 
     // --- COMPOSITING ---
-    
+
     // 1. Calculate Intensity Mask
     float ring = smoothstep(0.0, 0.7, sin(log(rD + 1e-3) * 9.5 + time_f * 1.2));
     ring = ring * pingPong((time_f * PI), 5.0);
     float pulse = 0.5 + 0.5 * sin(time_f * 2.0 + rD * 28.0 + k * 12.0);
-    
+
     // 2. Refine the Fractal Light
     vec3 effectColor = kaleidoRGB;
     effectColor *= (0.75 + 0.25 * ring) * (0.85 + 0.15 * pulse);
-    
+
     // Add the "Bloom" from your original shader, but boost it with the electric pulse
     vec3 bloom = effectColor * effectColor * 0.18 + pow(max(effectColor - 0.6, 0.0), vec3(2.0)) * 0.12;
     effectColor += bloom * (1.0 + electricPulse); // Electricity makes it glow brighter
 
     // 3. FINAL ADDITIVE BLEND
-    // Instead of mixing, we ADD. 
+    // Instead of mixing, we ADD.
     // We darken the effectColor slightly where it's not "electric" so it doesn't wash out the image.
     // The 'pingPong' creates a rhythmic intensity change.
-    
+
     float intensity = 0.6 + 0.4 * pingPong(time_f, 2.0);
-    
+
     // Black background in fractal = transparent. Bright neon = light.
     vec3 finalRGB = baseTex.rgb + (effectColor * intensity);
 

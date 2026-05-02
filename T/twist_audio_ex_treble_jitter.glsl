@@ -13,7 +13,7 @@ float hash(vec2 p) {
 
 void main(void) {
     float treble = texture(spectrum, 0.62).r;
-    float air    = texture(spectrum, 0.85).r;
+    float air = texture(spectrum, 0.85).r;
 
     vec2 center = vec2(0.5);
     float radius = length(tc - center);

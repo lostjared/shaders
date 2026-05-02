@@ -16,7 +16,7 @@ void main() {
     // 1. Audio Data (Signal Interference Strength)
     float bass = texture(spectrum, 0.05).r;
     float treble = texture(spectrum, 0.60).r;
-    
+
     // Signal strength inversely tied to audio intensity
     float signalLoss = clamp(bass + treble * 0.5, 0.0, 1.0);
 
@@ -29,14 +29,14 @@ void main() {
     // --- VERTICAL SYNC LOSS (ROLL) ---
     // We only trigger the roll when the bass is hitting hard
     float rollThreshold = 0.7; // Adjust this to control sensitivity
-    float rollSpeed = 0.5;    // How fast it scrolls
-    
+    float rollSpeed = 0.5;     // How fast it scrolls
+
     // If bass exceeds threshold, start the roll
     float rollActive = smoothstep(rollThreshold, 1.0, bass);
-    
+
     // fract() creates the "wrap around" effect
     uv.y = fract(uv.y + time_f * rollSpeed * rollActive);
-    
+
     // Add a "blanking bar" (the black gap between frames)
     float blankingBar = step(0.98, uv.y) + step(uv.y, 0.02);
     // ---------------------------------
@@ -46,7 +46,7 @@ void main() {
     vec3 col = texture(samp, uv).rgb;
     vec3 ghost1 = texture(samp, uv + vec2(0.015, 0.005)).rgb;
     vec3 ghost2 = texture(samp, uv + vec2(0.03, -0.01)).rgb;
-    
+
     // Mix ghosts in with low opacity
     col = mix(col, ghost1, 0.2 * signalLoss);
     col = mix(col, ghost2, 0.1 * signalLoss);

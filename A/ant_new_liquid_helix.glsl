@@ -22,17 +22,18 @@ vec3 rainbow(float t) {
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p) {
-    vec2 i = floor(p); vec2 f = fract(p);
+    vec2 i = floor(p);
+    vec2 f = fract(p);
     vec2 u = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hash(i), hash(i + vec2(1,0)), u.x),
-               mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), u.x), u.y);
+    return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x),
+               mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y);
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.60).r;
-    float air    = texture(spectrum, 0.82).r;
+    float air = texture(spectrum, 0.82).r;
 
     vec2 uv = tc;
     vec2 centered = uv - 0.5;
@@ -50,7 +51,7 @@ void main() {
 
     // Glass normals
     float d = 0.008;
-    float h  = dot(texture(samp, uv).rgb, vec3(0.33));
+    float h = dot(texture(samp, uv).rgb, vec3(0.33));
     float h1 = dot(texture(samp, uv + vec2(d, 0)).rgb, vec3(0.33));
     float h2 = dot(texture(samp, uv + vec2(0, d)).rgb, vec3(0.33));
     vec2 n = vec2(h1 - h, h2 - h);
@@ -66,7 +67,7 @@ void main() {
     // Helix strands in screen space, riding the liquid refraction
     float aspect = iResolution.x / iResolution.y;
     vec2 sp = (tc - 0.5) * vec2(aspect, 1.0);
-    sp += n * 0.2;  // strands bend through the glass
+    sp += n * 0.2; // strands bend through the glass
     float hA = sin(sp.y * 14.0 + iTime * 3.0 + bass * 5.0) * (0.2 + mid * 0.12);
     float hB = sin(sp.y * 14.0 + iTime * 3.0 + bass * 5.0 + PI) * (0.2 + mid * 0.12);
     float sA = smoothstep(0.05, 0.0, abs(sp.x - hA));

@@ -13,9 +13,9 @@ uniform sampler1D spectrum;
 const float TAU = 6.28318530718;
 
 // Basic NTSC-inspired faded color palette constants
-const vec3 VHS_BLACK = vec3(0.01, 0.0, 0.03); 
-const vec3 VHS_RED = vec3(0.65, 0.1, 0.2);   
-const vec3 VHS_GREEN = vec3(0.0, 0.55, 0.4); 
+const vec3 VHS_BLACK = vec3(0.01, 0.0, 0.03);
+const vec3 VHS_RED = vec3(0.65, 0.1, 0.2);
+const vec3 VHS_GREEN = vec3(0.0, 0.55, 0.4);
 
 float hash(vec2 p) {
     return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
@@ -23,8 +23,8 @@ float hash(vec2 p) {
 
 void main() {
     // 1. Audio Analysis
-    float bass   = texture(spectrum, 0.05).r;
-    float mid    = texture(spectrum, 0.30).r;
+    float bass = texture(spectrum, 0.05).r;
+    float mid = texture(spectrum, 0.30).r;
     float treble = texture(spectrum, 0.70).r;
 
     vec2 uv = tc;
@@ -32,18 +32,18 @@ void main() {
     // 2. Horizontal Tracking & Jitter
     // Small high-frequency wiggle
     float jitter = (hash(vec2(time_f, uv.y)) - 0.5) * 0.003 * (0.5 + treble);
-    
+
     // Large horizontal "tear" based on bass intensity
     float drift = sin(uv.y * 10.0 + time_f) * 0.002;
     float jump = step(0.98, hash(vec2(time_f * 0.5, 0.0))) * sin(uv.y * 100.0) * 0.02 * bass;
-    
+
     uv.x += jitter + drift + jump;
 
     // 3. Chromatic Aberration & Tape Softening
     // Increased fringe and added blurAmount to hide high-frequency "noise"
     float fringe = 0.007 + (mid * 0.02);
-    float blurAmount = 0.002; 
-    
+    float blurAmount = 0.002;
+
     vec3 col;
     // We sample R and B with heavy offsets, and G with a slight "soft" offset
     col.r = texture(samp, uv + vec2(fringe + blurAmount, 0.0)).r;
@@ -74,7 +74,7 @@ void main() {
     // 6. Signal Color Grading
     // Desaturate and shift blacks toward blue (faded magnetic look)
     float gray = dot(col, vec3(0.299, 0.587, 0.114));
-    col = mix(col, vec3(gray), 0.2); 
+    col = mix(col, vec3(gray), 0.2);
     col = max(col, VHS_BLACK); // Lift the blacks
 
     // 7. Feedback Flash (Glitch)
@@ -88,7 +88,7 @@ void main() {
     col *= (vig + 0.3);
 
     // Soft-focus tape sampling
-  
+
     // Final Gain control
     col *= 0.8 + amp_smooth * 0.5;
     color = vec4(col, 1.0);

@@ -9,9 +9,8 @@ uniform vec2 iResolution;
 mat3 rotationMatrixY(float angle) {
     return mat3(
         cos(angle), 0.0, sin(angle),
-        0.0,       1.0, 0.0,
-       -sin(angle), 0.0, cos(angle)
-    );
+        0.0, 1.0, 0.0,
+        -sin(angle), 0.0, cos(angle));
 }
 
 vec2 vortexDistortion(vec2 uv, float time) {
@@ -32,4 +31,3 @@ void main(void) {
     vec4 texColor = texture(samp, uv);
     color = texColor;
 }
-

@@ -9,15 +9,15 @@ uniform vec2 iResolution;
 vec4 xor_RGB(vec4 icolor, vec4 source) {
     ivec3 int_color;
     ivec4 isource = ivec4(source * 255);
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
-        int_color[i] = int_color[i]^isource[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        icolor[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ isource[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 float pingPong(float x, float length) {
@@ -29,7 +29,7 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
     vec2 texelSize = 1.0 / resolution;
     vec4 result = vec4(0.0);
     float kernel[100];
-    
+
     float kernelVals[100] = float[](0.5, 1.0, 1.5, 2.0, 2.5, 2.5, 2.0, 1.5, 1.0, 0.5,
                                     1.0, 2.0, 2.5, 3.0, 3.5, 3.5, 3.0, 2.5, 2.0, 1.0,
                                     1.5, 2.5, 3.0, 3.5, 4.0, 4.0, 3.5, 3.0, 2.5, 1.5,
@@ -40,7 +40,7 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
                                     1.5, 2.5, 3.0, 3.5, 4.0, 4.0, 3.5, 3.0, 2.5, 1.5,
                                     1.0, 2.0, 2.5, 3.0, 3.5, 3.5, 3.0, 2.5, 2.0, 1.0,
                                     0.5, 1.0, 1.5, 2.0, 2.5, 2.5, 2.0, 1.5, 1.0, 0.5);
-    
+
     for (int i = 0; i < 100; i++) {
         kernel[i] = kernelVals[i];
     }
@@ -67,12 +67,12 @@ vec3 rainbow(float t) {
 void main(void) {
     vec4 tcolor = blur(samp, tc, iResolution);
     float time_t = pingPong(time_f, 10.0) + 2.0;
-    
+
     vec2 uv = tc * 2.0 - 1.0;
     uv.y *= iResolution.y / iResolution.x;
 
     float t = pingPong(time_f, 15) + 1.0;
-    
+
     float wave = sin(uv.x * 10.0 + t * 2.0) * 0.1;
     float expand = 0.5 + 0.5 * sin(t * 2.0);
     vec2 spiral_uv = uv * expand + vec2(cos(t), sin(t)) * 0.2;
@@ -82,5 +82,5 @@ void main(void) {
     vec3 rainbow_color = rainbow(angle / (2.0 * 3.14159));
     vec3 blended_color = mix(tcolor.rgb, rainbow_color, 0.5);
 
-    color = xor_RGB(sin(vec4(blended_color,1) * time_t), tcolor * time_t);
+    color = xor_RGB(sin(vec4(blended_color, 1) * time_t), tcolor * time_t);
 }

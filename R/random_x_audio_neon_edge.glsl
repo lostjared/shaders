@@ -14,7 +14,7 @@ uniform float amp_high;
 uniform float iamp;
 
 vec3 hsv2rgb(vec3 c) {
-    vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
@@ -27,16 +27,16 @@ void main(void) {
     vec2 off = ts * edgeScale;
 
     vec3 tl = texture(samp, tc + vec2(-off.x, -off.y)).rgb;
-    vec3 t  = texture(samp, tc + vec2(0.0, -off.y)).rgb;
+    vec3 t = texture(samp, tc + vec2(0.0, -off.y)).rgb;
     vec3 tr = texture(samp, tc + vec2(off.x, -off.y)).rgb;
-    vec3 l  = texture(samp, tc + vec2(-off.x, 0.0)).rgb;
-    vec3 r  = texture(samp, tc + vec2(off.x, 0.0)).rgb;
+    vec3 l = texture(samp, tc + vec2(-off.x, 0.0)).rgb;
+    vec3 r = texture(samp, tc + vec2(off.x, 0.0)).rgb;
     vec3 bl = texture(samp, tc + vec2(-off.x, off.y)).rgb;
-    vec3 b  = texture(samp, tc + vec2(0.0, off.y)).rgb;
+    vec3 b = texture(samp, tc + vec2(0.0, off.y)).rgb;
     vec3 br = texture(samp, tc + vec2(off.x, off.y)).rgb;
 
-    vec3 gx = -tl - 2.0*l - bl + tr + 2.0*r + br;
-    vec3 gy = -tl - 2.0*t - tr + bl + 2.0*b + br;
+    vec3 gx = -tl - 2.0 * l - bl + tr + 2.0 * r + br;
+    vec3 gy = -tl - 2.0 * t - tr + bl + 2.0 * b + br;
     float edge = length(gx) + length(gy);
 
     // Mids control neon brightness

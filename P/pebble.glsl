@@ -12,7 +12,7 @@ void main(void) {
     float maxRippleRadius = 8.0;
     float rippleSpeed = 0.5;
     float phase = mod(time_f * rippleSpeed, maxRippleRadius);
-    
+
     float ripple = sin((dist - phase) * 10.0) * exp(-dist * 3.0);
     vec2 displacedCoord = vec2(tc.x, tc.y + ripple * sin(time_f));
     color = texture(samp, displacedCoord);

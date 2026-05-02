@@ -5,8 +5,8 @@ uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
 uniform float time_f;
-uniform float amp;  
-uniform float uamp; 
+uniform float amp;
+uniform float uamp;
 
 vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect) {
     float s = sin(angle), cc = cos(angle);
@@ -47,7 +47,8 @@ vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -61,7 +62,7 @@ void main(void) {
     vec2 normPos = (uv - m) * vec2(aspect, 1.0);
     float dist = length(normPos);
     float phase = sin(dist * 8.0 - time_f * 2.0);
-    float rippleStrength = 0.02 + (0.05 * A); 
+    float rippleStrength = 0.02 + (0.05 * A);
     vec2 rippledUV = uv + (normPos * phase * rippleStrength);
     float seg = 4.0 + 2.0 * sin(time_f * 0.1);
     vec2 kUV = reflectUV(rippledUV, seg, m, aspect);
@@ -69,9 +70,9 @@ void main(void) {
     float foldZoom = 1.05 + 0.1 * sin(time_f * 0.2);
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
     vec2 mapUV = (kUV - m) * vec2(aspect, 1.0);
-    mapUV *= 0.8; 
+    mapUV *= 0.8;
     float rot = time_f * 0.1;
-    float s = sin(rot); 
+    float s = sin(rot);
     float c = cos(rot);
     mapUV = mat2(c, -s, s, c) * mapUV;
     float dispersion = 0.01 + (U * 0.05);
@@ -86,11 +87,11 @@ void main(void) {
     float r = texture(samp, texR).r;
     float g = texture(samp, texG).g;
     float b = texture(samp, texB).b;
-    
+
     // Shifting gradient neon color effect
     vec3 neonColor = vec3(sin(time_f * 2.0), sin(time_f * 1.5 + 2.0), sin(time_f + 1.0)) * 0.5 + 0.5; // Modulate RGB values using sine waves
-    neonColor *= 1.5; // Adjust the factor to control the intensity of the neon effect
-    
+    neonColor *= 1.5;                                                                                 // Adjust the factor to control the intensity of the neon effect
+
     vec3 finalCol = vec3(r, g, b) * neonColor;
     color = vec4(finalCol, 1.0);
 }

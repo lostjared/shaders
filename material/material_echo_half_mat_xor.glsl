@@ -22,28 +22,25 @@ uniform float restore_black;
 vec4 xor_RGB(vec4 icolor, vec4 src) {
     ivec4 isource = ivec4(src * 255);
     ivec3 int_color;
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
-        int_color[i] = int_color[i]^isource[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        icolor[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ isource[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 color2 = texture(samp, tc / 2);
-    vec4 color3 = texture(samp, tc/ 4);
-    vec4 color4 = texture(samp, tc/ 8);
-    color = (color * 0.3) + (color2 * 0.3) + (color3 * 0.3) + (color4 * 0.3) ;
+    vec4 color3 = texture(samp, tc / 4);
+    vec4 color4 = texture(samp, tc / 8);
+    color = (color * 0.3) + (color2 * 0.3) + (color3 * 0.3) + (color4 * 0.3);
     color = (0.5 * color) + (0.5 * texture(mat_samp, tc)) * sin(alpha);
-    
+
     vec4 fcolor = xor_RGB(texture(samp, tc), texture(mat_samp, tc));
     color = sin(alpha) * (0.5 * color) + (0.5 * fcolor);
-    
 }
-

@@ -16,15 +16,15 @@ uniform float amp_high;
 out vec4 color;
 in vec2 tc;
 
-const float iAmplitude  = 1.0;
-const float iFrequency  = 1.0;
+const float iAmplitude = 1.0;
+const float iFrequency = 1.0;
 const float iBrightness = 1.0;
-const float iContrast   = 1.20;
+const float iContrast = 1.20;
 const float iSaturation = 1.40;
-const float iHueShift   = 0.50;
-const float iZoom       = 1.0;
-const float iRotation   = 0.0;
-const float iInkWeight  = 1.10;
+const float iHueShift = 0.50;
+const float iZoom = 1.0;
+const float iRotation = 0.0;
+const float iInkWeight = 1.10;
 
 vec3 palette(float t) {
     vec3 a = vec3(0.5, 0.5, 0.5);
@@ -41,7 +41,10 @@ vec4 mxTexture(sampler2D tex, vec2 uv) {
     vec2 u = wrapUV(uv);
     return textureLod(tex, clamp(u, eps, 1.0 - eps), 0.0);
 }
-mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
+mat2 rot(float a) {
+    float c = cos(a), s = sin(a);
+    return mat2(c, -s, s, c);
+}
 
 float hash21(vec2 p) {
     p = fract(p * vec2(43.13, 27.91));
@@ -59,7 +62,11 @@ float vnoise(vec2 p) {
 }
 float fbm(vec2 p) {
     float v = 0.0, a = 0.5;
-    for (int i = 0; i < 6; ++i) { v += a * vnoise(p); p *= 2.05; a *= 0.5; }
+    for (int i = 0; i < 6; ++i) {
+        v += a * vnoise(p);
+        p *= 2.05;
+        a *= 0.5;
+    }
     return v;
 }
 
@@ -109,11 +116,12 @@ vec3 inkBloom(vec2 uv, vec2 center, float t) {
 void main() {
     vec2 uv = tc;
     vec2 center = vec2(0.5);
-    if (iMouse.z > 0.0) center = iMouse.xy / iResolution;
-    float bass   = texture(spectrum, 0.03).r + amp_low  * 0.5;
-    float midF   = texture(spectrum, 0.22).r + amp_mid  * 0.5;
+    if (iMouse.z > 0.0)
+        center = iMouse.xy / iResolution;
+    float bass = texture(spectrum, 0.03).r + amp_low * 0.5;
+    float midF = texture(spectrum, 0.22).r + amp_mid * 0.5;
     float treble = texture(spectrum, 0.58).r + amp_high * 0.5;
-    float beat   = max(amp_peak, bass);
+    float beat = max(amp_peak, bass);
     float t = time_f * (0.07 + iFrequency * 0.20) * (1.0 + 0.6 * beat);
 
     vec3 col = inkBloom(uv, center, t);

@@ -6,8 +6,7 @@ out vec4 color;
 uniform sampler2D samp;
 uniform float time_f;
 
-void main(void)
-{
+void main(void) {
     vec2 uv = tc * 2.0 - 1.0;
     float t = time_f * 0.5;
     float glitchX = sin(uv.y * 10.0 + t) * 0.1;
@@ -20,7 +19,7 @@ void main(void)
     vec2 distorted_uv = vec2(cos(angle), sin(angle)) * radius + 0.5;
 
     vec3 col = texture(samp, distorted_uv).rgb;
-    
+
     col = mix(col, vec3(1.0, 0.0, 0.0), 0.5 * sin(t + length(uv) * 5.0));
     color = vec4(col, 1.0);
 }

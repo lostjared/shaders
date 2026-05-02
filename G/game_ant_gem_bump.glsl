@@ -8,7 +8,7 @@ uniform vec2 iResolution;
 
 void main(void) {
     vec2 ts = 1.0 / iResolution;
-    float l  = dot(texture(samp, tc).rgb,             vec3(0.299, 0.587, 0.114));
+    float l = dot(texture(samp, tc).rgb, vec3(0.299, 0.587, 0.114));
     float lx = dot(texture(samp, tc + vec2(ts.x, 0)).rgb, vec3(0.299, 0.587, 0.114));
     float ly = dot(texture(samp, tc + vec2(0, ts.y)).rgb, vec3(0.299, 0.587, 0.114));
     vec3 n = normalize(vec3(l - lx, l - ly, 0.5));

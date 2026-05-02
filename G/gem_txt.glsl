@@ -18,10 +18,10 @@ void main(void) {
     // 1. Lens Distortion (Bulge effect)
     vec2 uv = tc * 2.0 - 1.0;
     uv.x *= iResolution.x / iResolution.y;
-    
+
     float r = length(uv);
     // Fish-eye math: pushes coordinates outward from the center
-    vec2 bulgeUV = tc + (uv * r * 0.2); 
+    vec2 bulgeUV = tc + (uv * r * 0.2);
 
     // 2. Chromatic Aberration (RGB Split)
     // We sample the texture at three slightly different bulges
@@ -35,12 +35,12 @@ void main(void) {
     // This adds that layer of text/data seen in your image
     float characters = text(bulgeUV * 1.5);
     vec3 textColor = vec3(0.4, 1.0, 0.6) * characters * 0.4;
-    
+
     // 4. Color Grading (The Pink/Gold spectrum)
     // Shifts the background toward the psychedelic tones in the snap
     float hueShift = sin(r * 3.0 - time_f) * 0.5 + 0.5;
     vec3 psychoTone = mix(vec3(0.8, 0.1, 0.5), vec3(0.1, 0.8, 0.9), hueShift);
-    
+
     // 5. Bright Central Flare
     // Replicates the intense white light in the center of the text
     float flare = exp(-r * 3.5) * 2.0;
@@ -50,7 +50,7 @@ void main(void) {
     vec3 result = mix(baseTex, psychoTone, 0.3); // Blend original texture with tones
     result += textColor;                         // Add scrolling text
     result += flareColor;                        // Add the central light
-    
+
     // Subtle vignette to focus the "eye"
     result *= smoothstep(1.5, 0.2, r);
 

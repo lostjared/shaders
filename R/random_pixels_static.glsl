@@ -20,30 +20,28 @@ uniform vec4 inc_value;
 
 uniform float restore_black;
 
-float random (vec2 st) {
+float random(vec2 st) {
     return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+                         vec2(12.9898, 78.233))) *
+                 43758.5453123);
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 color2 = texture(samp, tc / 2);
     vec2 pos1 = tc;
     vec2 pos2 = tc;
-    vec4 iv1 = inc_valuex/255;
-    vec4 iv2 = inc_value/255;
-    pos1[0] - tc[0]-iv1[0];
-    pos1[1] = tc[1]-iv1[1];
-    pos2[0] = tc[0]-iv2[0];
-    pos2[1] = tc[1]-iv2[1];
+    vec4 iv1 = inc_valuex / 255;
+    vec4 iv2 = inc_value / 255;
+    pos1[0] - tc[0] - iv1[0];
+    pos1[1] = tc[1] - iv1[1];
+    pos2[0] = tc[0] - iv2[0];
+    pos2[1] = tc[1] - iv2[1];
     vec2 pos3 = tc;
-    pos3[0] = tc[0]-iv1[2];
-    pos3[1] = tc[1]-iv2[2];    
+    pos3[0] = tc[0] - iv1[2];
+    pos3[1] = tc[1] - iv2[2];
     float rand_x = random(pos1);
     float rand_y = random(pos2);
     float rand_z = random(pos3);
     color = (0.5 * color) + (0.5 * vec4(rand_x, rand_y, rand_z, 1));
 }
-

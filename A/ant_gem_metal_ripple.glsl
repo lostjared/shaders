@@ -17,11 +17,11 @@ vec3 metalSpectrum(float t) {
 }
 
 void main(void) {
-    float bass   = texture(spectrum, 0.04).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.04).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     vec2 uv = tc * 2.0 - 1.0;
     uv.x *= iResolution.x / iResolution.y;
@@ -52,10 +52,8 @@ void main(void) {
     vec2 dx = vec2(0.01, 0.0);
     vec2 dy = vec2(0.0, 0.01);
     float h = surface;
-    float hx = sin((length(uv + dx - src1) * (20.0 + bass * 15.0) - time_f * 5.0)) / (1.0 + length(uv + dx - src1) * 3.0)
-             + sin((length(uv + dx - src2) * (18.0 + mid * 12.0) - time_f * 4.0)) / (1.0 + length(uv + dx - src2) * 3.0);
-    float hy = sin((length(uv + dy - src1) * (20.0 + bass * 15.0) - time_f * 5.0)) / (1.0 + length(uv + dy - src1) * 3.0)
-             + sin((length(uv + dy - src2) * (18.0 + mid * 12.0) - time_f * 4.0)) / (1.0 + length(uv + dy - src2) * 3.0);
+    float hx = sin((length(uv + dx - src1) * (20.0 + bass * 15.0) - time_f * 5.0)) / (1.0 + length(uv + dx - src1) * 3.0) + sin((length(uv + dx - src2) * (18.0 + mid * 12.0) - time_f * 4.0)) / (1.0 + length(uv + dx - src2) * 3.0);
+    float hy = sin((length(uv + dy - src1) * (20.0 + bass * 15.0) - time_f * 5.0)) / (1.0 + length(uv + dy - src1) * 3.0) + sin((length(uv + dy - src2) * (18.0 + mid * 12.0) - time_f * 4.0)) / (1.0 + length(uv + dy - src2) * 3.0);
 
     vec2 normal = vec2(hx - h, hy - h) * (3.0 + mid * 5.0);
 

@@ -27,28 +27,28 @@ float hash(vec2 p) {
 
 void main() {
     // Fetch audio - ensuring we don't get NaNs from empty textures
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
-    
+
     vec2 p = uv * (1.2 + bass * 0.3);
 
     // --- RECURSIVE FOLDING ---
     float scale = 1.0;
     float iter_sum = 0.0;
     const int iterations = 6; // Reduced iterations for cleaner geometry
-    
-    for(int i = 0; i < iterations; i++) {
-        p = abs(p) - 0.5 - (mid * 0.05); 
+
+    for (int i = 0; i < iterations; i++) {
+        p = abs(p) - 0.5 - (mid * 0.05);
         p *= rot(time_f * 0.1 + float(i) * 0.5 + treble * 0.1);
-        
+
         float s = 1.6 + bass * 0.1;
         p *= s;
         scale *= s;
-        
+
         // Orbit trap: measure closeness to origin at this scale
         iter_sum += exp(-length(p) * 0.5);
     }
@@ -56,7 +56,7 @@ void main() {
     // Normalizing coordinates for texture sampling
     vec2 sampUV = (p / scale) + 0.5;
     float chroma = treble * 0.02;
-    
+
     // Sample texture with slight CA (Chromatic Aberration)
     vec3 tex;
     tex.r = texture(samp, sampUV + vec2(chroma, 0.0)).r;
@@ -66,10 +66,10 @@ void main() {
     // --- COLOR COMPOSITION ---
     // Use the iteration sum to drive the fractal glow, but cap its influence
     vec3 fractalCol = crystal(iter_sum * 0.1 + time_f * 0.2);
-    
+
     // Mix instead of just adding to prevent blowout
     vec3 col = mix(tex, fractalCol, clamp(iter_sum / float(iterations), 0.0, 1.0));
-    
+
     // Additive highlights for "crystals"
     col += crystal(time_f) * (iter_sum * 0.2) * mid;
 
@@ -84,7 +84,7 @@ void main() {
     // --- FINAL MAPPING ---
     // Clamp before inversion to prevent negative color math
     col = clamp(col, 0.0, 1.0);
-    
+
     // High-amplitude inversion
     if (amp_peak > 0.95) {
         col = 1.0 - col;

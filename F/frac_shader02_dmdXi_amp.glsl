@@ -9,7 +9,7 @@ uniform vec4 iMouse;
 uniform float amp;
 uniform float uamp;
 uniform float iTime;
-uniform int iFrame; 
+uniform int iFrame;
 uniform float iTimeDelta;
 uniform vec4 iDate;
 uniform vec2 iMouseClick;
@@ -26,18 +26,18 @@ float gSlow;
 float gFast;
 float gDetail;
 
-float pingPong(float x, float length){
+float pingPong(float x, float length) {
     float m = mod(x, length * 2.0);
     return m <= length ? m : length * 2.0 - m;
 }
 
-vec3 hsv2rgb(vec3 c){
-    vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+vec3 hsv2rgb(vec3 c) {
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect){
+vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect) {
     float s = sin(angle), cc = cos(angle);
     vec2 p = uv - c;
     p.x *= aspect;
@@ -46,7 +46,7 @@ vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect){
     return p + c;
 }
 
-vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect){
+vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
     vec2 p = uv - c;
     p.x *= aspect;
     float ang = atan(p.y, p.x);
@@ -59,16 +59,16 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect){
     return r + c;
 }
 
-vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect){
+vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
-    for(int i = 0; i < 6; i++){
+    for (int i = 0; i < 6; i++) {
         p = abs((p - c) * (zoom + 0.15 * sin(t * 0.35 + float(i)))) - 0.5 + c;
         p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
     }
     return p;
 }
 
-vec3 neonPalette(float t){
+vec3 neonPalette(float t) {
     vec3 pink = vec3(1.0, 0.15, 0.75);
     vec3 blue = vec3(0.10, 0.55, 1.0);
     vec3 green = vec3(0.10, 1.00, 0.45);
@@ -82,13 +82,14 @@ vec3 neonPalette(float t){
     return normalize(a * k1 + b * k2 + c * k3) * 1.05;
 }
 
-vec3 limitHighlights(vec3 c){
+vec3 limitHighlights(vec3 c) {
     float m = max(c.r, max(c.g, c.b));
-    if(m > 0.9) c *= 0.9 / m;
+    if (m > 0.9)
+        c *= 0.9 / m;
     return c;
 }
 
-void main(void){
+void main(void) {
     float aAcc = clamp(amp, 0.0, 20.0);
     float aInst = clamp(uamp, 0.0, 20.0);
     float aMix = clamp(aAcc * 0.7 + aInst * 0.3, 0.0, 20.0);
@@ -109,16 +110,16 @@ void main(void){
 
     float datePhase = iDate.y * 0.13 + iDate.z * 0.03 + iDate.w * 0.001;
 
-    gSlow   = t * mix(0.18, 0.7, gAmp01);
-    gFast   = t * mix(0.7,  4.0, gAmp01);
+    gSlow = t * mix(0.18, 0.7, gAmp01);
+    gFast = t * mix(0.7, 4.0, gAmp01);
     gDetail = t * mix(0.35, 2.3, gAmp01);
 
     vec2 ar = vec2(iResolution.x / iResolution.y, 1.0);
 
     vec2 baseCenter = (iMouse.z > 0.5 ? (iMouse.xy / iResolution) : vec2(0.5));
     vec2 clickCenter = (iMouseClick.x > 0.0 || iMouseClick.y > 0.0)
-        ? (iMouseClick / iResolution)
-        : baseCenter;
+                           ? (iMouseClick / iResolution)
+                           : baseCenter;
     float clickMix = 0.25 + 0.35 * smoothstep(0.2, 1.0, gAmp01);
     vec2 m = mix(baseCenter, clickCenter, clickMix);
 
@@ -180,8 +181,7 @@ void main(void){
     float warpMix = 0.45 + 0.35 * gAmp01;
     vec3 combined = mix(base, warpCol, warpMix);
 
-    vec3 bloom = combined * combined * 0.08
-               + pow(max(combined - 0.6, 0.0), vec3(2.0)) * 0.05;
+    vec3 bloom = combined * combined * 0.08 + pow(max(combined - 0.6, 0.0), vec3(2.0)) * 0.05;
     combined += bloom;
 
     combined = limitHighlights(combined);

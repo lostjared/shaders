@@ -12,8 +12,8 @@ float pingPong(float x, float length) {
     return m <= length ? m : length * 2.0 - m;
 }
 
-float h1(float n){return fract(sin(n)*43758.5453123);}
-vec2 h2(float n){return fract(sin(vec2(n, n+1.0))*vec2(43758.5453,22578.1459));}
+float h1(float n) { return fract(sin(n) * 43758.5453123); }
+vec2 h2(float n) { return fract(sin(vec2(n, n + 1.0)) * vec2(43758.5453, 22578.1459)); }
 
 vec2 rotateUV(vec2 uv, float a, vec2 c, float aspect) {
     float s = sin(a), cv = cos(a);
@@ -77,16 +77,20 @@ void main() {
     float zoom = 1.3 + 0.6 * sin(t * 0.5 + h1(seed + 1.7) * 6.2831853);
 
     vec2 duv = uv;
-    if (mode == 0) duv = reflectUV(uv, seg, m, aspect);
-    if (mode == 1) duv = tileMirror(rotateUV(uv, 0.4 * sin(t * 0.6), m, aspect), tiles, m);
-    if (mode == 2) duv = swirl(uv, m, aspect, k * 6.0);
-    if (mode == 3) duv = fractalZoom(uv, zoom, t, m, aspect);
+    if (mode == 0)
+        duv = reflectUV(uv, seg, m, aspect);
+    if (mode == 1)
+        duv = tileMirror(rotateUV(uv, 0.4 * sin(t * 0.6), m, aspect), tiles, m);
+    if (mode == 2)
+        duv = swirl(uv, m, aspect, k * 6.0);
+    if (mode == 3)
+        duv = fractalZoom(uv, zoom, t, m, aspect);
 
     vec2 d = uv - m;
     float dist = length(d);
     float r = 0.45;
     float w = 1.0 - smoothstep(0.0, r, dist);
-    vec2 warp = normalize(d + 1e-5) * sin(dist * (18.0 + seg) - t * (2.0 + h1(seed)*3.0)) * 0.12 * w;
+    vec2 warp = normalize(d + 1e-5) * sin(dist * (18.0 + seg) - t * (2.0 + h1(seed) * 3.0)) * 0.12 * w;
     duv += warp;
 
     duv = vec2(pingPong(duv.x + 0.05 * sin(t), 1.0), pingPong(duv.y + 0.05 * cos(t), 1.0));

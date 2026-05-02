@@ -37,9 +37,8 @@ void main(void) {
     vec3 rainbow_color = rainbow(t);
     float rainbow_factor = 0.5;
     vec3 final_color = mix(prism_color, rainbow_color, rainbow_factor);
-    
+
     float time_t = pingPong(time_f, 4.0) + 2.0;
-    
+
     color = vec4(sin(final_color * time_t), 1.0);
 }
-

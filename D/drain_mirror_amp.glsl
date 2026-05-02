@@ -22,7 +22,7 @@ void main(void) {
     float angle = atan(normCoord.y, normCoord.x);
 
     // Spiral parameters influenced by audio
-    float spiralSpeed = 5.0 + uamp * 10.0;  // Reacting to `amp` for speed
+    float spiralSpeed = 5.0 + uamp * 10.0; // Reacting to `amp` for speed
     float inwardSpeed = currentTime / loopDuration;
     angle += (1.0 - smoothstep(0.0, 8.0, dist)) * currentTime * spiralSpeed;
 

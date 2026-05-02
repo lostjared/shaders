@@ -26,9 +26,9 @@ void main(void) {
     vec3 finalColor = mix(darkenedTexture, texColor.rgb, starMask);
 
     float time_t = mod(time_f, 10);
-    
-    if(starMask < 0.5)
-        color = texture(samp, sin(tc * cos(time_t *a )));
+
+    if (starMask < 0.5)
+        color = texture(samp, sin(tc * cos(time_t *a)));
     else
         color = vec4(finalColor, 1.0);
 }

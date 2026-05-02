@@ -6,12 +6,12 @@ uniform sampler2D samp;
 uniform float time_f;
 uniform vec2 iResolution;
 
-float pingPong(float x, float len){
-    float m = mod(x, len*2.0);
-    return m <= len ? m : len*2.0 - m;
+float pingPong(float x, float len) {
+    float m = mod(x, len * 2.0);
+    return m <= len ? m : len * 2.0 - m;
 }
 
-void main(void){
+void main(void) {
     float aspect = iResolution.x / iResolution.y;
     vec2 ar = vec2(aspect, 1.0);
 

@@ -14,8 +14,7 @@ void main(void) {
     vec2 normPos = gl_FragCoord.xy / iResolution.xy;
     vec2 mirroredPos = vec2(
         abs(fract(normPos.x * 2.0) - 0.5) * 2.0,
-        abs(fract(normPos.y * 2.0) - 0.5) * 2.0
-    );
+        abs(fract(normPos.y * 2.0) - 0.5) * 2.0);
 
     float time_t = pingPong(time_f, 6.0) + 2.0;
     float cycle = sin(time_t * 0.5);

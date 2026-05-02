@@ -13,10 +13,10 @@ uniform float amp_high;
 uniform float iamp;
 
 void main(void) {
-    float aLow  = clamp(amp_low,  0.0, 1.0);
+    float aLow = clamp(amp_low, 0.0, 1.0);
     float aHigh = clamp(amp_high, 0.0, 1.0);
-    float aPk   = clamp(amp_peak, 0.0, 1.0);
-    float aRms  = clamp(amp_rms,  0.0, 1.0);
+    float aPk = clamp(amp_peak, 0.0, 1.0);
+    float aRms = clamp(amp_rms, 0.0, 1.0);
 
     vec4 baseColor = texture(samp, tc);
     float glitchAmt = 0.02 + aPk * 0.12;

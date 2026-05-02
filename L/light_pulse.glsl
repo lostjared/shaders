@@ -11,8 +11,7 @@ void main(void) {
     vec3 rainbow = vec3(
         sin(time_f + 0.0) * 0.5 + 0.5,
         sin(time_f + 2.094) * 0.5 + 0.5,
-        sin(time_f + 4.188) * 0.5 + 0.5
-    );
+        sin(time_f + 4.188) * 0.5 + 0.5);
 
     vec4 rainbowLight = vec4(rainbow, 1.0) * lightIntensity;
 
@@ -20,4 +19,3 @@ void main(void) {
 
     color = mix(originalColor, rainbowLight, 0.5 * lightIntensity);
 }
-

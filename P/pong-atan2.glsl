@@ -27,7 +27,7 @@ void main(void) {
     vec2 rotatedTC;
     rotatedTC.x = cos(angle3) * (tc.x - 0.5) - sin(angle3) * (tc.y - 0.5) + 0.5;
     rotatedTC.y = sin(angle3) * (tc.x - 0.5) + cos(angle3) * (tc.y - 0.5) + 0.5;
-    
+
     rotatedTC = sin(rotatedTC * (modulatedTime1 * modulatedTime2));
 
     color = texture(samp, rotatedTC);

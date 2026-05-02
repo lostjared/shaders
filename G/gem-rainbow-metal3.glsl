@@ -5,13 +5,13 @@ out vec4 color;
 uniform float time_f;
 uniform sampler2D samp;
 uniform vec2 iResolution;
-uniform float amp_peak; // peak absolute sample value in current audio buffer
-uniform float amp_rms; // RMS energy of current audio buffer
+uniform float amp_peak;   // peak absolute sample value in current audio buffer
+uniform float amp_rms;    // RMS energy of current audio buffer
 uniform float amp_smooth; // exponentially smoothed amplitude for gradual transitions
-uniform float amp_low; // bass energy (below ~300 Hz)
-uniform float amp_mid; // mid-range energy (~300-3000 Hz)
-uniform float amp_high; // treble energy (above ~3000 Hz)
-uniform float iamp; // estimated dominant frequency in Hz via zero-crossing rate
+uniform float amp_low;    // bass energy (below ~300 Hz)
+uniform float amp_mid;    // mid-range energy (~300-3000 Hz)
+uniform float amp_high;   // treble energy (above ~3000 Hz)
+uniform float iamp;       // estimated dominant frequency in Hz via zero-crossing rate
 // High-fidelity spectrum for the oily "fringe" colors
 vec3 spectrum(float t) {
     return vec3(0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67))));

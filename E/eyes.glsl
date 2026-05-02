@@ -31,7 +31,8 @@ vec4 sampleRipple(vec2 uv) {
 vec4 lens(vec2 uv, vec2 center, float radius, float k) {
     vec2 d = (uv - center) / radius;
     float r = length(d);
-    if (r > 1.0) return vec4(0.0);
+    if (r > 1.0)
+        return vec4(0.0);
     float r2 = r * r;
     float s = 1.0 - k * r2;
     vec2 suv = center + d * s * radius;
@@ -51,11 +52,9 @@ void main() {
         vec2(0.75, 0.35),
         vec2(0.25, 0.65),
         vec2(0.50, 0.70),
-        vec2(0.75, 0.65)
-    );
+        vec2(0.75, 0.65));
     const float radii[8] = float[](
-        0.18, 0.18, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12
-    );
+        0.18, 0.18, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12);
     const float k = 0.35;
 
     vec3 acc = vec3(0.0);
@@ -65,8 +64,10 @@ void main() {
         acc += c.rgb;
         w += c.a;
     }
-    if (w > 0.0) acc /= w;
-    else acc = sampleRipple(tc).rgb;
+    if (w > 0.0)
+        acc /= w;
+    else
+        acc = sampleRipple(tc).rgb;
 
     color = vec4(acc, 1.0);
 }

@@ -17,9 +17,7 @@ void main() {
     vec3 rgbStrobe = vec3(
         strobe ? redLayer.r : blueLayer.r,
         greenLayer.g,
-        strobe ? blueLayer.b : redLayer.b
-    );
+        strobe ? blueLayer.b : redLayer.b);
     vec4 echoEffect = texture(samp, uv + vec2(0.01 * sin(time_f), 0.01 * cos(time_f)));
     color = mix(vec4(rgbStrobe, 1.0), echoEffect, 0.5);
 }
-

@@ -20,11 +20,10 @@ in vec2 iResolution_;
 uniform float restore_black;
 uniform vec4 inc_valuex;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
-    vec2 pos = gl_FragCoord.xy/iResolution_.xy;
-    vec4 s = color * sin(inc_valuex/255 * timeval);
+    vec2 pos = gl_FragCoord.xy / iResolution_.xy;
+    vec4 s = color * sin(inc_valuex / 255 * timeval);
     color[0] += s[0] * pos[0];
     color[1] += s[1] * pos[1];
 }

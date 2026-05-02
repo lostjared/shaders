@@ -10,9 +10,8 @@ float pingPong(float x, float length) {
     return modVal <= length ? modVal : length * 2.0 - modVal;
 }
 
-
 void main(void) {
-    float time_t =   pingPong(time_f, 10.0) + 2.0;
+    float time_t = pingPong(time_f, 10.0) + 2.0;
     vec2 uv = tc - 0.5;
     float len = length(uv);
     float factor = sqrt(len) * 0.5;

@@ -29,11 +29,11 @@ vec2 kaleidoscope(vec2 p, float seg) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 p = (tc - 0.5) * vec2(aspect, 1.0);
@@ -47,7 +47,8 @@ void main() {
 
     // Diamond fold for extra facets
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
 
     // Treble jitter: high-frequency noise displacement
     float jitter = treble * 0.04;
@@ -62,7 +63,7 @@ void main() {
 
     // Glass warp normals
     float delta = 0.007;
-    float h  = dot(texture(samp, sampUV).rgb, vec3(0.33));
+    float h = dot(texture(samp, sampUV).rgb, vec3(0.33));
     float h1 = dot(texture(samp, sampUV + vec2(delta, 0.0)).rgb, vec3(0.33));
     float h2 = dot(texture(samp, sampUV + vec2(0.0, delta)).rgb, vec3(0.33));
     vec2 normal = vec2(h1 - h, h2 - h);

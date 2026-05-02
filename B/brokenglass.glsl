@@ -16,10 +16,10 @@ float voronoi(vec2 uv) {
     vec2 g = floor(uv);
     vec2 f = fract(uv);
     float res = 8.0;
-    for (int y=-1; y<=1; y++) {
-        for (int x=-1; x<=1; x++) {
-            vec2 lattice = vec2(x,y);
-            vec2 p = hash(g+lattice) * vec2(0.5+0.5*sin(time_f*0.2));
+    for (int y = -1; y <= 1; y++) {
+        for (int x = -1; x <= 1; x++) {
+            vec2 lattice = vec2(x, y);
+            vec2 p = hash(g + lattice) * vec2(0.5 + 0.5 * sin(time_f * 0.2));
             vec2 diff = lattice + p - f;
             float d = length(diff);
             res = min(res, d);
@@ -32,11 +32,10 @@ void main(void) {
     vec2 uv = tc * iResolution.xy / min(iResolution.x, iResolution.y);
 
     // Crack mask that spreads with time
-    float cracks = smoothstep(0.05, 0.15, voronoi(uv * (2.0 + 0.5*sin(time_f*0.1))));
+    float cracks = smoothstep(0.05, 0.15, voronoi(uv * (2.0 + 0.5 * sin(time_f * 0.1))));
 
     // Distortion based on crack intensity
-    vec2 offset = vec2(cos(uv.y*20.0 + time_f*0.5), sin(uv.x*20.0 - time_f*0.5)) 
-                  * (1.0 - cracks) * 0.02;
+    vec2 offset = vec2(cos(uv.y * 20.0 + time_f * 0.5), sin(uv.x * 20.0 - time_f * 0.5)) * (1.0 - cracks) * 0.02;
 
     // Sample texture with refracted coords
     vec4 texCol = texture(samp, tc + offset);

@@ -5,13 +5,13 @@ out vec4 color;
 
 // --- Uniforms ---
 uniform float time_f;
-uniform sampler2D samp; 
+uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
-uniform float amp;  
-uniform float uamp; 
+uniform float amp;
+uniform float uamp;
 uniform float iTime;
-uniform int iFrame; 
+uniform int iFrame;
 uniform float iTimeDelta;
 uniform vec4 iDate;
 uniform vec2 iMouseClick;
@@ -43,12 +43,12 @@ float getLuma(vec3 c) {
 void main(void) {
     // 1. Sample the original texture
     vec4 texColor = texture(samp, tc);
-    
+
     // 2. Calculate how bright this pixel is
     float brightness = getLuma(texColor.rgb);
 
     // 3. Create a mask based on darkness
-    // smoothstep creates a value between 0.0 and 1.0. 
+    // smoothstep creates a value between 0.0 and 1.0.
     // If brightness is high (light pixel), mask becomes 0.0.
     // If brightness is low (dark pixel), mask becomes 1.0.
     float mask = 1.0 - smoothstep(DARKNESS_THRESHOLD, DARKNESS_THRESHOLD + BLEND_SOFTNESS, brightness);
@@ -58,7 +58,7 @@ void main(void) {
     vec3 rainbow = palette((tc.x + tc.y * 0.5) * RAINBOW_SCALE + iTime * RAINBOW_SPEED);
 
     // 5. Mix them together
-    // The 'mask' controls the mix. 
+    // The 'mask' controls the mix.
     // 0.0 = Pure Original Image
     // 1.0 = Pure Rainbow
     vec3 finalRGB = mix(texColor.rgb, rainbow, mask);

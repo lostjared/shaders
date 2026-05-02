@@ -16,14 +16,14 @@ uniform float amp_high;
 out vec4 color;
 in vec2 tc;
 
-const float iAmplitude  = 1.0;
-const float iFrequency  = 1.0;
+const float iAmplitude = 1.0;
+const float iFrequency = 1.0;
 const float iBrightness = 1.0;
-const float iContrast   = 1.20;
+const float iContrast = 1.20;
 const float iSaturation = 1.40;
-const float iHueShift   = 0.0;
-const float iZoom       = 1.0;
-const float iRotation   = 0.0;
+const float iHueShift = 0.0;
+const float iZoom = 1.0;
+const float iRotation = 0.0;
 const float iMercuryGloss = 1.0;
 
 vec3 palette(float t) {
@@ -43,7 +43,10 @@ vec4 mxTexture(sampler2D tex, vec2 uv) {
     return textureLod(tex, clamp(u, eps, 1.0 - eps), 0.0);
 }
 
-mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
+mat2 rot(float a) {
+    float c = cos(a), s = sin(a);
+    return mat2(c, -s, s, c);
+}
 
 vec3 mercuryFractal(vec2 uv, vec2 center, float t) {
     vec2 p = uv - center;
@@ -60,7 +63,8 @@ vec3 mercuryFractal(vec2 uv, vec2 center, float t) {
     for (float i = 0.0; i < iter; i++) {
         // sphere inversion: makes everything bulge / blob
         float r2 = dot(p, p);
-        if (r2 > 0.0001) p /= max(r2, 0.35);
+        if (r2 > 0.0001)
+            p /= max(r2, 0.35);
 
         // box fold
         p = clamp(p, -1.0, 1.0) * 2.0 - p;
@@ -96,11 +100,12 @@ vec3 mercuryFractal(vec2 uv, vec2 center, float t) {
 void main() {
     vec2 uv = tc;
     vec2 center = vec2(0.5);
-    if (iMouse.z > 0.0) center = iMouse.xy / iResolution;
-    float bass   = texture(spectrum, 0.03).r + amp_low  * 0.5;
-    float midF   = texture(spectrum, 0.22).r + amp_mid  * 0.5;
+    if (iMouse.z > 0.0)
+        center = iMouse.xy / iResolution;
+    float bass = texture(spectrum, 0.03).r + amp_low * 0.5;
+    float midF = texture(spectrum, 0.22).r + amp_mid * 0.5;
     float treble = texture(spectrum, 0.58).r + amp_high * 0.5;
-    float beat   = max(amp_peak, bass);
+    float beat = max(amp_peak, bass);
     float t = time_f * (0.08 + iFrequency * 0.20) * (1.0 + 0.6 * beat);
 
     vec3 col = mercuryFractal(uv, center, t);

@@ -14,7 +14,8 @@ void main() {
 
     vec2 p = tc - 0.5;
     vec2 uv = vec2(p.x * c - p.y * s,
-                   p.x * s + p.y * c) + 0.5;
+                   p.x * s + p.y * c) +
+              0.5;
 
     uv = abs(fract(uv) * 2.0 - 1.0);
 

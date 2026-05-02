@@ -15,20 +15,19 @@ void main(void) {
     ripple1 += sin(tc.y * 9.6 + time_f * 6.0) * 0.03;
     vec2 tc1 = tc + vec2(ripple1);
     tc1.y += sin(time_f * 2.5) * 0.02; // Vertical movement
-    
+
     // Spiral effect
     vec2 pos1 = tc1 - center;
     float angle1 = length(pos1) * 8.0 + time_f * 3.0;
     mat2 rot1 = mat2(cos(angle1), -sin(angle1), sin(angle1), cos(angle1));
     tc1 = rot1 * pos1 + center;
 
-
     // Wave 2: Horizontal Blue Wave
     float ripple2 = sin(tc.x * 15.0 + time_f * 6.5) * 0.025;
     ripple2 += sin(tc.y * 4.5 + time_f * 4.5) * 0.025;
     vec2 tc2 = tc + vec2(ripple2 * 1.5, -ripple2 * 0.7);
     tc2.y += sin(time_f * 3.0) * 0.015; // Vertical movement
-    
+
     // Reverse spiral
     vec2 pos2 = tc2 - center;
     float angle2 = -length(pos2) * 6.0 + time_f * 2.5;
@@ -40,7 +39,7 @@ void main(void) {
     ripple3 += sin(tc.y * 14.0 + time_f * 5.2) * 0.035;
     vec2 tc3 = tc + vec2(ripple3 * 0.4, ripple3);
     tc3.y += sin(time_f * 4.5) * 0.025; // Vertical movement
-    
+
     // Swirling spiral
     vec2 pos3 = tc3 - center;
     float angle3 = length(pos3) * 10.0 + time_f * 4.0;

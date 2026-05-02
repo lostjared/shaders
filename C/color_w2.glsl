@@ -32,10 +32,11 @@ void main(void) {
 
     float modAngle = angle + t * 0.5;
     vec3 swirlColor = vec3(
-        sin(modAngle * 3.0),
-        sin(modAngle * 2.0 + 1.0),
-        sin(modAngle * 1.0 + 2.0)
-    ) * 0.5 + 0.5;
+                          sin(modAngle * 3.0),
+                          sin(modAngle * 2.0 + 1.0),
+                          sin(modAngle * 1.0 + 2.0)) *
+                          0.5 +
+                      0.5;
 
     vec3 finalColor = mix(swirlColor, texColor, 0.7);
 

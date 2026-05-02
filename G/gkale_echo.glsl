@@ -16,24 +16,21 @@ vec4 firstEffect(vec2 tc) {
     tc2 *= 0.8;
     tc2 = vec2(
         tc2.x * cos(angle + 1.0) - tc2.y * sin(angle + 1.0),
-        tc2.x * sin(angle + 1.0) + tc2.y * cos(angle + 1.0)
-    );
+        tc2.x * sin(angle + 1.0) + tc2.y * cos(angle + 1.0));
     tc2 += center;
     tc2 = fract(tc2);
     vec2 tc3 = tc - center;
     tc3 *= 0.6;
     tc3 = vec2(
         tc3.x * cos(angle + 2.0) - tc3.y * sin(angle + 2.0),
-        tc3.x * sin(angle + 2.0) + tc3.y * cos(angle + 2.0)
-    );
+        tc3.x * sin(angle + 2.0) + tc3.y * cos(angle + 2.0));
     tc3 += center;
     tc3 = fract(tc3);
     vec2 tc4 = tc - center;
     tc4 *= 0.4;
     tc4 = vec2(
         tc4.x * cos(angle + 3.0) - tc4.y * sin(angle + 3.0),
-        tc4.x * sin(angle + 3.0) + tc4.y * cos(angle + 3.0)
-    );
+        tc4.x * sin(angle + 3.0) + tc4.y * cos(angle + 3.0));
     tc4 += center;
     tc4 = fract(tc4);
     vec4 color1 = texture(samp, tc1);
@@ -59,12 +56,10 @@ void main(void) {
     vec3 colorShift = vec3(
         0.5 + 0.5 * cos(pattern + time_t + 0.0),
         0.5 + 0.5 * cos(pattern + time_t + 2.094),
-        0.5 + 0.5 * cos(pattern + time_t + 4.188)
-    );
+        0.5 + 0.5 * cos(pattern + time_t + 4.188));
     vec3 finalColor = texColor.rgb * colorShift;
     color = vec4(finalColor, texColor.a);
     color = mix(color, firstEffect(tc), 0.5);
     color = sin(color * time_t);
     color.a = 1.0;
 }
-

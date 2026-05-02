@@ -19,6 +19,6 @@ void main(void) {
 
     float glitchFactor = sin(time_f * 50.0);
     vec4 glitchColor = texture(samp, tc + vec2(glitchFactor * 0.1, glitchFactor * 0.1));
-    
+
     color = mix(mix(color1, color2, 0.5), glitchColor, 0.5);
 }

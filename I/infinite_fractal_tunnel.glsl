@@ -20,9 +20,9 @@ void main() {
     // ==========================================
     // 1. AUDIO SAMPLING
     // ==========================================
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
 
     vec2 uv = (tc - 0.5) * 2.0;
@@ -31,7 +31,7 @@ void main() {
     // ==========================================
     // 2. LOG-POLAR TUNNEL MAPPING
     // ==========================================
-    float radius = max(length(uv), 0.0001); 
+    float radius = max(length(uv), 0.0001);
     float angle = atan(uv.y, uv.x);
 
     // Tweak these to change the physical structure of the tunnel
@@ -43,7 +43,7 @@ void main() {
 
     // Tile the coordinate space
     vec2 p = fract(polarUV * tunnelDensity) * 2.0 - 1.0;
-    
+
     // Audio pulse directly on the geometry
     p *= 1.0 + bass * 0.4;
 
@@ -53,10 +53,11 @@ void main() {
     float iters = 0.0;
     const float maxIters = 50.0;
     vec2 c = vec2(0.8 + mid * 0.2, 0.5 + 0.1 * sin(iTime * 0.25));
-    
+
     for (float i = 0.0; i < maxIters; i++) {
         p = abs(p) / dot(p, p) - c;
-        if (length(p) > 20.0) break;
+        if (length(p) > 20.0)
+            break;
         iters++;
     }
     float norm = iters / maxIters;

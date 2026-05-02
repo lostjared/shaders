@@ -21,26 +21,24 @@ in vec2 iResolution_;
 
 vec4 opposite(vec4 inputx) {
     ivec4 col = ivec4(inputx * 255);
-    col[0] = 255-col[0];
-    col[1] = 255-col[1];
-    col[2] = 255-col[2];
+    col[0] = 255 - col[0];
+    col[1] = 255 - col[1];
+    col[2] = 255 - col[2];
     vec4 val;
-    for(int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i) {
         val[i] = float(col[i]) / 255;
     }
     return val;
 }
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     ivec4 source = ivec4(255 * color);
-    vec2 pos = gl_FragCoord.xy/iResolution_.xy;
+    vec2 pos = gl_FragCoord.xy / iResolution_.xy;
     vec2 vpos;
-    vpos[0] = 1.0-tc[0];
+    vpos[0] = 1.0 - tc[0];
     vpos[1] = tc[1];
     vec4 color2 = opposite(texture(samp, vpos));
-    
+
     color = (0.5 * color) + (0.5 * color2);
 }
-

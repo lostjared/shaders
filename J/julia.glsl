@@ -16,7 +16,7 @@ uniform float uamp;
 // (Classic 2D hash based on UV coords)
 float hash12(vec2 p) {
     // A simple hashing function
-    vec3 p3  = fract(vec3(p.xyx) * 0.1031);
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
     p3 += dot(p3, p3.yzx + 19.19);
     return fract((p3.x + p3.y) * p3.z);
 }
@@ -35,9 +35,9 @@ vec2 genSeed(float key) {
 // --------------------------------------------------------
 // Simple helper to rotate 2D coordinates
 // --------------------------------------------------------
-mat2 rotate2D(float angle){
+mat2 rotate2D(float angle) {
     return mat2(cos(angle), -sin(angle),
-                sin(angle),  cos(angle));
+                sin(angle), cos(angle));
 }
 
 // --------------------------------------------------------
@@ -55,8 +55,8 @@ vec4 drawJulia(vec2 uv, vec2 center, vec2 c) {
     vec2 z = uv;
     float m = 0.0;
     for (int i = 0; i < MAX_ITER; i++) {
-        z = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y) + c;
-        if (dot(z,z) > 4.0) {
+        z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c;
+        if (dot(z, z) > 4.0) {
             m = float(i) / float(MAX_ITER);
             break;
         }
@@ -64,7 +64,7 @@ vec4 drawJulia(vec2 uv, vec2 center, vec2 c) {
 
     // Convert iteration ratio into color
     float colVal = m;
-    vec3 col = vec3(sin(colVal * 6.2831),  // some fun banding
+    vec3 col = vec3(sin(colVal * 6.2831), // some fun banding
                     colVal,
                     1.0 - colVal);
     // Return with alpha = min(1.0, some factor)
@@ -81,15 +81,15 @@ vec4 drawPulsingCircle(vec2 uv, vec2 center, float radius) {
     // Pulsate the radius with time
     float pulse = 0.5 + 0.4 * sin(time_f * 2.0);
     float finalRadius = radius * pulse;
-    
+
     // Hard edge circle with smooth fade
     float edge = smoothstep(finalRadius, finalRadius - 0.01, dist);
-    
+
     // We can color it however we like
     // Let’s do a gradient from center to edge
     float t = dist / finalRadius;
-    vec3 baseColor = mix(vec3(1.0, 0.5, 0.0),    // center color
-                         vec3(0.0, 0.5, 1.0),    // edge color
+    vec3 baseColor = mix(vec3(1.0, 0.5, 0.0), // center color
+                         vec3(0.0, 0.5, 1.0), // edge color
                          t);
     // edge is basically alpha for “outside vs inside”
     // invert because smoothstep finalRadius -> finalRadius-0.01
@@ -105,8 +105,7 @@ vec4 drawPulsingCircle(vec2 uv, vec2 center, float radius) {
 //   2) Once done, draw circle in another random location
 //   3) Repeat
 // --------------------------------------------------------
-void main(void)
-{
+void main(void) {
     //-----------------------------------------
     // 1) Basic pass-through from the original
     //    texture, so we have a background
@@ -126,20 +125,20 @@ void main(void)
     //-----------------------------------------
     float cycleDuration = 13.0;
     float cycleTime = mod(time_f, cycleDuration);
-    float cycleIndex = floor(time_f / cycleDuration); 
+    float cycleIndex = floor(time_f / cycleDuration);
     // We’ll use cycleIndex as a “seed” for random picks
 
     // Times for fractal
-    float fractalFadeInStart   = 0.0;
-    float fractalFadeInEnd     = 1.0;     // 0..1
-    float fractalHoldEnd       = 3.0;     // 1..3
-    float fractalFadeOutEnd    = 4.0;     // 3..4
+    float fractalFadeInStart = 0.0;
+    float fractalFadeInEnd = 1.0;  // 0..1
+    float fractalHoldEnd = 3.0;    // 1..3
+    float fractalFadeOutEnd = 4.0; // 3..4
 
     // Times for circle
-    float circleFadeInStart    = 5.0;
-    float circleFadeInEnd      = 6.0;     // 5..6
-    float circleHoldEnd        = 8.0;     // 6..8
-    float circleFadeOutEnd     = 9.0;     // 8..9
+    float circleFadeInStart = 5.0;
+    float circleFadeInEnd = 6.0;  // 5..6
+    float circleHoldEnd = 8.0;    // 6..8
+    float circleFadeOutEnd = 9.0; // 8..9
 
     //-----------------------------------------
     // 3) Random seeds and positions
@@ -148,15 +147,15 @@ void main(void)
     //       - circle location, circle radius
     //-----------------------------------------
     // fractal center (in clip space [-1..1])
-    vec2 fractalRand   = genSeed(cycleIndex * 3.17);
+    vec2 fractalRand = genSeed(cycleIndex * 3.17);
     // Map from [0..1] to [-0.8..0.8], so it's not off-screen
     vec2 fractalCenter = fractalRand * 1.6 - 0.8;
     // fractal c
-    vec2 fractalSeed   = genSeed(cycleIndex * 1.93) * 2.0 - 1.0;
+    vec2 fractalSeed = genSeed(cycleIndex * 1.93) * 2.0 - 1.0;
 
     // circle center
-    vec2 circleRand    = genSeed(cycleIndex * 7.87 + 1.234);
-    vec2 circleCenter  = circleRand * 1.6 - 0.8;
+    vec2 circleRand = genSeed(cycleIndex * 7.87 + 1.234);
+    vec2 circleCenter = circleRand * 1.6 - 0.8;
     // circle radius
     float circleRadius = 0.2 + 0.2 * hash12(circleRand + 0.123);
 
@@ -176,7 +175,7 @@ void main(void)
         // fade out from 1..0
         float t = (cycleTime - fractalHoldEnd) / (fractalFadeOutEnd - fractalHoldEnd);
         fractalAlpha = 1.0 - smoothstep(0.0, 1.0, t);
-    } 
+    }
     // else fractalAlpha remains 0 outside that interval
 
     //-----------------------------------------

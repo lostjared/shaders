@@ -14,16 +14,15 @@ float pingPong(float x, float length) {
     return m <= length ? m : length * 2.0 - m;
 }
 
-vec3 rainbow(float t){
+vec3 rainbow(float t) {
     float hue = mod(t, 1.0) * 6.0;
     float c = 1.0;
     float x = 1.0 - abs(mod(hue, 2.0) - 1.0);
-    vec3 rgb = (hue < 1.0) ? vec3(c, x, 0.0) :
-               (hue < 2.0) ? vec3(x, c, 0.0) :
-               (hue < 3.0) ? vec3(0.0, c, x) :
-               (hue < 4.0) ? vec3(0.0, x, c) :
-               (hue < 5.0) ? vec3(x, 0.0, c) :
-                             vec3(c, 0.0, x);
+    vec3 rgb = (hue < 1.0) ? vec3(c, x, 0.0) : (hue < 2.0) ? vec3(x, c, 0.0)
+                                           : (hue < 3.0)   ? vec3(0.0, c, x)
+                                           : (hue < 4.0)   ? vec3(0.0, x, c)
+                                           : (hue < 5.0)   ? vec3(x, 0.0, c)
+                                                           : vec3(c, 0.0, x);
     return rgb;
 }
 
@@ -116,7 +115,8 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -145,7 +145,8 @@ void main(void) {
 
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
+    if (q.y > q.x)
+        q = q.yx;
 
     float baseF = 1.82 + 0.18 * pingPong(sin(time_f * 0.2) * (PI * time_f), 5.0);
     float periodF = log(baseF) * pingPong(time_f * PI, 5.0);

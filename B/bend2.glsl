@@ -22,6 +22,6 @@ void main(void) {
     uv = mat2(cos(angle), -sin(angle), sin(angle), cos(angle)) * uv;
     uv += center;
     float time_t = pingPong(time_f, 10.0);
-    uv += sin(time_t * bend) + tan(bend * uv * time_t) ;
+    uv += sin(time_t *bend) + tan(bend * uv * time_t);
     color = texture(samp, uv);
 }

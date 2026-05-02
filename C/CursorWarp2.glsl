@@ -8,21 +8,24 @@ uniform vec4 iMouse;
 uniform float amp;
 uniform float uamp;
 
-float h1(float n){return fract(sin(n)*43758.5453123);}
-vec2 h2(float n){return fract(sin(vec2(n, n+1.0))*vec2(43758.5453,22578.1459));}
-float tri(float x){float f=fract(x); return 1.0-abs(f*2.0-1.0);}
+float h1(float n) { return fract(sin(n) * 43758.5453123); }
+vec2 h2(float n) { return fract(sin(vec2(n, n + 1.0)) * vec2(43758.5453, 22578.1459)); }
+float tri(float x) {
+    float f = fract(x);
+    return 1.0 - abs(f * 2.0 - 1.0);
+}
 
 void main(void) {
     vec2 uv = tc;
     float rate = 0.8;
-    float t = time_f*rate;
+    float t = time_f * rate;
     float t0 = floor(t);
     float a = fract(t);
-    vec2 p0 = vec2(0.1) + h2(t0)*0.8;
-    vec2 p1 = vec2(0.1) + h2(t0+1.0)*0.8;
-    float w = a*a*(3.0-2.0*a);
+    vec2 p0 = vec2(0.1) + h2(t0) * 0.8;
+    vec2 p1 = vec2(0.1) + h2(t0 + 1.0) * 0.8;
+    float w = a * a * (3.0 - 2.0 * a);
     vec2 m_auto = mix(p0, p1, w);
-    vec2 m = (iMouse.z>0.5 || iMouse.w>0.5) ? (iMouse.xy/iResolution) : m_auto;
+    vec2 m = (iMouse.z > 0.5 || iMouse.w > 0.5) ? (iMouse.xy / iResolution) : m_auto;
 
     vec2 d = uv - m;
     float dist = length(d);
@@ -30,8 +33,8 @@ void main(void) {
     float ua = clamp(uamp, 0.0, 1.0);
 
     float r0 = mix(0.06, 0.35, a1) * 1.5;
-    float pr = tri(time_f*0.6);
-    float r = r0 * mix(0.75, 1.35, pr*(0.3+0.7*ua));
+    float pr = tri(time_f * 0.6);
+    float r = r0 * mix(0.75, 1.35, pr * (0.3 + 0.7 * ua));
 
     float s = smoothstep(r, 0.0, dist);
     float k = 0.6 + 0.4 * ua;

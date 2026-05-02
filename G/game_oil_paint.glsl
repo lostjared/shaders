@@ -24,12 +24,15 @@ vec4 boxAvg(vec2 origin, vec2 px) {
 void main(void) {
     vec2 px = 1.5 / iResolution;
     vec4 q0 = boxAvg(tc + vec2(-2.0, -2.0) * px, px);
-    vec4 q1 = boxAvg(tc + vec2( 0.0, -2.0) * px, px);
-    vec4 q2 = boxAvg(tc + vec2(-2.0,  0.0) * px, px);
-    vec4 q3 = boxAvg(tc + vec2( 0.0,  0.0) * px, px);
+    vec4 q1 = boxAvg(tc + vec2(0.0, -2.0) * px, px);
+    vec4 q2 = boxAvg(tc + vec2(-2.0, 0.0) * px, px);
+    vec4 q3 = boxAvg(tc + vec2(0.0, 0.0) * px, px);
     vec4 best = q0;
-    if (q1.a < best.a) best = q1;
-    if (q2.a < best.a) best = q2;
-    if (q3.a < best.a) best = q3;
+    if (q1.a < best.a)
+        best = q1;
+    if (q2.a < best.a)
+        best = q2;
+    if (q3.a < best.a)
+        best = q3;
     color = vec4(best.rgb, 1.0);
 }

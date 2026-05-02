@@ -15,4 +15,3 @@ void main() {
     vec3 finalColor = mix(texColor.rgb, vec3(xor_effect_r, xor_effect_g, xor_effect_b), 0.5);
     color = vec4(finalColor, texColor.a);
 }
-

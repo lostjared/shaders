@@ -14,10 +14,11 @@ void main(void) {
     float angle = atan(uv.y, uv.x);
     float spiralSpeed = 1.0;
     angle += current_t * spiralSpeed;
-    radius *= current_t;     vec2 spiralCoord = vec2(cos(angle), sin(angle)) * radius;
+    radius *= current_t;
+    vec2 spiralCoord = vec2(cos(angle), sin(angle)) * radius;
 
-    vec2 transformedCoord = sin(spiralCoord * radius/2);
-    
+    vec2 transformedCoord = sin(spiralCoord * radius / 2);
+
     vec2 finalCoord = transformedCoord * 0.5 + 0.5;
     color = texture(samp, finalCoord);
 }

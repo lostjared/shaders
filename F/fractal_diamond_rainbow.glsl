@@ -80,24 +80,24 @@ vec3 tentBlur3(sampler2D img, vec2 uv, vec2 res) {
 vec3 preBlendColor(vec2 uv) {
     // 1. Sample the image (using high quality blur)
     vec3 tex = tentBlur3(samp, uv, iResolution);
-    
-    // 2. Generate the Rainbow Wave 
+
+    // 2. Generate the Rainbow Wave
     // We center the UVs (0..1 -> -1..1) to make the spiral rotate around the center of the shard
     vec2 centered = uv * 2.0 - 1.0;
-    
+
     // Optional: fix aspect for the spiral so it's circular
     float aspect = iResolution.x / iResolution.y;
     // centered.x *= aspect; // Uncomment if spirals look too squashed
-    
+
     // Wave distortion
     float wave = sin(centered.x * 10.0 + time_f * 2.0) * 0.1;
-    
+
     // Angle calculation + Rotation
     float angle = atan(centered.y + wave, centered.x) + time_f * 2.0;
-    
+
     // Get Rainbow color
     vec3 rain = rainbow(angle / (2.0 * PI));
-    
+
     // 3. Blend the Texture with the Rainbow (50/50 mix)
     return mix(tex, rain, 0.5);
 }
@@ -110,7 +110,8 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x) p = p.yx;
+    if (p.y > p.x)
+        p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -118,75 +119,76 @@ vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
 void main(void) {
     // Original Background
     vec4 baseTex = texture(samp, tc);
-    
+
     // Geometry Setup
     vec2 uv = tc * 2.0 - 1.0;
     float aspect = iResolution.x / iResolution.y;
     uv.x *= aspect;
-    
+
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
     vec2 ar = vec2(aspect, 1.0);
-    
+
     // Fractal Shape Logic
     float seg = 4.0 + 2.0 * sin(time_f * 0.33);
     vec2 kUV = reflectUV(tc, seg, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    
+
     // Reduced zoom aggression to keep image visible
     float foldZoom = 1.3 + 0.3 * sin(time_f * 0.42);
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
     kUV = rotateUV(kUV, time_f * 0.23, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    
+
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x) q = q.yx;
-    
+    if (q.y > q.x)
+        q = q.yx;
+
     // Logarithmic Spiral Projection
-    float base = 1.82; 
+    float base = 1.82;
     float period = log(base);
     float tz = time_f * 0.65;
     float rD = diamondRadius(p) + 1e-6;
     float ang = atan(q.y, q.x) + tz * 0.35 + 0.35 * sin(rD * 18.0 + time_f * 0.6);
     float k = fract((log(rD) - tz) / period);
     float rw = exp(k * period);
-    
+
     // Texture Mapping
     vec2 pwrap = vec2(cos(ang), sin(ang)) * rw;
-    
+
     // Chromatic Aberration Offsets
     vec2 dir = normalize(pwrap + 1e-6);
     vec2 off = dir * (0.0015 + 0.001 * sin(time_f * 1.3)) * vec2(1.0, 1.0 / aspect);
-    
+
     vec2 u0 = fract(pwrap / ar + m);
     vec2 u1 = fract((pwrap * 1.045) / ar + m);
     vec2 u2 = fract((pwrap * 0.955) / ar + m);
-    
+
     // --- Sample Texture + Rainbow ---
     vec3 rC = preBlendColor(u0 + off);
     vec3 gC = preBlendColor(u1);
     vec3 bC = preBlendColor(u2 - off);
-    
+
     vec3 kaleidoRGB = vec3(rC.r, gC.g, bC.b);
-    
+
     // Post-Processing
     float vign = 1.0 - smoothstep(0.75, 1.2, length((tc - m) * ar));
     vign = mix(0.9, 1.15, vign);
-    
+
     float pulse = 0.5 + 0.5 * sin(time_f * 2.0 + rD * 28.0 + k * 12.0);
-    
+
     vec3 outCol = kaleidoRGB;
     outCol *= (0.8 + 0.2 * pulse) * vign; // Gentle lighting
-    
+
     // Removed the "Bloom" that turns things white
     // Instead, just clamping to keep colors rich
     outCol = clamp(outCol, 0.0, 1.0);
-    
+
     // Final Mix
     // 60% Fractal Overlay, 40% Original Background
-    // This blend allows the original image to show through, 
+    // This blend allows the original image to show through,
     // while the diamonds (containing the image + rainbow) float on top.
     vec3 finalRGB = mix(baseTex.rgb, outCol, 0.6);
-    
+
     color = vec4(finalRGB, baseTex.a);
 }

@@ -7,8 +7,7 @@ uniform sampler2D samp;
 uniform float time_f;
 uniform vec2 iResolution;
 
-void main(void)
-{
+void main(void) {
     vec2 uv = tc;
     vec2 center = vec2(0.5, 0.5);
     float distance = length(uv - center);

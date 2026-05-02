@@ -4,12 +4,11 @@ out vec4 color;
 uniform sampler2D samp;
 uniform float time_f;
 
-void main(void)
-{
+void main(void) {
     vec2 mirrored_tc = tc;
-    
+
     int direction = int(mod(time_f, 4.0));
-    
+
     if (direction == 0) {
         mirrored_tc = tc;
     } else if (direction == 1) {
@@ -22,4 +21,3 @@ void main(void)
 
     color = texture(samp, mirrored_tc);
 }
-

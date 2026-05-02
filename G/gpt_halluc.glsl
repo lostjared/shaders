@@ -9,14 +9,14 @@ out vec4 color;
 in vec2 tc; // Input UVs from the 3D Mesh
 
 // Controls
-const float iAmplitude  = 1.0;
-const float iFrequency  = 1.0;
+const float iAmplitude = 1.0;
+const float iFrequency = 1.0;
 const float iBrightness = 1.0;
-const float iContrast   = 1.0;
+const float iContrast = 1.0;
 const float iSaturation = 1.0;
-const float iHueShift   = 0.0;
-const float iZoom       = 1.0;
-const float iRotation   = 0.0;
+const float iHueShift = 0.0;
+const float iZoom = 1.0;
+const float iRotation = 0.0;
 
 // --- Helper Functions ---
 
@@ -37,16 +37,15 @@ vec3 rotateHue(vec3 col, float angle) {
     float U = cos(angle);
     float W = sin(angle);
     mat3 R = mat3(
-        0.299 + 0.701*U + 0.168*W,
-        0.587 - 0.587*U + 0.330*W,
-        0.114 - 0.114*U - 0.497*W,
-        0.299 - 0.299*U - 0.328*W,
-        0.587 + 0.413*U + 0.035*W,
-        0.114 - 0.114*U + 0.292*W,
-        0.299 - 0.300*U + 1.250*W,
-        0.587 - 0.588*U - 1.050*W,
-        0.114 + 0.886*U - 0.203*W
-    );
+        0.299 + 0.701 * U + 0.168 * W,
+        0.587 - 0.587 * U + 0.330 * W,
+        0.114 - 0.114 * U - 0.497 * W,
+        0.299 - 0.299 * U - 0.328 * W,
+        0.587 + 0.413 * U + 0.035 * W,
+        0.114 - 0.114 * U + 0.292 * W,
+        0.299 - 0.300 * U + 1.250 * W,
+        0.587 - 0.588 * U - 1.050 * W,
+        0.114 + 0.886 * U - 0.203 * W);
     return clamp(R * col, 0.0, 1.0);
 }
 
@@ -76,16 +75,16 @@ vec2 wrapUV(vec2 tc) {
 vec4 mxTexture(sampler2D tex, vec2 tc) {
     vec2 ts = vec2(textureSize(tex, 0));
     vec2 eps = 0.5 / ts;
-    
+
     vec2 uv = wrapUV(tc);
     vec2 sampleUV = clamp(uv, eps, 1.0 - eps);
-    
+
     float lod = 0.0;
     vec2 deriv = fwidth(tc);
     if (deriv.x > 0.0 || deriv.y > 0.0) {
         lod = log2(max(max(deriv.x, deriv.y) * max(ts.x, ts.y), 1.0));
     }
-    
+
     return textureLod(tex, sampleUV, lod);
 }
 
@@ -129,10 +128,10 @@ vec2 kaleido(vec2 p, float slices) {
 
 vec3 sampleWarp(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     // If mapping to a mesh with square texture, you might want to force aspect to 1.0
-    // float aspect = 1.0; 
-    float aspect = res.x / res.y; 
+    // float aspect = 1.0;
+    float aspect = res.x / res.y;
 
-    float ampControl  = clamp(iAmplitude,  0.0, 2.0);
+    float ampControl = clamp(iAmplitude, 0.0, 2.0);
     float freqControl = clamp(iFrequency, 0.0, 2.0);
 
     vec2 p = (uv - center) * vec2(aspect, 1.0);
@@ -146,7 +145,7 @@ vec3 sampleWarp(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     a += (f1 * 4.0 + f2 * 2.0) * strength * 0.6;
     swirl = vec2(cos(a), sin(a)) * r;
 
-    float sliceBase  = 8.0;
+    float sliceBase = 8.0;
     float sliceRange = 8.0;
     float slices = sliceBase + sliceRange * (0.3 + 0.7 * ampControl) + 4.0 * sin(t * 0.17);
 
@@ -157,7 +156,7 @@ vec3 sampleWarp(vec2 uv, float t, float strength, vec2 center, vec2 res) {
     flow.y += (f2 - f3) * 0.8 * strength;
 
     vec2 base = flow / vec2(aspect, 1.0) + center;
-    base = fract(base); 
+    base = fract(base);
 
     float chromaBoost = 0.5 + 0.5 * ampControl;
     vec2 chromaShift = 0.0035 * strength * chromaBoost *
@@ -185,7 +184,7 @@ vec3 sampleWarp(vec2 uv, float t, float strength, vec2 center, vec2 res) {
 void main() {
     // 1. Get UVs from the mesh input
     vec2 uv = tc;
-    
+
     // 2. Apply Mirror Wrapping immediately
     // This makes the UVs "bounce" back and forth (0->1->0) ensuring seamless edges on the mesh
     uv = wrapUV(uv);
@@ -193,15 +192,15 @@ void main() {
     // 3. Apply Zoom/Rotation to the wrapped UVs
     uv = applyZoomRotation(uv, vec2(0.5));
 
-    float ampControl  = clamp(iAmplitude,  0.0, 2.0);
+    float ampControl = clamp(iAmplitude, 0.0, 2.0);
     float freqControl = clamp(iFrequency, 0.0, 2.0);
 
-    float tSpeed   = 0.3 + 1.7 * (freqControl * 0.5);
-    float t        = time_f * tSpeed;
+    float tSpeed = 0.3 + 1.7 * (freqControl * 0.5);
+    float t = time_f * tSpeed;
     float strength = 0.6 + 1.6 * (ampControl * 0.5);
 
     vec2 center = vec2(0.5);
-    
+
     // Check if mouse button is pressed (z > 0)
     if (iMouse.z > 0.0) {
         center = iMouse.xy / iResolution;

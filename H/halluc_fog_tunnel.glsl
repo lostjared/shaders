@@ -16,14 +16,14 @@ uniform float amp_high;
 out vec4 color;
 in vec2 tc;
 
-const float iAmplitude  = 1.0;
-const float iFrequency  = 0.9;
+const float iAmplitude = 1.0;
+const float iFrequency = 0.9;
 const float iBrightness = 0.95;
-const float iContrast   = 1.10;
+const float iContrast = 1.10;
 const float iSaturation = 0.80;
-const float iHueShift   = 0.40;
-const float iZoom       = 1.0;
-const float iRotation   = 0.0;
+const float iHueShift = 0.40;
+const float iZoom = 1.0;
+const float iRotation = 0.0;
 
 vec3 fogPalette(float t) {
     vec3 a = vec3(0.40, 0.45, 0.55);
@@ -40,7 +40,10 @@ vec4 mxTexture(sampler2D tex, vec2 uv) {
     vec2 u = wrapUV(uv);
     return textureLod(tex, clamp(u, eps, 1.0 - eps), 0.0);
 }
-mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
+mat2 rot(float a) {
+    float c = cos(a), s = sin(a);
+    return mat2(c, -s, s, c);
+}
 
 float hash21(vec2 p) {
     p = fract(p * vec2(127.1, 311.7));
@@ -58,7 +61,11 @@ float vnoise(vec2 p) {
 }
 float fbm(vec2 p) {
     float v = 0.0, a = 0.5;
-    for (int i = 0; i < 6; ++i) { v += a * vnoise(p); p *= 2.05; a *= 0.5; }
+    for (int i = 0; i < 6; ++i) {
+        v += a * vnoise(p);
+        p *= 2.05;
+        a *= 0.5;
+    }
     return v;
 }
 
@@ -79,7 +86,7 @@ vec3 fogTunnel(vec2 uv, vec2 center, float t) {
     vec2 ang = vec2(cos(a), sin(a));
 
     // fbm fog density along tunnel — continuous across the seam
-    float fog  = fbm(ang * K * 1.5 + vec2(depth * 1.5, 0.0));
+    float fog = fbm(ang * K * 1.5 + vec2(depth * 1.5, 0.0));
     float fog2 = fbm(ang * K * 3.0 + vec2(0.0, depth * 3.0) + 5.0);
     fog = mix(fog, fog2, 0.4);
     fog *= smoothstep(0.0, 1.5, 1.5 - r); // fade at edges
@@ -99,7 +106,7 @@ vec3 fogTunnel(vec2 uv, vec2 center, float t) {
     vec3 pal = fogPalette(fog * 0.7 + r * 0.3 + t * 0.05);
     vec3 col = accTex * (1.0 - fog * 0.85);
     col = mix(col, pal, smoothstep(0.10, 0.95, fog));
-    col += pal * pow(1.0 - r, 4.0) * 0.30;     // distant glow
+    col += pal * pow(1.0 - r, 4.0) * 0.30;      // distant glow
     col *= 1.0 - smoothstep(0.7, 1.6, r) * 0.5; // tunnel falloff
     return col;
 }
@@ -107,11 +114,12 @@ vec3 fogTunnel(vec2 uv, vec2 center, float t) {
 void main() {
     vec2 uv = tc;
     vec2 center = vec2(0.5);
-    if (iMouse.z > 0.0) center = iMouse.xy / iResolution;
-    float bass   = texture(spectrum, 0.03).r + amp_low  * 0.5;
-    float midF   = texture(spectrum, 0.22).r + amp_mid  * 0.5;
+    if (iMouse.z > 0.0)
+        center = iMouse.xy / iResolution;
+    float bass = texture(spectrum, 0.03).r + amp_low * 0.5;
+    float midF = texture(spectrum, 0.22).r + amp_mid * 0.5;
     float treble = texture(spectrum, 0.58).r + amp_high * 0.5;
-    float beat   = max(amp_peak, bass);
+    float beat = max(amp_peak, bass);
     float t = time_f * (0.10 + iFrequency * 0.20) * (1.0 + 0.6 * beat);
 
     vec3 col = fogTunnel(uv, center, t);

@@ -21,18 +21,16 @@ uniform vec4 inc_value;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     ivec4 source = ivec4(color * 255);
     ivec4 inc = ivec4(inc_valuex);
     ivec4 inc_v = ivec4(inc_value);
-    
+
     source += inc + inc_v;
-    
-    for(int i = 0; i < 3; ++i) {
-        source[i] = source[i]%255;
-        color[i] = float(source[i])/255;
+
+    for (int i = 0; i < 3; ++i) {
+        source[i] = source[i] % 255;
+        color[i] = float(source[i]) / 255;
     }
 }
-

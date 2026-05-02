@@ -15,7 +15,7 @@ void main(void) {
     vec2 center = vec2(0.5, 0.5);
     vec2 tc_centered = tc - center;
     float dist = length(tc_centered);
-   vec2 dir = tc_centered / max(dist, 1e-6);
+    vec2 dir = tc_centered / max(dist, 1e-6);
     float waveLength = 0.05;
     float amplitude = 0.02;
     float speed = 2.0;
@@ -25,4 +25,3 @@ void main(void) {
     vec4 texColor = texture(samp, tc_displaced);
     color = texColor;
 }
-

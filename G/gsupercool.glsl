@@ -42,8 +42,7 @@ void main(void) {
     vec3 colorShift = vec3(
         0.5 + 0.5 * cos(pattern + time_t + 0.0),
         0.5 + 0.5 * cos(pattern + time_t + 2.094),
-        0.5 + 0.5 * cos(pattern + time_t + 4.188)
-    );
+        0.5 + 0.5 * cos(pattern + time_t + 4.188));
 
     vec4 texColorKaleido = texture(samp, uv_kaleidoscope);
     vec4 texColorDistorted = texture(samp, uv_distorted);

@@ -65,22 +65,21 @@ vec2 warp(vec2 uv) {
     uv = p * 0.5 + 0.5;
 
     uv += 0.006 * vec2(
-        sin(uv.y * 24.0 + time_f * 0.30),
-        cos(uv.x * 20.0 - time_f * 0.28)
-    );
+                      sin(uv.y * 24.0 + time_f * 0.30),
+                      cos(uv.x * 20.0 - time_f * 0.28));
 
     return uv;
 }
 
 float sobel(vec2 uv, vec2 px) {
     float tl = lum(texture(samp, uv + px * vec2(-1.0, -1.0)).rgb);
-    float tc0 = lum(texture(samp, uv + px * vec2( 0.0, -1.0)).rgb);
-    float tr = lum(texture(samp, uv + px * vec2( 1.0, -1.0)).rgb);
-    float ml = lum(texture(samp, uv + px * vec2(-1.0,  0.0)).rgb);
-    float mr = lum(texture(samp, uv + px * vec2( 1.0,  0.0)).rgb);
-    float bl = lum(texture(samp, uv + px * vec2(-1.0,  1.0)).rgb);
-    float bc = lum(texture(samp, uv + px * vec2( 0.0,  1.0)).rgb);
-    float br = lum(texture(samp, uv + px * vec2( 1.0,  1.0)).rgb);
+    float tc0 = lum(texture(samp, uv + px * vec2(0.0, -1.0)).rgb);
+    float tr = lum(texture(samp, uv + px * vec2(1.0, -1.0)).rgb);
+    float ml = lum(texture(samp, uv + px * vec2(-1.0, 0.0)).rgb);
+    float mr = lum(texture(samp, uv + px * vec2(1.0, 0.0)).rgb);
+    float bl = lum(texture(samp, uv + px * vec2(-1.0, 1.0)).rgb);
+    float bc = lum(texture(samp, uv + px * vec2(0.0, 1.0)).rgb);
+    float br = lum(texture(samp, uv + px * vec2(1.0, 1.0)).rgb);
 
     float gx = -tl - 2.0 * ml - bl + tr + 2.0 * mr + br;
     float gy = -tl - 2.0 * tc0 - tr + bl + 2.0 * bc + br;
@@ -95,9 +94,12 @@ vec3 pastelBase(float t) {
     vec3 d = vec3(0.96, 0.86, 0.38);
     vec3 e = vec3(0.92, 0.28, 0.86);
 
-    if (t < 0.25) return mix(a, b, t / 0.25);
-    if (t < 0.50) return mix(b, c, (t - 0.25) / 0.25);
-    if (t < 0.75) return mix(c, d, (t - 0.50) / 0.25);
+    if (t < 0.25)
+        return mix(a, b, t / 0.25);
+    if (t < 0.50)
+        return mix(b, c, (t - 0.25) / 0.25);
+    if (t < 0.75)
+        return mix(c, d, (t - 0.50) / 0.25);
     return mix(d, e, (t - 0.75) / 0.25);
 }
 
@@ -107,11 +109,11 @@ void main() {
 
     vec2 wuv = warp(uv);
 
-    vec3 src  = texture(samp, wuv).rgb;
-    vec3 sx1  = texture(samp, wuv + px * vec2( 1.0,  0.0)).rgb;
-    vec3 sx2  = texture(samp, wuv + px * vec2(-1.0,  0.0)).rgb;
-    vec3 sy1  = texture(samp, wuv + px * vec2( 0.0,  1.0)).rgb;
-    vec3 sy2  = texture(samp, wuv + px * vec2( 0.0, -1.0)).rgb;
+    vec3 src = texture(samp, wuv).rgb;
+    vec3 sx1 = texture(samp, wuv + px * vec2(1.0, 0.0)).rgb;
+    vec3 sx2 = texture(samp, wuv + px * vec2(-1.0, 0.0)).rgb;
+    vec3 sy1 = texture(samp, wuv + px * vec2(0.0, 1.0)).rgb;
+    vec3 sy2 = texture(samp, wuv + px * vec2(0.0, -1.0)).rgb;
     vec3 soft = (src + sx1 + sx2 + sy1 + sy2) / 5.0;
 
     float e1 = sobel(wuv, px * 1.0);
@@ -130,12 +132,12 @@ void main() {
 
     vec3 base = pastelBase(clamp(q, 0.0, 1.0));
 
-    vec3 cyan    = vec3(0.05, 0.76, 0.92);
-    vec3 aqua    = vec3(0.20, 0.92, 0.72);
-    vec3 lime    = vec3(0.55, 0.92, 0.18);
-    vec3 yellow  = vec3(0.98, 0.86, 0.12);
+    vec3 cyan = vec3(0.05, 0.76, 0.92);
+    vec3 aqua = vec3(0.20, 0.92, 0.72);
+    vec3 lime = vec3(0.55, 0.92, 0.18);
+    vec3 yellow = vec3(0.98, 0.86, 0.12);
     vec3 magenta = vec3(0.88, 0.12, 0.82);
-    vec3 violet  = vec3(0.48, 0.28, 0.92);
+    vec3 violet = vec3(0.48, 0.28, 0.92);
     vec3 grayLav = vec3(0.80, 0.78, 0.82);
 
     float flow1 = 0.5 + 0.5 * sin((wuv.x * 12.0 + wuv.y * 16.0) + n1 * 8.0 + field * 7.0);
@@ -148,8 +150,8 @@ void main() {
 
     vec3 contour = vec3(0.0);
     contour += magenta * (smoothstep(0.08, 0.25, edge) - smoothstep(0.25, 0.45, edge)) * 0.90;
-    contour += violet  * (smoothstep(0.28, 0.50, edge) - smoothstep(0.50, 0.72, edge)) * 0.70;
-    contour += cyan    * smoothstep(0.50, 0.95, edge) * 0.45;
+    contour += violet * (smoothstep(0.28, 0.50, edge) - smoothstep(0.50, 0.72, edge)) * 0.70;
+    contour += cyan * smoothstep(0.50, 0.95, edge) * 0.45;
 
     float cells = 0.5 + 0.5 * sin((field + n2 * 0.7) * 42.0);
     float rings = smoothstep(0.72, 0.98, cells) - smoothstep(0.98, 1.0, cells);
@@ -160,8 +162,7 @@ void main() {
     vec3 hsvShift = hsv2rgb(vec3(
         fract(rgb2hsv(src).x + 0.12 * edge + 0.06 * flow2),
         clamp(rgb2hsv(src).y * 1.25 + 0.20 * detail, 0.0, 1.0),
-        clamp(rgb2hsv(src).z * 1.05 + 0.08 * edge, 0.0, 1.0)
-    ));
+        clamp(rgb2hsv(src).z * 1.05 + 0.08 * edge, 0.0, 1.0)));
 
     vec3 finalColor = mix(grayLav, base, 0.72);
     finalColor = mix(finalColor, hsvShift, 0.20);

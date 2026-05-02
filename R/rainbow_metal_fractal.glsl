@@ -19,7 +19,7 @@ float fractalNoise(vec2 uv) {
     for (int i = 0; i < 5; ++i) {
         n += a * texture(samp, uv).r;
         uv = fract(uv * 2.0); // Scale and wrap coordinates to create fractal pattern
-        a *= 0.5; // Decrease amplitude for each iteration
+        a *= 0.5;             // Decrease amplitude for each iteration
     }
     return n / (1 - 0.5); // Normalize the noise value
 }
@@ -35,11 +35,11 @@ void main(void) {
     float noiseValue = fractalNoise(tc * 5.0) * 0.1;
     float ripple = sin(angle * 10.0 + time_f + noiseValue) * 0.03;
     ripple += sin(angle * 25.0 - time_f * 2.0) * 0.01; // Secondary fine detail
-    
+
     float wave = sin(r * 20.0 - time_f * 4.0 + ripple * 10.0);
-    
+
     float shift = ripple * 0.5 + wave * 0.01;
-    
+
     float r_chan = texture(samp, tc + vec2(shift, 0.0)).r;
     float g_chan = texture(samp, tc).g;
     float b_chan = texture(samp, tc - vec2(shift, 0.0)).b;
@@ -48,13 +48,13 @@ void main(void) {
     // Psychedelic Coloring with more vibrant and complex colors based on fractal noise
     vec3 rainbow = spectrum(r - time_f * 0.5 + ripple + noiseValue * 0.2);
     float glowMask = smoothstep(0.5, 1.0, wave);
-    
+
     // Central Highlight with increased brightness and saturation
     vec3 coreGlow = vec3(1.0, 0.98, 0.9) * pow(wave, 2.0) * 2.0;
 
     vec3 finalColor = mix(baseTex, rainbow, glowMask * 0.35);
     finalColor = finalColor * sin(coreGlow * time_f);
-    
+
     // Add a bit of metallic "sheen" to the edges of the ripples
     finalColor += (wave * ripple * 2.0) + noiseValue * 0.1;
 

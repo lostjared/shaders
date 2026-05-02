@@ -24,8 +24,7 @@ void main() {
     vec3 rgbStrobe = vec3(
         strobe ? redLayer.r : blueLayer.r,
         greenLayer.g,
-        strobe ? blueLayer.b : redLayer.b
-    );
+        strobe ? blueLayer.b : redLayer.b);
 
     vec2 dir = normalize(p + 1e-6);
     vec4 echoEffect = texture(samp, uv + dir * (0.015 + 0.005 * sin(time_f * 2.0)));

@@ -16,14 +16,14 @@ uniform float amp_high;
 out vec4 color;
 in vec2 tc;
 
-const float iAmplitude  = 1.0;
-const float iFrequency  = 1.0;
+const float iAmplitude = 1.0;
+const float iFrequency = 1.0;
 const float iBrightness = 1.05;
-const float iContrast   = 1.20;
+const float iContrast = 1.20;
 const float iSaturation = 1.40;
-const float iHueShift   = 0.0;
-const float iZoom       = 1.0;
-const float iRotation   = 0.0;
+const float iHueShift = 0.0;
+const float iZoom = 1.0;
+const float iRotation = 0.0;
 const float iEmberDensity = 1.10;
 
 vec3 firePalette(float t) {
@@ -32,8 +32,10 @@ vec3 firePalette(float t) {
     vec3 c2 = vec3(0.70, 0.10, 0.05);
     vec3 c3 = vec3(1.20, 0.50, 0.10);
     vec3 c4 = vec3(1.30, 1.00, 0.40);
-    if (t < 0.40) return mix(c1, c2, t / 0.40);
-    if (t < 0.75) return mix(c2, c3, (t - 0.40) / 0.35);
+    if (t < 0.40)
+        return mix(c1, c2, t / 0.40);
+    if (t < 0.75)
+        return mix(c2, c3, (t - 0.40) / 0.35);
     return mix(c3, c4, (t - 0.75) / 0.25);
 }
 
@@ -44,7 +46,10 @@ vec4 mxTexture(sampler2D tex, vec2 uv) {
     vec2 u = wrapUV(uv);
     return textureLod(tex, clamp(u, eps, 1.0 - eps), 0.0);
 }
-mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
+mat2 rot(float a) {
+    float c = cos(a), s = sin(a);
+    return mat2(c, -s, s, c);
+}
 
 float hash21(vec2 p) {
     p = fract(p * vec2(127.1, 311.7));
@@ -84,8 +89,7 @@ vec3 emberStorm(vec2 uv, vec2 center, float t) {
             // ember position drifts upward and jitters
             vec2 jitter = vec2(
                 hash21(cell + 1.7) - 0.5,
-                hash21(cell + 5.3) - 0.5
-            );
+                hash21(cell + 5.3) - 0.5);
             vec2 pos = nb + jitter * 0.6 + vec2(0.0, -life * 1.0);
             float d = length(gf - pos);
             float spark = exp(-22.0 * d) * (1.0 - life) * iEmberDensity;
@@ -106,11 +110,12 @@ vec3 emberStorm(vec2 uv, vec2 center, float t) {
 void main() {
     vec2 uv = tc;
     vec2 center = vec2(0.5);
-    if (iMouse.z > 0.0) center = iMouse.xy / iResolution;
-    float bass   = texture(spectrum, 0.03).r + amp_low  * 0.5;
-    float midF   = texture(spectrum, 0.22).r + amp_mid  * 0.5;
+    if (iMouse.z > 0.0)
+        center = iMouse.xy / iResolution;
+    float bass = texture(spectrum, 0.03).r + amp_low * 0.5;
+    float midF = texture(spectrum, 0.22).r + amp_mid * 0.5;
     float treble = texture(spectrum, 0.58).r + amp_high * 0.5;
-    float beat   = max(amp_peak, bass);
+    float beat = max(amp_peak, bass);
     float t = time_f * (0.10 + iFrequency * 0.25) * (1.0 + 0.6 * beat);
 
     vec3 col = emberStorm(uv, center, t);

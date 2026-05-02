@@ -37,10 +37,10 @@ void main() {
     uv.x *= iResolution.x / iResolution.y;
 
     // Sample full spectrum sweep for ring modulation
-    float bass   = texture(spectrum, 0.04).r;
+    float bass = texture(spectrum, 0.04).r;
     float lowMid = texture(spectrum, 0.10).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.65).r;
 
     float r = length(uv);

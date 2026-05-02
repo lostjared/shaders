@@ -17,11 +17,13 @@ uniform sampler1D spectrum;
 const float PI = 3.14159265;
 
 vec3 ocean(float t) {
-    return vec3(0.1, 0.3, 0.5) + vec3(0.3, 0.4, 0.5)
-         * cos(6.28318 * (vec3(1.0, 1.2, 1.0) * t + vec3(0.0, 0.25, 0.5)));
+    return vec3(0.1, 0.3, 0.5) + vec3(0.3, 0.4, 0.5) * cos(6.28318 * (vec3(1.0, 1.2, 1.0) * t + vec3(0.0, 0.25, 0.5)));
 }
 
-mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
+mat2 rot(float a) {
+    float s = sin(a), c = cos(a);
+    return mat2(c, -s, s, c);
+}
 
 vec2 kaleido(vec2 p, float seg) {
     float ang = atan(p.y, p.x);
@@ -37,11 +39,11 @@ vec2 mirror(vec2 u) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.60).r;
-    float air    = texture(spectrum, 0.82).r;
+    float air = texture(spectrum, 0.82).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0) * 2.0;
@@ -52,7 +54,8 @@ void main() {
     const float maxI = 40.0;
     for (float i = 0.0; i < maxI; i++) {
         fp = abs(fp) / dot(fp, fp) - vec2(0.78 + hiMid * 0.25, 0.5 + 0.1 * sin(iTime * 0.3));
-        if (length(fp) > 20.0) break;
+        if (length(fp) > 20.0)
+            break;
         iters++;
     }
     float ni = iters / maxI;
@@ -68,7 +71,8 @@ void main() {
         p += fp * 0.02 * (d + 1.0);
         vec2 kUV = kaleido(p, seg);
         kUV = abs(kUV);
-        if (kUV.y > kUV.x) kUV = kUV.yx;
+        if (kUV.y > kUV.x)
+            kUV = kUV.yx;
         vec2 texUV = mirror(kUV * 0.55 + 0.5);
 
         float co = d * 0.003 * (1.0 + treble);

@@ -23,7 +23,7 @@ void main(void) {
     float t = time_f * 0.5;
     float t_floor = floor(t);
     float t_fract = smoothstep(0.0, 1.0, fract(t)); // Smooth transition
-    
+
     vec2 p0 = hash2(t_floor);
     vec2 p1 = hash2(t_floor + 1.0);
     vec2 center = mix(p0, p1, t_fract);
@@ -39,20 +39,20 @@ void main(void) {
 
     // Reconstruct UVs
     vec2 warpedUV = center + vec2(cos(angle), sin(angle)) * r;
-    
+
     // Add a gentle "liquid" wave
     warpedUV += 0.015 * vec2(sin(tc.y * 10.0 + time_f), cos(tc.x * 10.0 + time_f));
 
     // 3. Chromatic Aberration (The "Neat" Factor)
     // We sample the texture 3 times at slightly different offsets
-    float shift = 0.005 * r; 
+    float shift = 0.005 * r;
     float r_chan = texture(samp, mirror(warpedUV + shift)).r;
     float g_chan = texture(samp, mirror(warpedUV)).g;
     float b_chan = texture(samp, mirror(warpedUV - shift)).b;
 
     // 4. Final Polish
     vec3 finalCol = vec3(r_chan, g_chan, b_chan);
-    
+
     // Add a subtle vignette to focus on the center distortion
     float vignette = smoothstep(1.2, 0.2, r);
     finalCol *= vignette;

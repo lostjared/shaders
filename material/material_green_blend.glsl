@@ -19,15 +19,12 @@ uniform float time_f;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     vec4 color2 = texture(mat_samp, tc);
     vec4 value = vec4(0.2, 0.1, 0.8, 1.0);
 
     vec2 color_value = gl_FragCoord.xy / 64;
-    
-    color = color * color2 * value * vec4(color_value.yx, 1, 1);
-    
-}
 
+    color = color * color2 * value * vec4(color_value.yx, 1, 1);
+}

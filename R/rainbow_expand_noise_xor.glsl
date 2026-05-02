@@ -9,15 +9,15 @@ uniform vec2 iResolution;
 vec4 xor_RGB(vec4 icolor, vec3 source) {
     ivec3 int_color;
     ivec3 isource = ivec3(source * 255);
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         int_color[i] = int(255 * icolor[i]);
-        int_color[i] = int_color[i]^isource[i];
-        if(int_color[i] > 255)
-            int_color[i] = int_color[i]%255;
-        icolor[i] = float(int_color[i])/255;
+        int_color[i] = int_color[i] ^ isource[i];
+        if (int_color[i] > 255)
+            int_color[i] = int_color[i] % 255;
+        icolor[i] = float(int_color[i]) / 255;
     }
     icolor.a = 1.0;
-return icolor;
+    return icolor;
 }
 
 float hash(float n) {
@@ -60,16 +60,15 @@ void main(void) {
     vec2 random_direction = smoothRandom2(time_t) * 0.5;
     float expand = 0.5 + 0.5 * sin(time_t * 2.0);
     vec2 spiral_uv = uv * expand + random_direction;
-    
+
     float rotation_period = 3.0;
     float rotation_angle = mod(time_f, rotation_period * 2.0) < rotation_period ? time_t : -time_t;
-    
+
     float angle = atan(spiral_uv.y + wave, spiral_uv.x) + rotation_angle * 2.0;
     vec3 rainbow_color = rainbow(angle / (2.0 * 3.14159));
     vec4 original_color = texture(samp, tc);
     vec4 blended_color = xor_RGB(original_color, rainbow_color);
-    
-    
-    color = sin(time_t * blended_color);
+
+    color = sin(time_t *blended_color);
     color.a = 1.0;
 }

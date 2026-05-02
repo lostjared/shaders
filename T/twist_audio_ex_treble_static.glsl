@@ -13,7 +13,7 @@ float hash(vec2 p) {
 
 void main(void) {
     float treble = texture(spectrum, 0.65).r;
-    float air    = texture(spectrum, 0.90).r;
+    float air = texture(spectrum, 0.90).r;
 
     vec2 grain = (vec2(hash(tc * 1024.0 + time_f), hash(tc * 1024.0 - time_f)) - 0.5) * (treble + air) * 0.04;
 

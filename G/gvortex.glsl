@@ -19,8 +19,7 @@ void main() {
     float refractAmount = pow(1.0 - radius, 2.0) * 0.5;
     vec2 refractedUV = vec2(
         centeredUV.x + sin(angle) * refractAmount,
-        centeredUV.y + cos(angle) * refractAmount
-    );
+        centeredUV.y + cos(angle) * refractAmount);
 
     vec2 texUV = refractedUV * 0.5 + 0.5;
 
@@ -30,9 +29,7 @@ void main() {
     vec3 dynamicColor = vec3(
         0.5 + 0.5 * sin(time_f + uv.x * 10.0),
         0.5 + 0.5 * cos(time_f + uv.y * 10.0),
-        0.5 + 0.5 * sin(time_f + (uv.x + uv.y) * 10.0)
-    );
+        0.5 + 0.5 * sin(time_f + (uv.x + uv.y) * 10.0));
 
     color = vec4(texColor.rgb * 0.6 + dynamicColor * 0.4 * pulse, texColor.a);
 }
-

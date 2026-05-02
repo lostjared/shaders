@@ -12,8 +12,8 @@ float pingPong(float x, float length) {
 }
 
 void main(void) {
-		 vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
-    uv = uv - floor(uv);    
+    vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
+    uv = uv - floor(uv);
     float angle = time_f * 0.5;
     float radius = length(uv - 0.5);
     float twist = radius * 5.0;

@@ -23,21 +23,28 @@ uniform vec2 iResolution;
 uniform float time_f;
 
 vec4 sampleCache(int idx, vec2 uv) {
-    if (idx == 0) return texture(samp1, uv);
-    if (idx == 1) return texture(samp2, uv);
-    if (idx == 2) return texture(samp3, uv);
-    if (idx == 3) return texture(samp4, uv);
-    if (idx == 4) return texture(samp5, uv);
-    if (idx == 5) return texture(samp6, uv);
-    if (idx == 6) return texture(samp7, uv);
+    if (idx == 0)
+        return texture(samp1, uv);
+    if (idx == 1)
+        return texture(samp2, uv);
+    if (idx == 2)
+        return texture(samp3, uv);
+    if (idx == 3)
+        return texture(samp4, uv);
+    if (idx == 4)
+        return texture(samp5, uv);
+    if (idx == 5)
+        return texture(samp6, uv);
+    if (idx == 6)
+        return texture(samp7, uv);
     return texture(samp8, uv);
 }
 
 void main(void) {
     vec4 current = texture(samp, tc);
 
-    float bass   = texture(spectrum, 0.05).r;
-    float mid    = texture(spectrum, 0.25).r;
+    float bass = texture(spectrum, 0.05).r;
+    float mid = texture(spectrum, 0.25).r;
     float treble = texture(spectrum, 0.65).r;
 
     // Direction: radial from center, twisted by treble

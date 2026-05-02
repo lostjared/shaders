@@ -21,17 +21,16 @@ uniform float restore_black;
 uniform vec4 inc_valuex;
 uniform vec4 inc_value;
 
-void main(void)
-{
+void main(void) {
     float time = time_f * 0.2;
     vec2 glitchOffset = vec2(sin(time * 2.0) * 0.005, cos(time * 3.0) * 0.005);
     glitchOffset += vec2(random_value.x * 0.005, random_value.y * 0.005);
-    
+
     vec2 tcOffset = tc + glitchOffset;
-    
+
     vec4 baseColor = texture(samp, tcOffset);
     vec4 glitchColor = texture(samp, tc + glitchOffset * 2.0);
-    
+
     color = mix(baseColor, glitchColor, 0.5);
     color.rgb *= vec3(1.0 + sin(time_f * 5.0) * 0.1, 1.0 + cos(time_f * 5.0) * 0.1, 1.0 + sin(time_f * 7.0) * 0.1);
 }

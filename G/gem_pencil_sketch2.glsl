@@ -27,12 +27,12 @@ uniform float amp_mid;
 uniform float amp_high;
 uniform float iamp;
 
-const float PI  = 3.1415926535897932384626433832795;
+const float PI = 3.1415926535897932384626433832795;
 const float TAU = 6.28318530718;
 
 void main(void) {
     vec2 uv = tc;
-    
+
     // 1. The Zero-Axis Pull
     // Lines are sucked toward the center as the "negative energy" increases.
     float pull = (amp_low * 0.2);
@@ -53,7 +53,7 @@ void main(void) {
 
     // 4. The "Negative Energy" Inversion
     // We mix the original color with its inverse based on the low-end pulse.
-    // At high intensity (bass hits), the image inverts. 
+    // At high intensity (bass hits), the image inverts.
     // If they hit exactly 0.5, they 'neutralize' each other.
     vec3 negative = 1.0 - tex;
     float neutralizer = clamp(amp_low * 1.8, 0.0, 1.0);

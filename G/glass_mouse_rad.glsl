@@ -13,7 +13,7 @@ void main(void) {
     float distortionStrength = 0.25;
     float noiseFactor = sin(uv.x * 10.0 + time_f) * cos(uv.y * 10.0 + time_f);
 
-    float radius = 0.75; 
+    float radius = 0.75;
     float w = 1.0 - smoothstep(0.0, radius, length(uv - c));
 
     vec2 dir = normalize(uv - c + 1e-5);

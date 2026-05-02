@@ -19,18 +19,16 @@ uniform float time_f;
 
 uniform float restore_black;
 
-void main(void)
-{
+void main(void) {
     color = texture(samp, tc);
     float value = fract(timeval);
-    if(value >= 0 && value <= 0.3) {
+    if (value >= 0 && value <= 0.3) {
         color[0] *= value;
     } else if (value >= 0.3 && value <= 0.6) {
         color[1] *= value;
-    } else if(value >= 0.6 && value <= 1.0) {
+    } else if (value >= 0.6 && value <= 1.0) {
         color[2] *= value;
     }
-    
-    color = color * (alpha/2);
-}
 
+    color = color * (alpha / 2);
+}
