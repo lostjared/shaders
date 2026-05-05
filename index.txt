@@ -34,15 +34,23 @@ A/animation.glsl
 A/ant_cache_spectrum8_acid_rain.glsl
 A/ant_cache_spectrum8_caustic_storm.glsl
 A/ant_cache_spectrum8_chromatic_pulse.glsl
+A/ant_cache_spectrum8_cosmic_web.glsl
+A/ant_cache_spectrum8_echo_quad_mirror.glsl
 A/ant_cache_spectrum8_fractal.glsl
+A/ant_cache_spectrum8_fractal_xor_fold.glsl
 A/ant_cache_spectrum8_galaxy_swirl.glsl
+A/ant_cache_spectrum8_geometric_polar.glsl
+A/ant_cache_spectrum8_glitch_boil.glsl
 A/ant_cache_spectrum8_glitch_storm.glsl
 A/ant_cache_spectrum8_hex_grid.glsl
 A/ant_cache_spectrum8_holographic.glsl
 A/ant_cache_spectrum8_kaleidoscope.glsl
+A/ant_cache_spectrum8_kaleido_sin_osc.glsl
 A/ant_cache_spectrum8_lava_flow.glsl
 A/ant_cache_spectrum8_lightning.glsl
+A/ant_cache_spectrum8_liquid_light.glsl
 A/ant_cache_spectrum8_mandala.glsl
+A/ant_cache_spectrum8_mirror_tile_rotor.glsl
 A/ant_cache_spectrum8_neon_grid.glsl
 A/ant_cache_spectrum8_neural.glsl
 A/ant_cache_spectrum8_oilslick.glsl
@@ -51,7 +59,9 @@ A/ant_cache_spectrum8_radial_echo.glsl
 A/ant_cache_spectrum8_spectrum_rings.glsl
 A/ant_cache_spectrum8_starburst.glsl
 A/ant_cache_spectrum8_strobe_tunnel.glsl
+A/ant_cache_spectrum8_tremor_storm.glsl
 A/ant_cache_spectrum8_tunnel.glsl
+A/ant_cache_spectrum8_vignette_calm.glsl
 A/ant_cache_spectrum8_voronoi_pulse.glsl
 A/ant_cache_spectrum8_vortex.glsl
 A/ant_cache_spectrum8_warp_drive.glsl
@@ -1576,6 +1586,7 @@ R/react_x_ripple_bass.glsl
 R/react_x_spin_amp.glsl
 R/react_x_spiral_twist.glsl
 R/react_x_swirl_deep.glsl
+R/react_x_vert_warp.glsl
 R/react_x_wave_distort.glsl
 R/react_x_xor_gradient.glsl
 R/recep.glsl
@@ -1586,6 +1597,7 @@ R/red.glsl
 R/red_strobe.glsl
 R/reverse.glsl
 R/reverse_alpha.glsl
+R/reverse_vert.glsl
 R/reverse_xor.glsl
 R/reverse_xy.glsl
 R/rgb.glsl
@@ -1658,6 +1670,7 @@ S/single-glittch.glsl
 S/sin_delic.glsl
 S/skinny.glsl
 S/slither.glsl
+S/slither_vert.glsl
 S/smoke.glsl
 S/smooth_gl.glsl
 S/smooth_pixel.glsl
