@@ -24,11 +24,11 @@ vec2 mirror(vec2 uv) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.20).r;
-    float hiMid  = texture(spectrum, 0.36).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.20).r;
+    float hiMid = texture(spectrum, 0.36).r;
     float treble = texture(spectrum, 0.55).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     vec2 uv = tc;
     vec2 centered = uv - 0.5;
@@ -40,7 +40,8 @@ void main() {
     centered.y = abs(centered.y + waveY);
 
     // Additional fold
-    if (centered.y > centered.x) centered = centered.yx;
+    if (centered.y > centered.x)
+        centered = centered.yx;
 
     uv = centered + 0.5;
 

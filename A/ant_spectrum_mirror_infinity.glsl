@@ -38,12 +38,12 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.04).r;
+    float bass = texture(spectrum, 0.04).r;
     float lowMid = texture(spectrum, 0.12).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -63,7 +63,8 @@ void main() {
         // Kaleidoscope at this depth
         vec2 kUV = kaleidoscope(infUV, seg);
         kUV = abs(kUV);
-        if (kUV.y > kUV.x) kUV = kUV.yx;
+        if (kUV.y > kUV.x)
+            kUV = kUV.yx;
 
         // Mirror texture
         vec2 texUV = mirror(kUV * 0.5 + 0.5);

@@ -21,8 +21,10 @@ vec3 inferno(float t) {
     vec3 c2 = vec3(0.9, 0.3, 0.1);
     vec3 c3 = vec3(1.0, 0.95, 0.6);
     float p = t * 3.0;
-    if (p < 1.0) return mix(c0, c1, p);
-    if (p < 2.0) return mix(c1, c2, p - 1.0);
+    if (p < 1.0)
+        return mix(c0, c1, p);
+    if (p < 2.0)
+        return mix(c1, c2, p - 1.0);
     return mix(c2, c3, p - 2.0);
 }
 
@@ -49,10 +51,10 @@ float noise(vec2 p) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);

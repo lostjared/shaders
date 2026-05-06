@@ -20,14 +20,17 @@ vec3 prism(float t) {
     return 0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67)));
 }
 
-mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
+mat2 rot(float a) {
+    float s = sin(a), c = cos(a);
+    return mat2(c, -s, s, c);
+}
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.60).r;
-    float air    = texture(spectrum, 0.82).r;
+    float air = texture(spectrum, 0.82).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * 2.0;
@@ -56,7 +59,7 @@ void main() {
     float hB = ang + depth * twist + PI;
     float strand = 0.2 / max(abs(sin(hA)), 0.001);
     strand += 0.2 / max(abs(sin(hB)), 0.001);
-    strand *= smoothstep(1.5, 0.2 + bass * 0.4, dist);  // fade near rim
+    strand *= smoothstep(1.5, 0.2 + bass * 0.4, dist); // fade near rim
 
     // Prism hue cycling
     vec3 hue = prism(dist * 2.0 - iTime * 0.4 + bass * 0.5);

@@ -20,8 +20,7 @@ vec3 rainbow(float t) {
     return 0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67)));
 }
 vec3 ocean(float t) {
-    return vec3(0.1, 0.3, 0.5) + vec3(0.3, 0.4, 0.5)
-         * cos(6.28318 * (vec3(1.0, 1.2, 1.0) * t + vec3(0.0, 0.25, 0.5)));
+    return vec3(0.1, 0.3, 0.5) + vec3(0.3, 0.4, 0.5) * cos(6.28318 * (vec3(1.0, 1.2, 1.0) * t + vec3(0.0, 0.25, 0.5)));
 }
 
 vec2 kaleidoscope(vec2 p, float seg) {
@@ -33,11 +32,11 @@ vec2 kaleidoscope(vec2 p, float seg) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.82).r;
+    float air = texture(spectrum, 0.82).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0) * 2.0;
@@ -46,7 +45,8 @@ void main() {
     float seg = floor(6.0 + bass * 8.0);
     vec2 kUV = kaleidoscope(uv, seg);
     kUV = abs(kUV);
-    if (kUV.y > kUV.x) kUV = kUV.yx;
+    if (kUV.y > kUV.x)
+        kUV = kUV.yx;
 
     // Fractal escape on kaleidoscoped coords
     vec2 p = kUV * (0.75 + 0.3 * mid);
@@ -54,7 +54,8 @@ void main() {
     const float maxI = 40.0;
     for (float i = 0.0; i < maxI; i++) {
         p = abs(p) / dot(p, p) - vec2(0.78 + hiMid * 0.25, 0.5 + 0.1 * sin(iTime * 0.3));
-        if (length(p) > 20.0) break;
+        if (length(p) > 20.0)
+            break;
         iters++;
     }
     float ni = iters / maxI;

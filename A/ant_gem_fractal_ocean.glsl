@@ -33,11 +33,11 @@ float noise(vec2 p) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.20).r;
-    float hiMid  = texture(spectrum, 0.38).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.20).r;
+    float hiMid = texture(spectrum, 0.38).r;
     float treble = texture(spectrum, 0.60).r;
-    float air    = texture(spectrum, 0.82).r;
+    float air = texture(spectrum, 0.82).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * 2.0;
@@ -52,7 +52,8 @@ void main() {
     const float max_iters = 48.0;
     for (float i = 0.0; i < max_iters; i++) {
         p = abs(p) / dot(p, p) - vec2(0.8 + mid * 0.3, 0.5 + 0.1 * sin(iTime * 0.3));
-        if (length(p) > 20.0) break;
+        if (length(p) > 20.0)
+            break;
         iters++;
     }
     float normIters = iters / max_iters;

@@ -23,10 +23,10 @@ float hash(vec2 p) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     vec2 uv = tc;
 
@@ -58,7 +58,7 @@ void main() {
         float rx = hash(vec2(i, 5.0));
         float rt = fract(iTime * 0.8 + hash(vec2(i, 6.0)));
         float rr = rt * 0.3;
-        float d = length(vec2(uv.x - rx, uv.y * 3.0) );
+        float d = length(vec2(uv.x - rx, uv.y * 3.0));
         ripple += sin(d * 50.0 - rt * 20.0) * (1.0 - rt) * smoothstep(rr + 0.05, rr, d);
     }
 

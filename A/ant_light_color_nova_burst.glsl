@@ -24,10 +24,10 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -42,9 +42,9 @@ void main() {
     // Nova explosion: radial burst with chromatic split
     float burst = exp(-r * (2.0 - bass * 1.5));
     vec2 burstUV = uv * (1.0 + burst * bass * 0.5);
-    
+
     // FIX: Rotate/swirl the space based on 'r' (radius) rather than 'angle'.
-    // This creates a continuous, unbroken vortex twist. 
+    // This creates a continuous, unbroken vortex twist.
     // I swapped `angle * 0.1` for `r * 1.5` to maintain a cool spatial distortion.
     burstUV = rot(r * 1.5 + iTime * 0.3 + mid) * burstUV;
 

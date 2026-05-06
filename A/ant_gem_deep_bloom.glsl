@@ -17,11 +17,11 @@ vec3 neonRing(float t) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * 2.0;
@@ -38,7 +38,8 @@ void main() {
     vec2 c = vec2(0.8 + mid * 0.2, 0.5 + 0.1 * sin(iTime * 0.25));
     for (float i = 0.0; i < maxIters; i++) {
         p = abs(p) / dot(p, p) - c;
-        if (length(p) > 20.0) break;
+        if (length(p) > 20.0)
+            break;
         iters++;
     }
     float norm = iters / maxIters;

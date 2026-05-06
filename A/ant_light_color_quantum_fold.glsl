@@ -28,11 +28,11 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 p = (tc - 0.5) * vec2(aspect, 1.0);
@@ -42,7 +42,8 @@ void main() {
     float energy = 0.0;
     for (int i = 0; i < 8; i++) {
         q = abs(q);
-        if (q.x < q.y) q = q.yx;
+        if (q.x < q.y)
+            q = q.yx;
         q -= 0.5 + hiMid * 0.2;
         q = rot(iTime * 0.15 + float(i) * 0.4) * q;
         q *= 1.15;

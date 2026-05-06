@@ -15,18 +15,21 @@ uniform sampler1D spectrum;
 
 const float PI = 3.14159265;
 
-mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
+mat2 rot(float a) {
+    float s = sin(a), c = cos(a);
+    return mat2(c, -s, s, c);
+}
 
 vec3 prism(float t) {
     return 0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67)));
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.60).r;
-    float air    = texture(spectrum, 0.82).r;
+    float air = texture(spectrum, 0.82).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * 2.0;
@@ -49,12 +52,11 @@ void main() {
     vec2 sampUV = mix(
         abs(fract(tunnel * 0.5) * 2.0 - 1.0),
         fract(petal + 0.5),
-        0.5 + hiMid * 0.3
-    );
+        0.5 + hiMid * 0.3);
 
     // Glass normals from luminance gradient (liquid_mirror trick)
     float delta = 0.009;
-    float h  = dot(texture(samp, sampUV).rgb, vec3(0.33));
+    float h = dot(texture(samp, sampUV).rgb, vec3(0.33));
     float h1 = dot(texture(samp, sampUV + vec2(delta, 0.0)).rgb, vec3(0.33));
     float h2 = dot(texture(samp, sampUV + vec2(0.0, delta)).rgb, vec3(0.33));
     vec2 normal = vec2(h1 - h, h2 - h);

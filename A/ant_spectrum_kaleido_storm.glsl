@@ -50,11 +50,11 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -73,7 +73,8 @@ void main() {
     kUV = abs(kUV);
     kUV *= rot(iTime * 0.05);
     kUV = abs(kUV);
-    if (kUV.y > kUV.x) kUV = kUV.yx;
+    if (kUV.y > kUV.x)
+        kUV = kUV.yx;
 
     // Texture
     vec2 texUV = mirror(kUV * 0.6 + 0.5);

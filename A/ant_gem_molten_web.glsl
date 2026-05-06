@@ -28,10 +28,10 @@ vec3 lava(float t) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.20).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.20).r;
     float treble = texture(spectrum, 0.55).r;
-    float air    = texture(spectrum, 0.78).r;
+    float air = texture(spectrum, 0.78).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 p = (tc - 0.5) * vec2(aspect, 1.0);
@@ -57,7 +57,7 @@ void main() {
     // Glass refraction normals from texture
     vec2 baseUV = fract(kaleido / vec2(aspect, 1.0) + 0.5);
     float delta = 0.008;
-    float h  = dot(texture(samp, baseUV).rgb, vec3(0.33));
+    float h = dot(texture(samp, baseUV).rgb, vec3(0.33));
     float h1 = dot(texture(samp, baseUV + vec2(delta, 0.0)).rgb, vec3(0.33));
     float h2 = dot(texture(samp, baseUV + vec2(0.0, delta)).rgb, vec3(0.33));
     vec2 normal = vec2(h1 - h, h2 - h);

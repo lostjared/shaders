@@ -33,12 +33,12 @@ vec2 kaleidoscope(vec2 p, float seg) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.10).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -55,7 +55,8 @@ void main() {
         uv *= rot(iTime * 0.12 + i * 0.5);
         // Mirror fold
         uv = abs(uv);
-        if (uv.y > uv.x) uv = uv.yx;
+        if (uv.y > uv.x)
+            uv = uv.yx;
 
         float d = length(uv) * exp(-length(uv0));
         float ringFreq = 8.0 + hiMid * 10.0 + i * 1.5;

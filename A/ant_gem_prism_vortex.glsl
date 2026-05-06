@@ -24,11 +24,11 @@ vec3 prism(float t) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.60).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * 2.0;
@@ -59,8 +59,7 @@ void main() {
     vec2 sampUV = mix(
         abs(fract(tunnelUV * 0.5) * 2.0 - 1.0),
         fract(prismP + 0.5),
-        0.5 + hiMid * 0.3
-    );
+        0.5 + hiMid * 0.3);
 
     // Chromatic prism split
     float chroma = (treble + air) * 0.04;

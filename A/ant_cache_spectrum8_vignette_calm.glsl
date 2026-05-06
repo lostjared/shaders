@@ -33,25 +33,40 @@ uniform float amp_smooth;
 const float TAU = 6.28318530718;
 
 float specHist(int i, float f) {
-    if (i == 0) return texture(spectrum0, f).r;
-    if (i == 1) return texture(spectrum1, f).r;
-    if (i == 2) return texture(spectrum2, f).r;
-    if (i == 3) return texture(spectrum3, f).r;
-    if (i == 4) return texture(spectrum4, f).r;
-    if (i == 5) return texture(spectrum5, f).r;
-    if (i == 6) return texture(spectrum6, f).r;
+    if (i == 0)
+        return texture(spectrum0, f).r;
+    if (i == 1)
+        return texture(spectrum1, f).r;
+    if (i == 2)
+        return texture(spectrum2, f).r;
+    if (i == 3)
+        return texture(spectrum3, f).r;
+    if (i == 4)
+        return texture(spectrum4, f).r;
+    if (i == 5)
+        return texture(spectrum5, f).r;
+    if (i == 6)
+        return texture(spectrum6, f).r;
     return texture(spectrum7, f).r;
 }
 
 vec4 cacheHist(int i, vec2 uv) {
-    if (i == 0) return texture(samp,  uv);
-    if (i == 1) return texture(samp1, uv);
-    if (i == 2) return texture(samp2, uv);
-    if (i == 3) return texture(samp3, uv);
-    if (i == 4) return texture(samp4, uv);
-    if (i == 5) return texture(samp5, uv);
-    if (i == 6) return texture(samp6, uv);
-    if (i == 7) return texture(samp7, uv);
+    if (i == 0)
+        return texture(samp, uv);
+    if (i == 1)
+        return texture(samp1, uv);
+    if (i == 2)
+        return texture(samp2, uv);
+    if (i == 3)
+        return texture(samp3, uv);
+    if (i == 4)
+        return texture(samp4, uv);
+    if (i == 5)
+        return texture(samp5, uv);
+    if (i == 6)
+        return texture(samp6, uv);
+    if (i == 7)
+        return texture(samp7, uv);
     return texture(samp8, uv);
 }
 
@@ -66,7 +81,7 @@ void main() {
 
     vec3 acc = vec3(0.0);
     for (int i = 0; i < 8; i++) {
-        float h  = specHist(i, 0.05 + float(i) * 0.06);
+        float h = specHist(i, 0.05 + float(i) * 0.06);
         float h2 = specHist(i, 0.55);
 
         // Holographic fringe (subtler under cinematic look)

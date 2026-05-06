@@ -38,12 +38,12 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.10).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.38).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.38).r;
     float treble = texture(spectrum, 0.55).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -57,7 +57,8 @@ void main() {
         kUV = abs(kUV * (1.15 + lowMid * 0.15)) - 0.35;
         kUV *= rot(iTime * 0.06 + float(i) * 0.3);
         kUV = abs(kUV);
-        if (kUV.y > kUV.x) kUV = kUV.yx;
+        if (kUV.y > kUV.x)
+            kUV = kUV.yx;
     }
 
     // Sample with mirror wrap
@@ -77,7 +78,8 @@ void main() {
             eKUV = abs(eKUV * (1.15 + lowMid * 0.15 + e * 0.01)) - 0.35;
             eKUV *= rot(iTime * 0.06 + float(i) * 0.3 + e * 0.02);
             eKUV = abs(eKUV);
-            if (eKUV.y > eKUV.x) eKUV = eKUV.yx;
+            if (eKUV.y > eKUV.x)
+                eKUV = eKUV.yx;
         }
         vec3 s = texture(samp, mirror(eKUV * 0.5 + 0.5)).rgb;
         s *= rainbow(e * 0.18 + length(kUV) + iTime * 0.2 + hiMid);

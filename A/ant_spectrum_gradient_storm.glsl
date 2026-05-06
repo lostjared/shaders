@@ -41,11 +41,11 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.20).r;
-    float hiMid  = texture(spectrum, 0.38).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.20).r;
+    float hiMid = texture(spectrum, 0.38).r;
     float treble = texture(spectrum, 0.55).r;
-    float air    = texture(spectrum, 0.78).r;
+    float air = texture(spectrum, 0.78).r;
 
     vec2 uv = (tc - 0.5) * 2.0;
     uv.x *= iResolution.x / iResolution.y;
@@ -55,7 +55,8 @@ void main() {
         uv = abs(uv) - 0.5;
         uv *= rot(iTime * 0.15 + float(i) * 0.7 + bass * 0.5);
         uv = abs(uv);
-        if (uv.y > uv.x) uv = uv.yx;
+        if (uv.y > uv.x)
+            uv = uv.yx;
     }
 
     // Turbulent noise distortion

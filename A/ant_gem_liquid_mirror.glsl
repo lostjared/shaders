@@ -27,10 +27,10 @@ float noise(vec2 p) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.60).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     vec2 uv = tc;
     vec2 centered = uv - 0.5;
@@ -50,7 +50,7 @@ void main() {
 
     // Glass warp normals from texture luminance
     float delta = 0.008;
-    float h  = dot(texture(samp, uv).rgb, vec3(0.33));
+    float h = dot(texture(samp, uv).rgb, vec3(0.33));
     float h1 = dot(texture(samp, uv + vec2(delta, 0.0)).rgb, vec3(0.33));
     float h2 = dot(texture(samp, uv + vec2(0.0, delta)).rgb, vec3(0.33));
     vec2 normal = vec2(h1 - h, h2 - h);

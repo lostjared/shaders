@@ -17,16 +17,15 @@ uniform sampler1D spectrum;
 const float TAU = 6.28318530718;
 
 vec3 ocean(float t) {
-    return vec3(0.1, 0.3, 0.5) + vec3(0.3, 0.4, 0.5)
-         * cos(TAU * (vec3(1.0, 1.2, 1.0) * t + vec3(0.0, 0.25, 0.5)));
+    return vec3(0.1, 0.3, 0.5) + vec3(0.3, 0.4, 0.5) * cos(TAU * (vec3(1.0, 1.2, 1.0) * t + vec3(0.0, 0.25, 0.5)));
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.82).r;
+    float air = texture(spectrum, 0.82).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * 2.0;
@@ -46,7 +45,8 @@ void main() {
     const float max_iters = 42.0;
     for (float i = 0.0; i < max_iters; i++) {
         p = abs(p) / dot(p, p) - vec2(0.78 + mid * 0.3, 0.5 + 0.1 * sin(iTime * 0.3));
-        if (length(p) > 20.0) break;
+        if (length(p) > 20.0)
+            break;
         iters++;
     }
     float ni = iters / max_iters;

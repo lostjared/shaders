@@ -33,11 +33,11 @@ float noise(vec2 p) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.60).r;
-    float air    = texture(spectrum, 0.82).r;
+    float air = texture(spectrum, 0.82).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * 2.0;
@@ -64,8 +64,7 @@ void main() {
     vec2 sampUV = mix(
         abs(fract(tunnel * 0.5) * 2.0 - 1.0),
         fract(petal * 0.6 + 0.5),
-        0.45 + hiMid * 0.35
-    );
+        0.45 + hiMid * 0.35);
 
     // Chromatic split driven by treble + air
     float chroma = (treble + air) * 0.04;

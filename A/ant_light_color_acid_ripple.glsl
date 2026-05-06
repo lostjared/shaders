@@ -23,10 +23,10 @@ vec3 acid(float t) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -49,8 +49,7 @@ void main() {
     // Feedback-style UV distortion
     vec2 distort = vec2(
         combined * 0.03 * (1.0 + bass),
-        (wave1 - wave2) * 0.02 * (1.0 + mid)
-    );
+        (wave1 - wave2) * 0.02 * (1.0 + mid));
     vec2 sampUV = tc + distort;
 
     float chroma = abs(combined) * 0.04 + treble * 0.02;
@@ -69,7 +68,8 @@ void main() {
 
     // Source point glow
     for (int i = 0; i < 3; i++) {
-        vec2 src = (i == 0) ? src1 : (i == 1) ? src2 : src3;
+        vec2 src = (i == 0) ? src1 : (i == 1) ? src2
+                                              : src3;
         float glow = exp(-length(uv - src) * (5.0 - bass * 2.0));
         col += acid(float(i) * 0.33 + iTime * 0.3) * glow * (0.5 + amp_peak);
     }

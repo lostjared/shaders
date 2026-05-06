@@ -24,11 +24,11 @@ vec2 mirror(vec2 uv) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.10).r;
-    float mid    = texture(spectrum, 0.22).r;
+    float mid = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     vec2 uv = (tc - 0.5) * 2.5;
     uv.x *= iResolution.x / iResolution.y;
@@ -45,7 +45,8 @@ void main() {
         float xNew = z.x * z.x - z.y * z.y + c.x;
         z.y = 2.0 * z.x * z.y + c.y;
         z.x = xNew;
-        if (dot(z, z) > 100.0) break;
+        if (dot(z, z) > 100.0)
+            break;
         iters++;
     }
     float normIter = iters / 40.0;

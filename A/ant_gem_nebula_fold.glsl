@@ -28,11 +28,11 @@ vec3 nebula(float t) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 p = (tc - 0.5) * vec2(aspect, 1.0);
@@ -55,7 +55,8 @@ void main() {
     float foldZoom = 1.15 + 0.15 * sin(iTime * 0.4) + bass * 0.2;
     vec2 ctr = vec2(0.0);
     for (int i = 0; i < 7; i++) {
-        if (i >= foldCount) break;
+        if (i >= foldCount)
+            break;
         p = abs((p - ctr) * (foldZoom + 0.1 * sin(iTime * 0.3 + float(i)))) - 0.4 + ctr;
         p = rot(iTime * 0.1 + float(i) * 0.07 + mid * 0.2) * p;
     }

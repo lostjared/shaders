@@ -29,11 +29,11 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
@@ -41,7 +41,8 @@ void main() {
 
     // Mirror box: abs folds
     uv = abs(uv);
-    if (uv.y > uv.x) uv = uv.yx;
+    if (uv.y > uv.x)
+        uv = uv.yx;
     uv = abs(uv);
 
     // Neon fractal
@@ -70,7 +71,8 @@ void main() {
     for (float e = 1.0; e < 4.0; e++) {
         float freq = texture(spectrum, e * 0.1 + 0.05).r;
         vec2 eUV = abs(uv0 * (1.0 + e * 0.05));
-        if (eUV.y > eUV.x) eUV = eUV.yx;
+        if (eUV.y > eUV.x)
+            eUV = eUV.yx;
         eUV = abs(eUV);
         vec3 s = texture(samp, mirror(eUV * 0.5 + 0.5)).rgb;
         s *= rainbow(e * 0.25 + freq + iTime * 0.2);

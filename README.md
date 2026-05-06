@@ -1,6 +1,6 @@
 # GLSL Shader Collection
 
-A collection of **1100+ OpenGL GLSL fragment shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
+A collection of **2000+ OpenGL GLSL fragment shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
 
 ## Overview
 
@@ -113,6 +113,136 @@ Hurricane-style rotating swirl/zoom effects — `huri`, `huri1`–`huri3`, `huri
 ### `af_scale*` series (≈5 shaders)
 Audio-frequency-driven uniform-scale shaders — `af_scale`, `af_scale2`, `af_scale3`, `af_scale_puple`, `af_scale_spectrum`. Frame is uniformly scaled in/out using bass / spectrum bin energy.
 
+---
+
+## Frame Cache & Spectrum History
+
+### Frame Cache Uniforms (`samp1`–`samp8`)
+
+The host maintains a rolling ring buffer of the most recently rendered frames and binds them to `samp1`–`samp8`:
+
+| Uniform | Age | Meaning |
+|---------|-----|----------|
+| `samp` | 0 (now) | Current live frame |
+| `samp8` | −1 | 1 frame ago (newest cache entry) |
+| `samp7` | −2 | 2 frames ago |
+| `samp6` | −3 | 3 frames ago |
+| `samp5` | −4 | 4 frames ago |
+| `samp4` | −5 | 5 frames ago |
+| `samp3` | −6 | 6 frames ago |
+| `samp2` | −7 | 7 frames ago |
+| `samp1` | −8 | 8 frames ago (oldest cache entry) |
+
+The cache is only populated when the host has texture caching enabled. In that mode, shaders can:
+- **Stack ghost echoes** — blend `samp` through `samp8` at decreasing opacity.
+- **Build feedback tunnels** — zoom/rotate before each cache lookup so older frames appear as receding rings.
+- **Drive motion blur trails** — offset each cache layer along an audio-driven direction vector.
+- **Detect movement** — subtract `samp8` from `samp` to isolate pixel change.
+
+Convenience helper used by many shaders in this collection:
+```glsl
+vec4 cacheHist(int i, vec2 uv) {
+    if (i == 0) return texture(samp,  uv);
+    if (i == 1) return texture(samp1, uv);
+    // ... samp2 through samp8 ...
+    return texture(samp8, uv);
+}
+```
+
+### Spectrum History Uniforms (`spectrum0`–`spectrum7`)
+
+In addition to the per-frame FFT exposed through `amp_*` scalars and `spectrum`, the host maintains a ring of 8 consecutive FFT frames:
+
+| Uniform | Age | Meaning |
+|---------|-----|----------|
+| `spectrum0` | 0 (now) | Current frame's FFT spectrum |
+| `spectrum1` | −1 | 1 FFT frame ago |
+| `spectrum2` | −2 | 2 FFT frames ago |
+| `spectrum3` | −3 | 3 FFT frames ago |
+| `spectrum4` | −4 | 4 FFT frames ago |
+| `spectrum5` | −5 | 5 FFT frames ago |
+| `spectrum6` | −6 | 6 FFT frames ago |
+| `spectrum7` | −7 | 7 FFT frames ago (oldest) |
+
+Each is a `sampler1D` with `GL_R32F` internal format. Sample with a normalized frequency coordinate `[0, 1]`:
+```glsl
+float bass_now    = texture(spectrum0, 0.03).r;
+float bass_oldest = texture(spectrum7, 0.03).r;
+```
+
+Common frequency landmarks (approximate, depends on FFT size and sample rate):
+
+| Frequency coord | Approx. range | Band |
+|----------------|---------------|------|
+| 0.00 – 0.06 | < ~150 Hz | Sub-bass |
+| 0.06 – 0.20 | ~150–500 Hz | Bass |
+| 0.20 – 0.35 | ~500–1 kHz | Low-mid |
+| 0.35 – 0.55 | ~1–3 kHz | Mid |
+| 0.55 – 0.75 | ~3–8 kHz | Presence/treble |
+| 0.75 – 1.00 | > ~8 kHz | Air/high-treble |
+
+Convenience helper for reading any history slot:
+```glsl
+float specHist(int i, float freq) {
+    if (i == 0) return texture(spectrum0, freq).r;
+    if (i == 1) return texture(spectrum1, freq).r;
+    // ... spectrum2 through spectrum7 ...
+    return texture(spectrum7, freq).r;
+}
+
+// Accumulated energy across all 8 slots (useful for sustain detection)
+float histEnergy(float freq) {
+    float e = 0.0;
+    for (int i = 0; i < 8; i++) e += specHist(i, freq);
+    return e;
+}
+```
+
+---
+
+## New Shader Families (Added 2026)
+
+### `ant_cache_spectrum8_*` series (25 shaders)
+Audio-reactive shaders that combine an 8-frame texture cache (`samp1`–`samp8`) with per-slot FFT history (`spectrum0`–`spectrum7`). Each shader has a distinct visual theme but shares the same feedback architecture: the cache is used for zoom/rotate feedback layering and the spectrum history modulates per-layer hue shift, zoom depth, and rotation speed. All use `iTime` for smooth animation.
+
+Members: `acid_rain`, `caustic_storm`, `chromatic_pulse`, `fractal`, `galaxy_swirl`, `glitch_storm`, `hex_grid`, `holographic`, `kaleidoscope`, `lava_flow`, `lightning`, `mandala`, `neon_grid`, `neural`, `oilslick`, `plasma`, `radial_echo`, `spectrum_rings`, `starburst`, `strobe_tunnel`, `tunnel`, `voronoi_pulse`, `vortex`, `warp_drive`, `zebra_wave`.
+
+### `ant_peak_inversion_cache_spectrum_time_*` series (25 shaders)
+Built on the same architecture as `ant_cache_spectrum8_*` but with effects tuned to be approximately 5× more intense. Historical FFT energy is accumulated across all 8 spectrum slots via `histEnergy()` and then used with large multipliers for zoom collapse, rotation snap, and color inversion. Uses `iTime`. Adds hard peak inversion (`mix(color, 1-color, ...)`) at `amp_peak` thresholds.
+
+Members: `acid_rain_flood`, `caustic_drowning`, `chromatic_quake`, `fractal_inferno`, `galaxy_devourer`, `glitch_apocalypse`, `hex_seizure`, `hologram_collapse`, `hyperspace_tunnel`, `kaleidoscope_storm`, `lightning_god`, `magma_eruption`, `mandala_pulse`, `neon_grid_inferno`, `neural_overload`, `oilslick_meltdown`, `plasma_furnace`, `radial_echo_chamber`, `spectrum_visualizer`, `starburst_supernova`, `strobe_void`, `voronoi_seizure`, `vortex_singularity`, `warp_drive_overload`, `zebra_riot`.
+
+### `ant_time_f_color_*` series (25 shaders)
+A new family that makes the use of frame history and FFT history **visually obvious and structural** — the history is not just a subtle feedback modifier but the primary compositional device. Uses `time_f` (safe to use since the host now wraps at `65536 × 2π` rather than `2π`, preserving trig and `mod()` continuity). Each shader presents the 9 cache frames and/or 8 spectrum slots as explicit visible elements:
+
+| Shader | How history is shown |
+|--------|----------------------|
+| `ringbuffer_spiral` | 9 spiral arms, each sampling a different cache frame |
+| `echo_chamber` | 8 ghost copies of past frames offset in an audio-driven ring |
+| `spectrum_waterfall` | y-axis = age; top row = `spectrum0` (now), bottom = `spectrum7` |
+| `timeline_strips` | Screen divided into 9 vertical strips, one per cache frame |
+| `trail_blaze` | Motion-blur trail through all 9 frames along an audio path |
+| `ghost_train` | 8 ghosts marching across the screen at different speeds |
+| `memory_kaleidoscope` | Pie-slice kaleidoscope where each slice = different cache frame |
+| `tunnel_recall` | Concentric rings, one ring per cache frame, with visible borders |
+| `fft_aurora` | 8 aurora curtain bands, one per `spectrum0`–`spectrum7` |
+| `shutter_burst` | 3×3 grid showing all 9 cache frames simultaneously |
+| `polar_history` | Clock-face wedges: angle = age, radius = FFT frequency |
+| `radial_smear` | Concentric rings of cache frames blended outward |
+| `crosshatch_recall` | 3×3 grid cells with per-cell FFT history overlay bar |
+| `afterimage_burn` | max-blend of all 9 frames for a long-exposure burn-in look |
+| `quantum_freeze` | Random per-tile pick from 9 cache frames |
+| `light_painting` | Additive long-exposure trail across all cache frames |
+| `bass_pulse_rings` | 8 expanding rings; each ring's brightness = bass history at that age |
+| `glitch_archive` | Scanline bands snap to different cache frames at audio intervals |
+| `data_stream` | 8 vertical columns, each scrolling one `spectrum*` slot |
+| `parallax_layers` | 9 depth planes scrolling at speeds proportional to their age |
+| `mirror_corridor` | 8 receding mirror planes, each showing an older cache frame |
+| `timeline_swirl` | Spiral where angle encodes age and radius encodes FFT frequency |
+| `acid_smear` | Each cache frame distorted by its matching `spectrum*` waveform |
+| `spectrogram_paint` | Full 2-D spectrogram (x = frequency, y = age 0–7) |
+| `holo_replay` | 9 transparent holographic layers with chromatic aberration per layer |
+
 ### `crystal*` series
 Crystal lattice / refraction overlays — `crystal`, `crystal-2`, `crystal-3`, `crystal-4`, `crystalball`, `crystalbend`, `crystalblend2`, `crystalprism`. Faceted UV reflections, often combined with chromatic dispersion.
 
@@ -186,7 +316,7 @@ Some shaders blend, echo, or composite multiple textures. Hosts should bind thes
 
 | Uniform | Type | Description |
 |---------|------|-------------|
-| `samp1` … `samp8` | `sampler2D` | Auxiliary texture inputs. Used variously as additional layers (`samp1`–`samp4`), older frames in echo/feedback chains, or cached intermediate buffers. |
+| `samp1` … `samp8` | `sampler2D` | **Frame history ring buffer.** When the texture cache is enabled the host fills these as a rolling window of the 8 most-recently rendered frames: `samp1` = oldest (furthest back in time), `samp8` = newest (most recent previous frame), `samp` = the current live frame. Shaders can build motion-blur trails, persistent ghost echoes, feedback tunnels, and other time-layered effects by sampling across this ring. See *Frame Cache Uniforms* below. |
 | `mat_samp` | `sampler2D` | Material/overlay texture (paired with `mat_size` and `image_pos`). Used by shaders in the `material/` folder. |
 | `mat_size` | `vec2` | Pixel dimensions of `mat_samp`. |
 | `image_pos` | `vec2` | Position offset (in pixels or normalized coords) at which the material texture should be placed. |
@@ -206,7 +336,8 @@ Shaders that respond to live audio expect any subset of these. Values are typica
 | `amp_low` | `float` | Bass-band energy (below ~300 Hz). |
 | `amp_mid` | `float` | Mid-band energy (~300–3000 Hz). |
 | `amp_high` | `float` | Treble-band energy (above ~3000 Hz). |
-| `spectrum` | `sampler1D` | 1-D frequency spectrum texture (FFT bins) for shaders that read individual bands. |
+| `spectrum` | `sampler1D` | 1-D frequency spectrum texture (FFT bins) for shaders that read individual bands. |  
+| `spectrum0` … `spectrum7` | `sampler1D` | **FFT history ring.** Eight 1-D spectrum textures capturing recent FFT frames: `spectrum0` = the current frame's spectrum (newest), `spectrum7` = the oldest stored spectrum. Each texture contains `FFT_SIZE/2` red-channel texels in `[0, 1]` representing normalized magnitude per frequency bin. Shaders can compare current and historical spectra to detect transients, build spectrograms, or drive effects whose intensity depends on how long a band has been active. See *Spectrum History Uniforms* below. |
 | `iSampleRate` | `float` | Audio sample rate in Hz (e.g. 44100). |
 | `iChannelTime[4]` | `float[4]` | Playback time for each texture channel (Shadertoy-compatible). |
 | `iChannelResolution[4]` | `vec3[4]` | Resolution of each texture channel. |

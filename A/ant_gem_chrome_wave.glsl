@@ -17,11 +17,11 @@ vec3 chrome(float t) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc * 2.0 - 1.0);
@@ -46,8 +46,7 @@ void main() {
     // UV warp
     vec2 warpOff = vec2(
         sin(r * 7.0 - iTime * 1.5) * mid * 0.05,
-        cos(r * 7.0 + iTime * 1.2) * mid * 0.05
-    );
+        cos(r * 7.0 + iTime * 1.2) * mid * 0.05);
     vec2 warpedTC = tc + warpOff + vec2(ripple * bass * 0.25);
 
     // Chrome chromatic aberration

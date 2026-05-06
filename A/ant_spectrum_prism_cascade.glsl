@@ -29,11 +29,11 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
+    float bass = texture(spectrum, 0.03).r;
     float lowMid = texture(spectrum, 0.12).r;
-    float mid    = texture(spectrum, 0.25).r;
+    float mid = texture(spectrum, 0.25).r;
     float treble = texture(spectrum, 0.55).r;
-    float air    = texture(spectrum, 0.78).r;
+    float air = texture(spectrum, 0.78).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);

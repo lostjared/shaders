@@ -13,11 +13,11 @@ uniform float amp_smooth;
 uniform sampler1D spectrum;
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * 2.0;
@@ -33,11 +33,11 @@ void main() {
     const float maxIters = 55.0;
     vec2 voidPoint = vec2(
         0.7 + mid * 0.3 * sin(iTime * 0.2),
-        0.4 + bass * 0.2 * cos(iTime * 0.3)
-    );
+        0.4 + bass * 0.2 * cos(iTime * 0.3));
     for (float i = 0.0; i < maxIters; i++) {
         p = abs(p) / dot(p, p) - voidPoint;
-        if (length(p) > 25.0) break;
+        if (length(p) > 25.0)
+            break;
         iters++;
     }
     float norm = iters / maxIters;

@@ -34,15 +34,21 @@ float noise(vec2 p) {
                mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
 }
 
-mat3 rotY(float a) { float s=sin(a),c=cos(a); return mat3(c,0,s, 0,1,0, -s,0,c); }
-mat3 rotZ(float a) { float s=sin(a),c=cos(a); return mat3(c,-s,0, s,c,0, 0,0,1); }
+mat3 rotY(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, 0, s, 0, 1, 0, -s, 0, c);
+}
+mat3 rotZ(float a) {
+    float s = sin(a), c = cos(a);
+    return mat3(c, -s, 0, s, c, 0, 0, 0, 1);
+}
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.20).r;
-    float hiMid  = texture(spectrum, 0.38).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.20).r;
+    float hiMid = texture(spectrum, 0.38).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 p = (tc - 0.5) * vec2(aspect, 1.0);

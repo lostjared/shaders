@@ -20,11 +20,11 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = tc;
@@ -54,7 +54,7 @@ void main() {
 
     // Edge detection via luminance gradient (sketch style)
     float delta = 0.003;
-    float lum  = dot(texture(samp, kaleUV).rgb, vec3(0.299, 0.587, 0.114));
+    float lum = dot(texture(samp, kaleUV).rgb, vec3(0.299, 0.587, 0.114));
     float lumR = dot(texture(samp, kaleUV + vec2(delta, 0.0)).rgb, vec3(0.299, 0.587, 0.114));
     float lumU = dot(texture(samp, kaleUV + vec2(0.0, delta)).rgb, vec3(0.299, 0.587, 0.114));
     float edge = length(vec2(lumR - lum, lumU - lum)) * 40.0;

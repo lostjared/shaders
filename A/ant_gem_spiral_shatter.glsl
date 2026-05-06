@@ -24,11 +24,11 @@ vec3 metalPalette(float t) {
 }
 
 void main() {
-    float bass   = texture(spectrum, 0.03).r;
-    float mid    = texture(spectrum, 0.22).r;
-    float hiMid  = texture(spectrum, 0.40).r;
+    float bass = texture(spectrum, 0.03).r;
+    float mid = texture(spectrum, 0.22).r;
+    float hiMid = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air    = texture(spectrum, 0.80).r;
+    float air = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * 2.0;
@@ -57,7 +57,8 @@ void main() {
         float a = spiralPhase * 0.1 + fi * 0.4;
         shardUV = rot(a) * shardUV;
         shardUV += vec2(sin(shardUV.y * 3.0 + iTime + fi),
-                        cos(shardUV.x * 3.0 - iTime + fi)) * (0.35 + hiMid * 0.15);
+                        cos(shardUV.x * 3.0 - iTime + fi)) *
+                   (0.35 + hiMid * 0.15);
     }
 
     // Map shattered coords to texture via smooth cosine fold
