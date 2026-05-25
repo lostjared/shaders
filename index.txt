@@ -98,6 +98,7 @@ A/ant_gem_metal_opal.glsl
 A/ant_gem_metal_orbital.glsl
 A/ant_gem_metal_prism.glsl
 A/ant_gem_metal_pulse.glsl
+A/ant_gem_metal_pulse_mouse.glsl
 A/ant_gem_metal_ripple.glsl
 A/ant_gem_metal_shard.glsl
 A/ant_gem_metal_storm.glsl
@@ -333,6 +334,10 @@ B/bi_cycle.glsl
 B/blackhole.glsl
 B/black_rings.glsl
 B/blank.glsl
+B/blend_orig_10_cache.glsl
+B/blend_orig_25_cache.glsl
+B/blend_orig_50_cache.glsl
+B/blend_orig_75_cache.glsl
 B/block_pixels.glsl
 B/bloom.glsl
 B/blue.glsl
@@ -351,6 +356,7 @@ B/breathe.glsl
 B/bright.glsl
 B/brighten.glsl
 B/brighten_rev.glsl
+B/brightness_increase.glsl
 B/bright_rainbow.glsl
 B/broadcast.glsl
 B/broadcast_sync_lost.glsl
@@ -741,7 +747,9 @@ F/fractal_noise.glsl
 F/fractal_no_zero.glsl
 F/fractal_recursion.glsl
 F/fractal_texture_large.glsl
+F/fractal_texture_large-nowrap.glsl
 F/fractal_texture_large_audio.glsl
+F/fractal_texture_large_spectrum.glsl
 F/fractal_texture_no_wrap.glsl
 F/fractal_vhs.glsl
 F/fractal_zoom_e.glsl
@@ -1001,7 +1009,6 @@ G/gem_spectrum_extreme.glsl
 G/gem_spectrum_test.glsl
 G/gem_spiderweb.glsl
 G/gem_spiderweb_tunnel.glsl
-G/gem_txt.glsl
 G/genergy.glsl
 G/geometric.glsl
 G/geometric2.glsl
@@ -1329,9 +1336,6 @@ O/open_shadow_jump.glsl
 O/open_shadow_multi.glsl
 O/open_shadow_multi_x2.glsl
 O/open_up.glsl
-O/optxtime.glsl
-O/optxtime_cos.glsl
-O/optxtime_tex.glsl
 P/PI_x1.mp4.glsl
 P/page_turn.glsl
 P/page_turn2.glsl
@@ -1788,6 +1792,7 @@ T/tridim.glsl
 T/tripple.glsl
 T/tripple2.glsl
 T/triwavedistort.glsl
+T/tunnel_x.glsl
 T/tv_show.glsl
 T/twarp.glsl
 T/twarp2.glsl
