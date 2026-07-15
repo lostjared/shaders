@@ -1,6 +1,6 @@
 # GLSL Shader Collection
 
-A collection of **2000+ OpenGL GLSL fragment shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
+A collection of **2400+ OpenGL GLSL fragment shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
 
 ## Overview
 
@@ -243,6 +243,45 @@ A new family that makes the use of frame history and FFT history **visually obvi
 | `spectrogram_paint` | Full 2-D spectrogram (x = frequency, y = age 0–7) |
 | `holo_replay` | 9 transparent holographic layers with chromatic aberration per layer |
 
+### Additional 2026 shader families
+
+These newer families extend the collection with high-detail, audio-reactive, cache-driven, and gameplay-oriented effects. The filename prefix identifies the shared rendering approach; the remainder of each name describes that shader's visual theme.
+
+| Family | Count | Description |
+|--------|------:|-------------|
+| `ant_texture_cache_spectrum_scale_*` | 25 | Scalable trail-cache effects that read `textures[SIZE]` instead of a fixed eight-frame cache. FFT history controls the scale, color, displacement, and persistence of themes such as `chromatic`, `comet`, `ghost`, `kaleido`, `neon_trail`, `tunnel`, and `vortex`. |
+| `code-frac-*` | 25 | Audio-reactive recursive folds and kaleidoscopic fractal texture remixes. Members range from `aurora-vault` and `crystal-tunnel` to `prism-wormhole` and `zero-gravity-fold`. |
+| `code-frac-x-*` | 25 | Higher-detail fractal variants built for large displays, with derivative-filtered Julia fields, log-polar singularities, recursive geometry, chromatic refraction, and audio-driven motion. |
+| `code-mirror-*` | 25 | Mirror tiling, radial reflection, kaleidoscopic folding, and animated refraction combined with themed palettes and audio response. Examples include `aurora-corridor`, `echo-temple`, `glass-tesseract`, and `vortex-gallery`. |
+| `code-update-*` | 25 | Compact spectrum-reactive effects with distinct procedural scenes—ribbons, lattices, stained glass, ferrofluid, reefs, nebulae, and wormholes—plus peak-triggered flashes or inversion. |
+| `codex_*` | 45 | Experimental effects split into several groups: four cartoon/cel/VHS looks; ten `codex_glitch_*` fractal glitches; ten `codex_grad_fractal_*` palette-heavy fractals; ten `codex_vhs_*` tape simulations; and standalone aura, chrome, mosaic, prism, topography, echo, and signal-decay effects. Variants use time and, where appropriate, mouse control. |
+| `game_codex_*` | 20 | Readable gameplay overlays for recognizable events and states, including target lock, radar ping, critical hit, shield hit, low ammo, power-up, speed boost, stealth, underwater depth, and elemental damage. |
+| `inthesky_cache_*` | 10 | Celestial frame-history compositions that layer `samp1`–`samp8` with FFT history to form auroras, cloud architecture, solar pillars, storm crowns, and mirrored skies. |
+| `inv_cache_code_*` | 10 | Cache-driven perceptual fields inspired by afterimages, phosphenes, peripheral drift, entoptic patterns, and dreamlike visual persistence. |
+| `inversion_code_cache_*` | 25 | Temporal inversion energy fields. Cached frames and spectrum history are folded into scientific and abstract structures such as charge maps, flux lattices, moiré tensors, quasicrystals, plasma filaments, and quantum foam. |
+| `kale_code_*` | 15 | Nested, multi-domain kaleidoscopes with recursive folds, mirrored sampling, chromatic refraction, and audio-reactive segment counts or motion. |
+| `liquid_code_*` | 5 | Fluid metallic warps (`chrome_nautilus`, `iridescent_whirlpool`, `mercury_vortex`, `molten_helix`, and `silver_riptide`) using noise fields, thin-film color, and audio-responsive lighting. |
+| `metal-code-*` | 10 | Procedural metallic surfaces with animated height fields, reflected texture sampling, iridescence, and physically inspired highlights. |
+| `rainbow-code-*` | 10 | High-detail spectral materials and distortions: aurora silk, chromatic ribbons, diamond waves, holographic facets, liquid pearl, opal vortices, caustics, bloom, and stained-glass kaleidoscopes. |
+| `rainbow_metal_code_*` | 25 | Audio-reactive rainbow metal with procedural normals, spectral lighting, and optional `slider1`–`slider4` controls. Themes include chrome, mercury, liquid mandalas, magnetic opal, radiant helixes, and foundry effects. |
+| `twist-code-*` | 25 | Animated polar and radial tunnel warps, ranging from double helices and augers to gravity wells, shockwaves, turbines, and singularities. |
+| `vhs-code-*` | 11 | Focused analog-tape artifacts including chroma bleed, RF noise, dropout, ghosting, head switching, pause jitter, tracking roll, tape warp, worn tape, and stylized home-movie/Kung Fury looks. |
+| `xor_code_*` | 15 | Byte-level XOR color transforms combined with procedural spatial masks. Includes bit-plane, halftone, circuit, kaleidoscope, feedback, solarized, and smooth pastel/prismatic variants. |
+
+### Other recent additions
+
+| Shaders | Description |
+|---------|-------------|
+| `blend_orig_10_cache`, `blend_orig_25_cache`, `blend_orig_50_cache`, `blend_orig_75_cache` | Blend the live frame with `textures[0]` at fixed 10%, 25%, 50%, or 75% strengths. |
+| `af_scale_pulse`, `ant_gem_metal_pulse_mouse` | A pulsing audio-frequency scale effect and a mouse-positioned metallic `ant_gem` pulse variant. |
+| `echo_cache` | Builds a diagonally offset echo by repeatedly blending the fixed frame-history samplers. |
+| `fill_black`, `fill_black_fold` | Black-fill compositors; the fold variant combines the fill with mirrored/folded sampling. |
+| `fractal_texture_large-nowrap`, `fractal_texture_large_spectrum` | Large-format fractal texture effects, with a non-wrapping variant and an FFT-reactive variant. |
+| `hallu_code_abyssal_opaline`, `hallu_code_vesper_xenolith` | Audio-reactive hallucinatory fields with mirrored UVs, layered noise, opaline color, and deep procedural geometry. |
+| `brightness_increase`, `grad_color`, `shift_grad`, `remove_flicker` | Utility color processors for brightness, gradient color, gradient shifting, and luminance-based flicker reduction. |
+| `mirror-wrap-scale`, `pond`, `tunnel_x` | A scaled mirror-wrap, an extreme mouse/audio/cache-driven water ripple, and a tunnel distortion. |
+| `vhs-color-mode` | A sharpened cyan-shadow/magenta-highlight VHS grade with chroma styling and analog noise. |
+
 ### `crystal*` series
 Crystal lattice / refraction overlays — `crystal`, `crystal-2`, `crystal-3`, `crystal-4`, `crystalball`, `crystalbend`, `crystalblend2`, `crystalprism`. Faceted UV reflections, often combined with chromatic dispersion.
 
@@ -317,6 +356,7 @@ Some shaders blend, echo, or composite multiple textures. Hosts should bind thes
 | Uniform | Type | Description |
 |---------|------|-------------|
 | `samp1` … `samp8` | `sampler2D` | **Frame history ring buffer.** When the texture cache is enabled the host fills these as a rolling window of the 8 most-recently rendered frames: `samp1` = oldest (furthest back in time), `samp8` = newest (most recent previous frame), `samp` = the current live frame. Shaders can build motion-blur trails, persistent ghost echoes, feedback tunnels, and other time-layered effects by sampling across this ring. See *Frame Cache Uniforms* below. |
+| `textures[SIZE]` | `sampler2D[]` | Configurable frame-cache array used by `ant_texture_cache_spectrum_scale_*` and `blend_orig_*_cache`. `SIZE` is supplied by the host/build configuration (the shader fallback is usually 8). |
 | `mat_samp` | `sampler2D` | Material/overlay texture (paired with `mat_size` and `image_pos`). Used by shaders in the `material/` folder. |
 | `mat_size` | `vec2` | Pixel dimensions of `mat_samp`. |
 | `image_pos` | `vec2` | Position offset (in pixels or normalized coords) at which the material texture should be placed. |
@@ -370,6 +410,7 @@ Common tweak knobs exposed by individual effects.
 | `uRandRate` | `float` (default `0.2`) | Rate at which random/jitter values evolve. |
 | `uRotateSpeed` | `float` (default `1.0`) | Rotation speed multiplier. |
 | `uWarpSpeed` | `float` (default `0.1`) | Warp animation speed multiplier. |
+| `slider1` … `slider4` | `float` | Optional user controls exposed by the `rainbow_metal_code_*` family; their exact lighting, warp, and color mapping is shader-specific. |
 | `seed`, `random_seed`, `random_var` | `float` / `vec4` | Seed inputs for hashed/randomized shaders. |
 | `index_value` | `float` | Discrete index input (selector for palettes, modes, etc.). |
 | `restore_black` | `float` | Toggle (0/1) used by the "strip black / restore black" pipeline so cropped letterboxing can be re-applied after a color-altering pass. |
