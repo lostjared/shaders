@@ -1,6 +1,6 @@
 # GLSL Shader Collection
 
-A collection of **2400+ OpenGL GLSL fragment shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
+A collection of **2500+ OpenGL GLSL fragment shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
 
 ## Overview
 
@@ -29,11 +29,11 @@ Shaders are organized alphabetically into folders by the first character of thei
 - **Fisheye & lens** — `fisheye`, `fisheye_mouse`, `fisheye_warp`, `bubble`, `bubble-zoom-mouse`, `thick_glass`, `prism_glass`
 - **Warp & twist** — `twist`, `twist_full`, `warp_tunnel`, `warpcursor`, `bend`, `bend_twist`, `elastic`
 - **Zoom effects** — `zoom_fish`, `zoom_in_out_mouse`, `zoom_pulse`, `cd_zoom`, `brot-zoom-mouse`
-- **Spiral & swirl** — `spiral_wave`, `spiral_mirror`, `swirl_by_mouse`, `color_swirl_beautiful`, `gptswirl`, `g_swirl`
+- **Spiral & swirl** — `spiral_wave`, `spiral_mirror`, `spiral-code-*`, `swirl_by_mouse`, `color_swirl_beautiful`, `gptswirl`, `g_swirl`
 - **Page turn & fold** — `page_turn`, `fold`, `fold-mirror`, `fold-spin`, `tex_fold`
 
 ### Fractal & Mathematical
-- **Fractal patterns** — `fractal`, `frac_shader01`–`frac_shader05`, `frac_zoom1`–`frac_zoom8`, `new_fractal`, `fractal_diamond_rainbow`
+- **Fractal patterns** — `fractal`, `frac_shader01`–`frac_shader05`, `frac_zoom1`–`frac_zoom8`, `fractal-code-large-*`, `new_fractal`, `fractal_diamond_rainbow`
 - **Mandelbrot / Julia** — `mandella1`, `julia`, `brot-zoom-mouse`, `frac_shader02_dmd_mandella`
 - **Geometric patterns** — `geometric`–`geometric5`, `grid_pattern`, `grid_spiral`, `diamond`, `prism_quad`
 - **Kaleidoscope** — `kale`, `kale2`–`kale4`, `kscopic`, `gkale`, `gkalei`
@@ -62,7 +62,7 @@ Shaders are organized alphabetically into folders by the first character of thei
 - **Rotation & spin** — `rotate_xyz`, `rotate_xyz_zoom`, `fold-spin`, `rainbow_cd_spin`
 
 ### Nature & Organic
-- **Water effects** — `water`, `water_full`, `water_rgb`, `waterbend`, `underwater`, `ocean`, `fold-water`
+- **Water effects** — `water`, `water_full`, `water_rgb`, `water_hq_01`–`water_hq_25`, `waterbend`, `underwater`, `ocean`, `fold-water`
 - **Smoke & air** — `smoke`, `air`, `air_full`, `air-bowl`
 - **Psychedelic** — `psych`, `psyche_ripple`, `psyche_wave`, `acid_color2`, `acidcam`, `acidcolor`, `halluc_gem`, `halluc_liquid`
 
@@ -255,6 +255,7 @@ These newer families extend the collection with high-detail, audio-reactive, cac
 | `code-mirror-*` | 25 | Mirror tiling, radial reflection, kaleidoscopic folding, and animated refraction combined with themed palettes and audio response. Examples include `aurora-corridor`, `echo-temple`, `glass-tesseract`, and `vortex-gallery`. |
 | `code-update-*` | 25 | Compact spectrum-reactive effects with distinct procedural scenes—ribbons, lattices, stained glass, ferrofluid, reefs, nebulae, and wormholes—plus peak-triggered flashes or inversion. |
 | `codex_*` | 45 | Experimental effects split into several groups: four cartoon/cel/VHS looks; ten `codex_glitch_*` fractal glitches; ten `codex_grad_fractal_*` palette-heavy fractals; ten `codex_vhs_*` tape simulations; and standalone aura, chrome, mosaic, prism, topography, echo, and signal-decay effects. Variants use time and, where appropriate, mouse control. |
+| `fractal-code-large-*` | 25 | Large-format, alpha-preserving fractal overlays. Three recursive folds, kaleidoscopic geometry, derivative-aware sampling, chromatic separation, and soft-light compositing keep the source visible while `iMouse` and the `amp_*` audio bands animate themes such as `aurora-veil`, `liquid-cathedral`, `ocean-mandala`, `rainbow-glass`, and `temporal-gem`. |
 | `game_codex_*` | 20 | Readable gameplay overlays for recognizable events and states, including target lock, radar ping, critical hit, shield hit, low ammo, power-up, speed boost, stealth, underwater depth, and elemental damage. |
 | `inthesky_cache_*` | 10 | Celestial frame-history compositions that layer `samp1`–`samp8` with FFT history to form auroras, cloud architecture, solar pillars, storm crowns, and mirrored skies. |
 | `inv_cache_code_*` | 10 | Cache-driven perceptual fields inspired by afterimages, phosphenes, peripheral drift, entoptic patterns, and dreamlike visual persistence. |
@@ -264,8 +265,10 @@ These newer families extend the collection with high-detail, audio-reactive, cac
 | `metal-code-*` | 10 | Procedural metallic surfaces with animated height fields, reflected texture sampling, iridescence, and physically inspired highlights. |
 | `rainbow-code-*` | 10 | High-detail spectral materials and distortions: aurora silk, chromatic ribbons, diamond waves, holographic facets, liquid pearl, opal vortices, caustics, bloom, and stained-glass kaleidoscopes. |
 | `rainbow_metal_code_*` | 25 | Audio-reactive rainbow metal with procedural normals, spectral lighting, and optional `slider1`–`slider4` controls. Themes include chrome, mercury, liquid mandalas, magnetic opal, radiant helixes, and foundry effects. |
+| `spiral-code-*` | 25 | Time-animated spiral and polar-coordinate texture transformations. Mirrored sampling, tunnels, coils, helixes, kaleidoscopic folds, chromatic splits, and themed highlights produce effects such as `chromatic-tunnel`, `fractal-coil`, `galaxy-vortex`, `nautilus-glass`, and `prism-cyclone`. These require only `samp` and `time_f`. |
 | `twist-code-*` | 25 | Animated polar and radial tunnel warps, ranging from double helices and augers to gravity wells, shockwaves, turbines, and singularities. |
 | `vhs-code-*` | 11 | Focused analog-tape artifacts including chroma bleed, RF noise, dropout, ghosting, head switching, pause jitter, tracking roll, tape warp, worn tape, and stylized home-movie/Kung Fury looks. |
+| `water_hq_*` | 25 | High-quality, time-animated water refraction effects that preserve the input alpha and use mirrored UVs for safe edge sampling. The numbered set covers caustic shallows, ocean swell, rain ripples, glass refraction, currents, whirlpools, droplet lenses, shoreline, storm water, waterfall, and coral-lagoon looks using only `samp` and `time_f`. |
 | `xor_code_*` | 15 | Byte-level XOR color transforms combined with procedural spatial masks. Includes bit-plane, halftone, circuit, kaleidoscope, feedback, solarized, and smooth pastel/prismatic variants. |
 
 ### Other recent additions
