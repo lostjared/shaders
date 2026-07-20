@@ -1,0 +1,29 @@
+#version 330 core
+#ifndef SIZE
+#define SIZE 8
+#endif
+in vec2 tc;
+out vec4 color;
+uniform sampler2D samp;
+uniform sampler2D textures[SIZE];
+uniform vec2 iResolution;
+uniform float time_f;
+vec2 mir(vec2 u) { return 1. - abs(mod(u, 2.) - 1.); }
+vec3 P(float x) { return .5 + .5 * cos(6.28318 * (x + vec3(.0, .25, .55))); }
+void main() {
+    vec2 p = (tc - .5) * vec2(iResolution.x / iResolution.y, 1.);
+    float t = time_f, r = length(p), a0 = atan(p.y, p.x);
+    vec3 a = texture(samp, tc).rgb * .6;
+    float w = .6;
+    for (int i = 0; i < SIZE; i++) {
+        float n = float(i + 1), q = n / float(SIZE),
+              aa = abs(mod(a0 + t * .12 + n * .17, 6.28318 / 12.) - 3.14159 / 12.);
+        vec2 z = vec2(cos(aa), sin(aa)) * r;
+        z += .04 * sin(z.yx * vec2(17., 23.) + t + n) * q;
+        vec3 h = texture(textures[i], mir(z / vec2(iResolution.x / iResolution.y, 1.) + .5)).rgb;
+        float k = pow(.87, n);
+        a += h * P(q + r + t * .03) * k;
+        w += k;
+    }
+    color = vec4(clamp((a / w) / (1. + a / w), 0., 1.), 1.);
+}
