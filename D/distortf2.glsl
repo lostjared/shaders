@@ -30,3 +30,4 @@ void main() {
 
     color = vec4(finalColor, texColor.a);
 }
+

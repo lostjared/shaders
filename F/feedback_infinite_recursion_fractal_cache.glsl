@@ -13,46 +13,39 @@ uniform float amp_smooth;
 uniform sampler1D spectrum;
 
 // --- Ring Buffer Inputs ---
-uniform sampler2D samp1;
-uniform sampler2D samp2;
-uniform sampler2D samp3;
-uniform sampler2D samp4;
-uniform sampler2D samp5;
-uniform sampler2D samp6;
-uniform sampler2D samp7;
-uniform sampler2D samp8;
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
 
 vec3 neonRing(float t) {
     return 0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67)));
 }
 
 vec4 sampleCache(int idx, vec2 uv) {
-    if (idx == 0)
-        return texture(samp1, uv);
-    if (idx == 1)
-        return texture(samp2, uv);
-    if (idx == 2)
-        return texture(samp3, uv);
-    if (idx == 3)
-        return texture(samp4, uv);
-    if (idx == 4)
-        return texture(samp5, uv);
-    if (idx == 5)
-        return texture(samp6, uv);
-    if (idx == 6)
-        return texture(samp7, uv);
-    return texture(samp8, uv);
+    if (idx == 0) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(0))));
+    if (idx == 1) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(1))));
+    if (idx == 2) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(2))));
+    if (idx == 3) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(3))));
+    if (idx == 4) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(4))));
+    if (idx == 5) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(5))));
+    if (idx == 6) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(6))));
+    return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(7))));
 }
 
 void main() {
     // ==========================================
     // 1. AUDIO & FRACTAL GENERATION (Current Frame)
     // ==========================================
-    float bass = texture(spectrum, 0.03).r;
-    float mid = texture(spectrum, 0.22).r;
-    float hiMid = texture(spectrum, 0.40).r;
+    float bass   = texture(spectrum, 0.03).r;
+    float mid    = texture(spectrum, 0.22).r;
+    float hiMid  = texture(spectrum, 0.40).r;
     float treble = texture(spectrum, 0.58).r;
-    float air = texture(spectrum, 0.80).r;
+    float air    = texture(spectrum, 0.80).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * 2.0;
@@ -68,8 +61,7 @@ void main() {
     vec2 c = vec2(0.8 + mid * 0.2, 0.5 + 0.1 * sin(iTime * 0.25));
     for (float i = 0.0; i < maxIters; i++) {
         p = abs(p) / dot(p, p) - c;
-        if (length(p) > 20.0)
-            break;
+        if (length(p) > 20.0) break;
         iters++;
     }
     float norm = iters / maxIters;
@@ -111,6 +103,7 @@ void main() {
     baseCol *= 1.0 + bass * 0.3;
     baseCol = mix(baseCol, vec3(1.0) - baseCol, smoothstep(0.93, 1.0, amp_peak));
 
+
     // ==========================================
     // 2. RING BUFFER FEEDBACK RECURSION
     // ==========================================
@@ -121,7 +114,8 @@ void main() {
     // Offset center drifts slowly
     vec2 feedbackCenter = vec2(
         0.5 + 0.02 * sin(iTime * 0.4),
-        0.5 + 0.02 * cos(iTime * 0.35));
+        0.5 + 0.02 * cos(iTime * 0.35)
+    );
 
     vec3 accum = baseCol;
     float accWeight = 1.0;
@@ -141,9 +135,9 @@ void main() {
         vec2 fbUV = centered + feedbackCenter;
 
         // GLITCH INJECTION: Warp the history buffer coordinates using the current frame's
-        // escape-time vector (p). This makes the feedback trails tear and smear in
+        // escape-time vector (p). This makes the feedback trails tear and smear in 
         // response to the audio-driven fractal geometry.
-        fbUV += p * 0.0015 * gen;
+        fbUV += p * 0.0015 * gen; 
 
         vec4 cached = sampleCache(i, fbUV);
 

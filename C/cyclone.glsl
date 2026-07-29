@@ -4,6 +4,13 @@ out vec4 color;
 uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform float time_f;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 void main(void) {
     vec2 normCoord = gl_FragCoord.xy / iResolution.xy;
@@ -12,7 +19,7 @@ void main(void) {
     centeredCoord.x *= iResolution.x / iResolution.y;
     float r = length(centeredCoord);
     float theta = atan(centeredCoord.y, centeredCoord.x);
-    float twistAmount = 15.0;
+    float twistAmount = 15.0 + amp_low * 20.0;
     theta += (1.0 - r) * twistAmount * sin(time_f);
     vec2 twistedCoord = vec2(cos(theta), sin(theta)) * r;
 
@@ -20,4 +27,12 @@ void main(void) {
 
     twistedCoord += vec2(0.5, 0.5);
     color = texture(samp, twistedCoord);
+
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    color.rgb *= 1.0 + _ab * 0.6;
+    color.rgb = mix(color.rgb, color.rgb * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
+
 }

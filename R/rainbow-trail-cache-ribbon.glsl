@@ -7,14 +7,14 @@ in vec2 tc;
 out vec4 color;
 
 uniform sampler2D samp;
-uniform sampler2D samp1;
-uniform sampler2D samp2;
-uniform sampler2D samp3;
-uniform sampler2D samp4;
-uniform sampler2D samp5;
-uniform sampler2D samp6;
-uniform sampler2D samp7;
-uniform sampler2D samp8;
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
 
 uniform sampler1D spectrum0;
 uniform float time_f;
@@ -71,20 +71,20 @@ vec3 hueRotate(vec3 c, float angle) {
 vec4 sampleCache(int index, vec2 uv) {
     uv = seamlessUV(uv);
     if (index == 0)
-        return texture(samp1, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(0))));
     if (index == 1)
-        return texture(samp2, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(1))));
     if (index == 2)
-        return texture(samp3, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(2))));
     if (index == 3)
-        return texture(samp4, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(3))));
     if (index == 4)
-        return texture(samp5, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(4))));
     if (index == 5)
-        return texture(samp6, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(5))));
     if (index == 6)
-        return texture(samp7, uv);
-    return texture(samp8, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(6))));
+    return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(7))));
 }
 
 vec2 trailUV(vec2 uv, float age, float bass, float mid, float treble) {

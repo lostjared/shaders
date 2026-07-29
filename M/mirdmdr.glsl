@@ -26,3 +26,4 @@ void main() {
     vec4 texColor = texture(samp, mirroredUV);
     color = texColor;
 }
+

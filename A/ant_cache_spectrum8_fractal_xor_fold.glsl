@@ -7,23 +7,22 @@ in vec2 tc;
 out vec4 color;
 
 uniform sampler2D samp;
-uniform sampler2D samp1;
-uniform sampler2D samp2;
-uniform sampler2D samp3;
-uniform sampler2D samp4;
-uniform sampler2D samp5;
-uniform sampler2D samp6;
-uniform sampler2D samp7;
-uniform sampler2D samp8;
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
 
 uniform sampler1D spectrum0;
-uniform sampler1D spectrum1;
-uniform sampler1D spectrum2;
-uniform sampler1D spectrum3;
-uniform sampler1D spectrum4;
-uniform sampler1D spectrum5;
-uniform sampler1D spectrum6;
-uniform sampler1D spectrum7;
+uniform sampler1DArray spectrum_history;
+uniform int spectrum_history_head;
+uniform int spectrum_history_size;
+#ifndef SPECTRUM_HISTORY_LAYER
+#define SPECTRUM_HISTORY_LAYER(index) ((spectrum_history_head - ((index) % max(spectrum_history_size, 1)) + max(spectrum_history_size, 1)) % max(spectrum_history_size, 1))
+#endif
 
 uniform float iTime;
 uniform vec2 iResolution;
@@ -33,41 +32,26 @@ uniform float amp_smooth;
 const float TAU = 6.28318530718;
 
 float specHist(int i, float f) {
-    if (i == 0)
-        return texture(spectrum0, f).r;
-    if (i == 1)
-        return texture(spectrum1, f).r;
-    if (i == 2)
-        return texture(spectrum2, f).r;
-    if (i == 3)
-        return texture(spectrum3, f).r;
-    if (i == 4)
-        return texture(spectrum4, f).r;
-    if (i == 5)
-        return texture(spectrum5, f).r;
-    if (i == 6)
-        return texture(spectrum6, f).r;
-    return texture(spectrum7, f).r;
+    if (i == 0) return texture(spectrum0, f).r;
+    if (i == 1) return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(1)))).r;
+    if (i == 2) return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(2)))).r;
+    if (i == 3) return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(3)))).r;
+    if (i == 4) return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(4)))).r;
+    if (i == 5) return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(5)))).r;
+    if (i == 6) return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(6)))).r;
+    return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(7)))).r;
 }
 
 vec4 cacheHist(int i, vec2 uv) {
-    if (i == 0)
-        return texture(samp, uv);
-    if (i == 1)
-        return texture(samp1, uv);
-    if (i == 2)
-        return texture(samp2, uv);
-    if (i == 3)
-        return texture(samp3, uv);
-    if (i == 4)
-        return texture(samp4, uv);
-    if (i == 5)
-        return texture(samp5, uv);
-    if (i == 6)
-        return texture(samp6, uv);
-    if (i == 7)
-        return texture(samp7, uv);
-    return texture(samp8, uv);
+    if (i == 0) return texture(samp,  uv);
+    if (i == 1) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(0))));
+    if (i == 2) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(1))));
+    if (i == 3) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(2))));
+    if (i == 4) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(3))));
+    if (i == 5) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(4))));
+    if (i == 6) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(5))));
+    if (i == 7) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(6))));
+    return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(7))));
 }
 
 vec3 palette(float t, vec3 d) {
@@ -101,7 +85,7 @@ void main() {
     vec3 acc = vec3(0.0);
     vec3 prev = vec3(0.0);
     for (int i = 0; i < 8; i++) {
-        float h = specHist(i, 0.05 + float(i) * 0.06);
+        float h  = specHist(i, 0.05 + float(i) * 0.06);
         float h2 = specHist(i, 0.55);
         float bass = specHist(i, 0.04);
 

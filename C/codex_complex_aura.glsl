@@ -50,14 +50,13 @@ vec3 palette(float t) {
     vec3 c = vec3(0.98, 0.45, 0.84);
     vec3 d = vec3(0.95, 0.85, 1.00);
     float x = fract(t);
-    if (x < 0.33)
-        return mix(a, b, x / 0.33);
-    if (x < 0.66)
-        return mix(b, c, (x - 0.33) / 0.33);
+    if (x < 0.33) return mix(a, b, x / 0.33);
+    if (x < 0.66) return mix(b, c, (x - 0.33) / 0.33);
     return mix(c, d, (x - 0.66) / 0.34);
 }
 
-void main(void) {
+void main(void)
+{
     vec2 res = max(iResolution, vec2(1.0));
     float aspect = res.x / max(res.y, 1.0);
     float t = time_f * 0.32;

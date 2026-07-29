@@ -5,7 +5,14 @@
 in vec2 tc;
 out vec4 color;
 uniform sampler2D samp;
-uniform sampler2D textures[SIZE];
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
 uniform vec2 iResolution;
 uniform float time_f;
 mat2 rot(float a) { return mat2(cos(a), -sin(a), sin(a), cos(a)); }
@@ -23,7 +30,7 @@ void main() {
         float twist = 1.2 * sin(t * .7 - r * 7.0 + n * .8);
         z = rot(twist * q) * z;
         z += .035 * q * vec2(sin(a * 9. - t * 1.4 + n), cos(a * 7. + t));
-        vec3 h = texture(textures[i], mir(z / vec2(iResolution.x / iResolution.y, 1.) + .5)).rgb;
+        vec3 h = texture(history, vec3(mir(z / vec2(iResolution.x / iResolution.y, 1.) + .5), float(CACHE_HISTORY_LAYER(i)))).rgb;
         float ww = pow(.82, n) * (1. - .25 * q);
         acc += h * pal(a / 6.28318 + t * .04 + n * .09) * ww;
         w += ww;

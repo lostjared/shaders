@@ -2,9 +2,22 @@
 // Prismatic Caustic Whirlpool: liquid-metal normals, refractive caustics, and spiral time echoes.
 in vec2 tc;
 out vec4 color;
-uniform sampler2D samp, samp1, samp2, samp3, samp4, samp5, samp6, samp7, samp8;
-uniform sampler1D spectrum0, spectrum1, spectrum2, spectrum3, spectrum4, spectrum5, spectrum6,
-    spectrum7;
+uniform sampler2D samp;
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
+uniform sampler1D spectrum0;
+uniform sampler1DArray spectrum_history;
+uniform int spectrum_history_head;
+uniform int spectrum_history_size;
+#ifndef SPECTRUM_HISTORY_LAYER
+#define SPECTRUM_HISTORY_LAYER(index) ((spectrum_history_head - ((index) % max(spectrum_history_size, 1)) + max(spectrum_history_size, 1)) % max(spectrum_history_size, 1))
+#endif
 uniform float time_f, amp_peak, amp_smooth, amp_low, amp_mid, amp_high;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
@@ -24,35 +37,35 @@ vec3 aces(vec3 x) {
 }
 vec4 C(int i, vec2 u) {
     if (i == 0)
-        return texture(samp1, u);
+        return texture(history, vec3(u, float(CACHE_HISTORY_LAYER(0))));
     if (i == 1)
-        return texture(samp2, u);
+        return texture(history, vec3(u, float(CACHE_HISTORY_LAYER(1))));
     if (i == 2)
-        return texture(samp3, u);
+        return texture(history, vec3(u, float(CACHE_HISTORY_LAYER(2))));
     if (i == 3)
-        return texture(samp4, u);
+        return texture(history, vec3(u, float(CACHE_HISTORY_LAYER(3))));
     if (i == 4)
-        return texture(samp5, u);
+        return texture(history, vec3(u, float(CACHE_HISTORY_LAYER(4))));
     if (i == 5)
-        return texture(samp6, u);
+        return texture(history, vec3(u, float(CACHE_HISTORY_LAYER(5))));
     if (i == 6)
-        return texture(samp7, u);
-    return texture(samp8, u);
+        return texture(history, vec3(u, float(CACHE_HISTORY_LAYER(6))));
+    return texture(history, vec3(u, float(CACHE_HISTORY_LAYER(7))));
 }
 float S(int i, float f) {
     if (i == 0)
-        return texture(spectrum1, f).r;
+        return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(1)))).r;
     if (i == 1)
-        return texture(spectrum2, f).r;
+        return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(2)))).r;
     if (i == 2)
-        return texture(spectrum3, f).r;
+        return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(3)))).r;
     if (i == 3)
-        return texture(spectrum4, f).r;
+        return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(4)))).r;
     if (i == 4)
-        return texture(spectrum5, f).r;
+        return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(5)))).r;
     if (i == 5)
-        return texture(spectrum6, f).r;
-    return texture(spectrum7, f).r;
+        return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(6)))).r;
+    return texture(spectrum_history, vec2(f, float(SPECTRUM_HISTORY_LAYER(7)))).r;
 }
 float H(vec2 p, vec2 o, float b, float m) {
     vec2 q = p - o;

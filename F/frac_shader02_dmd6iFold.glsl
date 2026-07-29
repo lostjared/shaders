@@ -6,6 +6,13 @@ uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform float time_f;
 uniform vec4 iMouse;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 const float PI = 3.1415926535897932384626433832795;
 
@@ -45,9 +52,8 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
 vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
     for (int i = 0; i < 8; i++) {
-        p = abs((p - c) * (zoom + 0.15 * sin(t * 0.35 + float(i)))) - 0.5 + c;
-        if (i % 2 == 0)
-            p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
+        p = abs((p - c) * (zoom + 0.15 * sin(t * (0.35 + amp_low * 0.2) + float(i)))) - 0.5 + c;
+        if (i % 2 == 0) p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
     }
     return p;
 }
@@ -78,8 +84,8 @@ void main() {
     float aspect = iResolution.x / iResolution.y;
     vec2 m = iMouse.xy / iResolution.xy;
 
-    if (iMouse.z == 0.0)
-        m = uv / aspect;
+			 if(iMouse.z == 0.0)
+								m = uv / aspect;
     // Initial fractal folding
     uv = fractalFold(uv, 1.45 + 0.55 * sin(time_f * 0.42), time_f, m, aspect);
 
@@ -89,11 +95,19 @@ void main() {
     // Transparency manipulation
     float alpha = 0.8 - 0.6 * abs(sin(time_f + length(uv - m) * 10.0));
 
-    vec3 fcol = texture(samp, tc).rgb;
+				vec3 fcol = texture(samp, tc).rgb;
 
-    col = sin(col * (1.0 + pingPong(time_f, 10.0))) * fcol;
+    col = sin(col * (1.0+pingPong(time_f, 10.0))) * fcol;
     col *= alpha;
 
     // Output color
+
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    col *= 1.0 + _ab * 0.6;
+    col = mix(col, col * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
+
     color = vec4(col, 1.0);
 }

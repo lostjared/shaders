@@ -11,7 +11,8 @@ mat4 rotationMatrixX(float angle) {
         1.0, 0.0, 0.0, 0.0,
         0.0, cos(angle), -sin(angle), 0.0,
         0.0, sin(angle), cos(angle), 0.0,
-        0.0, 0.0, 0.0, 1.0);
+        0.0, 0.0, 0.0, 1.0
+    );
 }
 
 mat4 rotationMatrixY(float angle) {
@@ -19,7 +20,8 @@ mat4 rotationMatrixY(float angle) {
         cos(angle), 0.0, sin(angle), 0.0,
         0.0, 1.0, 0.0, 0.0,
         -sin(angle), 0.0, cos(angle), 0.0,
-        0.0, 0.0, 0.0, 1.0);
+        0.0, 0.0, 0.0, 1.0
+    );
 }
 
 mat4 rotationMatrixZ(float angle) {
@@ -27,7 +29,8 @@ mat4 rotationMatrixZ(float angle) {
         cos(angle), -sin(angle), 0.0, 0.0,
         sin(angle), cos(angle), 0.0, 0.0,
         0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0);
+        0.0, 0.0, 0.0, 1.0
+    );
 }
 
 void main(void) {

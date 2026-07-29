@@ -13,6 +13,7 @@ float pingPong(float x, float length) {
     return m <= length ? m : length * 2.0 - m;
 }
 
+
 void main() {
     vec2 ar = vec2(iResolution.x / iResolution.y, 1.0);
     vec2 p = (tc - 0.5) * ar;

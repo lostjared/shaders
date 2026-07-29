@@ -26,3 +26,4 @@ void main(void) {
 
     color = vec4(tan(blended_color * time_f), original_color.a);
 }
+

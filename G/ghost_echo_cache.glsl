@@ -7,14 +7,14 @@ in vec2 tc;
 out vec4 color;
 
 uniform sampler2D samp;
-uniform sampler2D samp1;
-uniform sampler2D samp2;
-uniform sampler2D samp3;
-uniform sampler2D samp4;
-uniform sampler2D samp5;
-uniform sampler2D samp6;
-uniform sampler2D samp7;
-uniform sampler2D samp8;
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
 
 uniform vec2 iResolution;
 uniform float time_f;
@@ -43,7 +43,14 @@ void main(void) {
     vec2 d7 = d1 * 8.3;
     vec2 d8 = d1 * 9.5;
 
-    vec4 ghost = texture(samp1, tc + d1) * w1 + texture(samp2, tc + d2) * w2 + texture(samp3, tc + d3) * w3 + texture(samp4, tc + d4) * w4 + texture(samp5, tc + d5) * w5 + texture(samp6, tc + d6) * w6 + texture(samp7, tc + d7) * w7 + texture(samp8, tc + d8) * w8;
+    vec4 ghost = texture(history, vec3(tc + d1, float(CACHE_HISTORY_LAYER(0)))) * w1
+               + texture(history, vec3(tc + d2, float(CACHE_HISTORY_LAYER(1)))) * w2
+               + texture(history, vec3(tc + d3, float(CACHE_HISTORY_LAYER(2)))) * w3
+               + texture(history, vec3(tc + d4, float(CACHE_HISTORY_LAYER(3)))) * w4
+               + texture(history, vec3(tc + d5, float(CACHE_HISTORY_LAYER(4)))) * w5
+               + texture(history, vec3(tc + d6, float(CACHE_HISTORY_LAYER(5)))) * w6
+               + texture(history, vec3(tc + d7, float(CACHE_HISTORY_LAYER(6)))) * w7
+               + texture(history, vec3(tc + d8, float(CACHE_HISTORY_LAYER(7)))) * w8;
 
     // Normalize the ghost accumulation
     float totalW = w1 + w2 + w3 + w4 + w5 + w6 + w7 + w8;

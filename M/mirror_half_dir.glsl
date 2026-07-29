@@ -5,7 +5,8 @@ out vec4 color;
 uniform sampler2D samp;
 uniform float time_f;
 
-void main(void) {
+void main(void)
+{
     vec2 uv = tc;
     float duration = 2.0;
     float totalDuration = 2.0 * duration;
@@ -20,6 +21,6 @@ void main(void) {
             uv.x = 1.0 - uv.x;
         }
     }
-
+    
     color = texture(samp, uv);
 }

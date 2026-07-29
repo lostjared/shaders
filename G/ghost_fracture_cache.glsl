@@ -7,14 +7,14 @@ in vec2 tc;
 out vec4 color;
 
 uniform sampler2D samp;
-uniform sampler2D samp1;
-uniform sampler2D samp2;
-uniform sampler2D samp3;
-uniform sampler2D samp4;
-uniform sampler2D samp5;
-uniform sampler2D samp6;
-uniform sampler2D samp7;
-uniform sampler2D samp8;
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
 
 uniform vec2 iResolution;
 uniform float time_f;
@@ -64,21 +64,14 @@ vec2 fracture(vec2 uv, int layer) {
 }
 
 vec4 sampleCache(int idx, vec2 uv) {
-    if (idx == 0)
-        return texture(samp1, uv);
-    if (idx == 1)
-        return texture(samp2, uv);
-    if (idx == 2)
-        return texture(samp3, uv);
-    if (idx == 3)
-        return texture(samp4, uv);
-    if (idx == 4)
-        return texture(samp5, uv);
-    if (idx == 5)
-        return texture(samp6, uv);
-    if (idx == 6)
-        return texture(samp7, uv);
-    return texture(samp8, uv);
+    if (idx == 0) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(0))));
+    if (idx == 1) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(1))));
+    if (idx == 2) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(2))));
+    if (idx == 3) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(3))));
+    if (idx == 4) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(4))));
+    if (idx == 5) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(5))));
+    if (idx == 6) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(6))));
+    return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(7))));
 }
 
 void main(void) {
@@ -94,8 +87,7 @@ void main(void) {
         // Staggered visibility — each layer pulses in and out
         float phase = sin(time_f * 1.5 + float(i) * 0.785) * 0.5 + 0.5;
         float weight = phase * (1.0 - float(i) * 0.1);
-        if (weight < 0.05)
-            continue;
+        if (weight < 0.05) continue;
 
         vec2 fracturedUV = fracture(tc, (i + cycle) % 8);
         vec4 cached = sampleCache(i, fracturedUV);
@@ -105,14 +97,14 @@ void main(void) {
         vec3 tint = vec3(
             0.7 + 0.3 * cos(hue * 6.28),
             0.7 + 0.3 * cos((hue + 0.33) * 6.28),
-            0.7 + 0.3 * cos((hue + 0.66) * 6.28));
+            0.7 + 0.3 * cos((hue + 0.66) * 6.28)
+        );
 
         ghostAccum += cached.rgb * tint * weight;
         totalW += weight;
     }
 
-    if (totalW > 0.0)
-        ghostAccum /= totalW;
+    if (totalW > 0.0) ghostAccum /= totalW;
 
     // Screen blend: brightens without blowing out
     vec3 result = vec3(1.0) - (vec3(1.0) - current.rgb) * (vec3(1.0) - ghostAccum * 0.6);

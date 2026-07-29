@@ -43,3 +43,4 @@ void main() {
     float shimmer = sin(dist * 20.0 - time_f * 5.0) * 0.1 + 1.0;
     color = vec4(blended * shimmer, texColor.a);
 }
+

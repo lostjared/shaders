@@ -9,6 +9,13 @@ uniform vec2 iResolution;
 uniform vec4 iMouse;
 uniform float amp;
 uniform float uamp;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 const float PI = 3.1415926535897932384626433832795;
 
@@ -48,7 +55,7 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
 vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
     for (int i = 0; i < 6; i++) {
-        p = abs((p - c) * (zoom + 0.15 * sin(t * 0.35 + float(i)))) - 0.5 + c;
+        p = abs((p - c) * (zoom + 0.15 * sin(t * (0.35 + amp_low * 0.2) + float(i)))) - 0.5 + c;
         p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
     }
     return p;
@@ -111,16 +118,14 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x)
-        p = p.yx;
+    if (p.y > p.x) p = p.yx;
     p.x /= aspect;
     return p + c;
 }
 
 vec3 limitHighlights(vec3 c) {
     float m = max(c.r, max(c.g, c.b));
-    if (m > 0.95)
-        c *= 0.95 / m;
+    if (m > 0.95) c *= 0.95 / m;
     return c;
 }
 
@@ -133,9 +138,9 @@ void main(void) {
     float aspect = iResolution.x / iResolution.y;
     vec2 center = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5, 0.5);
 
-    float tSpin = time_f * mix(0.3, 1.8, a01);
-    float tSlow = time_f * mix(0.2, 0.9, a01);
-    float tFast = time_f * mix(0.8, 3.2, a01);
+    float tSpin  = time_f * mix(0.3, 1.8, a01);
+    float tSlow  = time_f * mix(0.2, 0.9, a01);
+    float tFast  = time_f * mix(0.8, 3.2, a01);
 
     vec2 offset = tc - center;
     float maxRadius = length(vec2(0.5, 0.5));
@@ -154,8 +159,10 @@ void main(void) {
     angle += modulatedTime;
 
     vec2 rotatedTC;
-    rotatedTC.x = cos(angle) * (distortedCoords.x - center.x) - sin(angle) * (distortedCoords.y - center.y) + center.x;
-    rotatedTC.y = sin(angle) * (distortedCoords.x - center.x) + cos(angle) * (distortedCoords.y - center.y) + center.y;
+    rotatedTC.x = cos(angle) * (distortedCoords.x - center.x)
+                - sin(angle) * (distortedCoords.y - center.y) + center.x;
+    rotatedTC.y = sin(angle) * (distortedCoords.x - center.x)
+                + cos(angle) * (distortedCoords.y - center.y) + center.y;
 
     float warpSpeed = 0.05 + 0.25 * a01 + 0.2 * (aInst / (aInst + 1.0));
     vec2 warpedCoords;
@@ -184,8 +191,7 @@ void main(void) {
 
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x)
-        q = q.yx;
+    if (q.y > q.x) q = q.yx;
 
     float base = 1.82 + 0.18 * sin(tSlow * 0.2);
     float period = log(base);
@@ -205,10 +211,10 @@ void main(void) {
     vec2 off = dir * (0.0015 + 0.001 * sin(tFast * 1.3)) * vec2(1.0, 1.0 / aspect);
 
     float vign = 1.0 - smoothstep(0.75, 1.2, length((warpedCoords - m) * ar));
-    vign = mix(0.9, 1.15, vign);
+    vign = mix(0.9, (1.15 + amp_smooth * 0.2), vign);
 
     vec3 rC = preBlendColor(u0 + off, tFast);
-    vec3 gC = preBlendColor(u1, tFast);
+    vec3 gC = preBlendColor(u1,       tFast);
     vec3 bC = preBlendColor(u2 - off, tFast);
     vec3 kaleidoRGB = vec3(rC.r, gC.g, bC.b);
 
@@ -219,7 +225,8 @@ void main(void) {
     vec3 outCol = kaleidoRGB;
     outCol *= (0.75 + 0.25 * ring) * (0.85 + 0.15 * pulse) * vign;
 
-    vec3 bloom = outCol * outCol * 0.10 + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * 0.06;
+    vec3 bloom = outCol * outCol * 0.10
+               + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * 0.06;
     outCol += bloom;
 
     outCol = mix(outCol, baseColBlur, 0.18 + 0.3 * a01);
@@ -231,6 +238,14 @@ void main(void) {
     vec3 finalRGB = mix(baseTex.rgb, outCol, mixAmt);
     finalRGB = limitHighlights(finalRGB);
     finalRGB = clamp(finalRGB, 0.0, 1.0);
+
+
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    finalRGB *= 1.0 + _ab * 0.6;
+    finalRGB = mix(finalRGB, finalRGB * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
 
     color = vec4(finalRGB, baseTex.a);
 }

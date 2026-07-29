@@ -17,60 +17,35 @@ uniform float amp_mid;
 uniform float amp_high;
 
 // 16 Temporal Buffers
-uniform sampler1D spectrum0; // T=0 (Now)
-uniform sampler1D spectrum1;
-uniform sampler1D spectrum2;
-uniform sampler1D spectrum3;
-uniform sampler1D spectrum4;
-uniform sampler1D spectrum5;
-uniform sampler1D spectrum6;
-uniform sampler1D spectrum7;
-uniform sampler1D spectrum8;
-uniform sampler1D spectrum9;
-uniform sampler1D spectrum10;
-uniform sampler1D spectrum11;
-uniform sampler1D spectrum12;
-uniform sampler1D spectrum13;
-uniform sampler1D spectrum14;
-uniform sampler1D spectrum15; // T=15 (Oldest)
+uniform sampler1D spectrum0;  // T=0 (Now)
+uniform sampler1DArray spectrum_history;
+uniform int spectrum_history_head;
+uniform int spectrum_history_size;
+#ifndef SPECTRUM_HISTORY_LAYER
+#define SPECTRUM_HISTORY_LAYER(index) ((spectrum_history_head - ((index) % max(spectrum_history_size, 1)) + max(spectrum_history_size, 1)) % max(spectrum_history_size, 1))
+#endif
 
 const float PI = 3.14159265358979323846;
 
 // Helper to sample the 16-stack
 float sample16(int index, float freq) {
-    switch (index) {
-    case 0:
-        return texture(spectrum0, freq).r;
-    case 1:
-        return texture(spectrum1, freq).r;
-    case 2:
-        return texture(spectrum2, freq).r;
-    case 3:
-        return texture(spectrum3, freq).r;
-    case 4:
-        return texture(spectrum4, freq).r;
-    case 5:
-        return texture(spectrum5, freq).r;
-    case 6:
-        return texture(spectrum6, freq).r;
-    case 7:
-        return texture(spectrum7, freq).r;
-    case 8:
-        return texture(spectrum8, freq).r;
-    case 9:
-        return texture(spectrum9, freq).r;
-    case 10:
-        return texture(spectrum10, freq).r;
-    case 11:
-        return texture(spectrum11, freq).r;
-    case 12:
-        return texture(spectrum12, freq).r;
-    case 13:
-        return texture(spectrum13, freq).r;
-    case 14:
-        return texture(spectrum14, freq).r;
-    default:
-        return texture(spectrum15, freq).r;
+    switch(index) {
+        case 0: return texture(spectrum0, freq).r;
+        case 1: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(1)))).r;
+        case 2: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(2)))).r;
+        case 3: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(3)))).r;
+        case 4: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(4)))).r;
+        case 5: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(5)))).r;
+        case 6: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(6)))).r;
+        case 7: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(7)))).r;
+        case 8: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(8)))).r;
+        case 9: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(9)))).r;
+        case 10: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(10)))).r;
+        case 11: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(11)))).r;
+        case 12: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(12)))).r;
+        case 13: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(13)))).r;
+        case 14: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(14)))).r;
+        default: return texture(spectrum_history, vec2(freq, float(SPECTRUM_HISTORY_LAYER(15)))).r;
     }
 }
 
@@ -138,8 +113,7 @@ float hash1(float n) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x)
-        p = p.yx;
+    if (p.y > p.x) p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -214,9 +188,9 @@ void main(void) {
     // monotonically. Audio is only allowed to ADD a bounded offset (size O(1)),
     // never to SCALE time_f - that would multiply Δrate by all of t and
     // produce huge phase jumps after the first minute.
-    float basePhase = time_f * 0.6;
+    float basePhase  = time_f * 0.6;
     float audioOffset = mix(liveFft, spectrumSum, historyValid) * 1.2; // bounded
-    float audioPhase = basePhase + audioOffset;                        // ALWAYS continuous
+    float audioPhase = basePhase + audioOffset;     // ALWAYS continuous
 
     // Monotonic evolving hash driver: non-repeating evolution over time.
     float evo = audioPhase * (0.22 + audioEnergy * 0.6) + spectrumSum * 3.7;
@@ -280,9 +254,11 @@ void main(void) {
 
     // 5. Final Glow & Vignette
     float pulse = 0.5 + 0.5 * clamp(
-                                  log(1.0 + abs(drift) * 0.08 + rD * (5.0 + audioEnergy * 6.0)) * 0.33 + evoHash * 0.55,
-                                  0.0,
-                                  1.0);
+        log(1.0 + abs(drift) * 0.08 + rD * (5.0 + audioEnergy * 6.0)) * 0.33
+        + evoHash * 0.55,
+        0.0,
+        1.0
+    );
     finalRGB *= (0.85 + 0.15 * pulse);
 
     float vign = 1.0 - smoothstep(0.5, 1.5, distFromCenter);

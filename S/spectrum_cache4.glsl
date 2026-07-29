@@ -9,51 +9,44 @@ in vec2 tc;
 out vec4 color;
 
 uniform sampler2D samp;
-uniform sampler2D samp1;
-uniform sampler2D samp2;
-uniform sampler2D samp3;
-uniform sampler2D samp4;
-uniform sampler2D samp5;
-uniform sampler2D samp6;
-uniform sampler2D samp7;
-uniform sampler2D samp8;
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
 
 uniform sampler1D spectrum;
 uniform vec2 iResolution;
 uniform float time_f;
 
 vec4 sampleCache(int idx, vec2 uv) {
-    if (idx == 0)
-        return texture(samp1, uv);
-    if (idx == 1)
-        return texture(samp2, uv);
-    if (idx == 2)
-        return texture(samp3, uv);
-    if (idx == 3)
-        return texture(samp4, uv);
-    if (idx == 4)
-        return texture(samp5, uv);
-    if (idx == 5)
-        return texture(samp6, uv);
-    if (idx == 6)
-        return texture(samp7, uv);
-    return texture(samp8, uv);
+    if (idx == 0) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(0))));
+    if (idx == 1) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(1))));
+    if (idx == 2) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(2))));
+    if (idx == 3) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(3))));
+    if (idx == 4) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(4))));
+    if (idx == 5) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(5))));
+    if (idx == 6) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(6))));
+    return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(7))));
 }
 
 void main(void) {
     vec4 current = texture(samp, tc);
 
-    float bass = texture(spectrum, 0.05).r;
-    float mid = texture(spectrum, 0.30).r;
+    float bass   = texture(spectrum, 0.05).r;
+    float mid    = texture(spectrum, 0.30).r;
     float treble = texture(spectrum, 0.60).r;
-    float air = texture(spectrum, 0.85).r;
+    float air    = texture(spectrum, 0.85).r;
 
     // Build a waveform displacement field from the spectrum
     // Bass controls vertical wave, mid controls horizontal wave
     float waveFreqX = 3.0 + treble * 12.0;
     float waveFreqY = 2.0 + mid * 10.0;
-    float waveAmpX = bass * 0.025;
-    float waveAmpY = mid * 0.020;
+    float waveAmpX  = bass * 0.025;
+    float waveAmpY  = mid * 0.020;
 
     vec3 accum = vec3(0.0);
     float totalW = 0.0;

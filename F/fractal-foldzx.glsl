@@ -5,8 +5,15 @@ uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform vec4 iMouse;
 uniform float time_f;
-uniform float amp;
-uniform float uamp;
+uniform float amp;  
+uniform float uamp; 
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect) {
     float s = sin(angle), cc = cos(angle);
@@ -33,7 +40,7 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
 vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
     for (int i = 0; i < 4; i++) { // Increase the number of folds for more complex patterns
-        p = abs((p - c) * (zoom + 0.10 * sin(t * 0.35 + float(i)))) - 0.5 + c;
+        p = abs((p - c) * (zoom + 0.10 * sin(t * (0.35 + amp_low * 0.2) + float(i)))) - 0.5 + c;
         if (i % 2 == 0) { // Alternate between rotation and scaling for more chaos
             p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
         } else {
@@ -47,8 +54,7 @@ vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x)
-        p = p.yx;
+    if (p.y > p.x) p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -62,20 +68,20 @@ void main(void) {
     vec2 normPos = (uv - m) * vec2(aspect, 1.0);
     float dist = length(normPos);
     float phase = sin(dist * 8.0 - time_f * 2.0);
-    float rippleStrength = 0.02 + (0.05 * A);
+    float rippleStrength = 0.02 + ((0.05 + amp_rms * 0.04) * A); 
     vec2 rippledUV = uv + (normPos * phase * rippleStrength);
-    float seg = 4.0 + 2.0 * sin(time_f * 0.1);
+    float seg = 4.0 + (2.0 + amp_mid * 2.0) * sin(time_f * 0.1);
     vec2 kUV = reflectUV(rippledUV, seg, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    float foldZoom = 1.05 + 0.1 * sin(time_f * 0.2);
+    float foldZoom = 1.05 + (0.1 + amp_low * 0.4) * sin(time_f * 0.2);
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
     vec2 mapUV = (kUV - m) * vec2(aspect, 1.0);
-    mapUV *= 0.8;
+    mapUV *= 0.8; 
     float rot = time_f * 0.1;
-    float s = sin(rot);
+    float s = sin(rot); 
     float c = cos(rot);
     mapUV = mat2(c, -s, s, c) * mapUV;
-    float dispersion = 0.01 + (U * 0.05);
+    float dispersion = (0.01 + amp_high * 0.02) + (U * 0.05);
     vec2 dispOffset = normalize(mapUV) * dispersion * length(mapUV);
     vec2 centerBase = mapUV + m;
     vec2 uvR = centerBase - dispOffset;
@@ -91,5 +97,13 @@ void main(void) {
     vec3 finalCol = vec3(r, g, b) * light;
     float vign = 1.0 - smoothstep(0.5, 1.5, dist);
     finalCol *= vign;
+
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    finalCol *= 1.0 + _ab * 0.6;
+    finalCol = mix(finalCol, finalCol * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
+
     color = vec4(finalCol, 1.0);
 }

@@ -22,8 +22,7 @@ void main(void) {
     for (int i = 0; i < 22; ++i) {
         z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c0;
         trap = min(trap, abs(z.x * z.y));
-        if (dot(z, z) > 9.0)
-            break;
+        if (dot(z, z) > 9.0) break;
         iter += 1.0;
     }
     float f = iter / 22.0;

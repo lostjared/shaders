@@ -5,7 +5,8 @@ out vec4 color;
 uniform sampler2D samp;
 uniform float time_f;
 
-void main(void) {
+void main(void)
+{
     vec2 center = vec2(0.5, 0.5);
     float angle = time_f;
 
@@ -15,7 +16,8 @@ void main(void) {
     tc2 *= 0.8;
     tc2 = vec2(
         tc2.x * cos(angle + 1.0) - tc2.y * sin(angle + 1.0),
-        tc2.x * sin(angle + 1.0) + tc2.y * cos(angle + 1.0));
+        tc2.x * sin(angle + 1.0) + tc2.y * cos(angle + 1.0)
+    );
     tc2 += center;
     tc2 = fract(tc2);
 
@@ -23,7 +25,8 @@ void main(void) {
     tc3 *= 0.6;
     tc3 = vec2(
         tc3.x * cos(angle + 2.0) - tc3.y * sin(angle + 2.0),
-        tc3.x * sin(angle + 2.0) + tc3.y * cos(angle + 2.0));
+        tc3.x * sin(angle + 2.0) + tc3.y * cos(angle + 2.0)
+    );
     tc3 += center;
     tc3 = fract(tc3);
 
@@ -45,3 +48,4 @@ void main(void) {
 
     color = vec4(finalColor, 1.0);
 }
+

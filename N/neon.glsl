@@ -6,6 +6,13 @@ uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform float time_f;
 uniform float value_alpha_r, value_alpha_g, value_alpha_b;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 vec3 overlayBlend(vec3 base, vec3 blend, float opacity) {
     vec3 c2 = blend * 2.0;
@@ -19,11 +26,19 @@ void main(void) {
     vec2 center = vec2(0.5, 0.5);
     vec2 normCoord = 2.0 * (uv - center);
     float dist = length(normCoord);
-    float angle = atan(normCoord.y, normCoord.x) + time_f * 5.0;
-    float spiral = cos(10.0 * dist - angle);
+    float angle = atan(normCoord.y, normCoord.x) + time_f * (5.0 + amp_low * 10.0);
+    float spiral = cos((10.0 + amp_mid * 10.0) * dist - angle);
     float mask = smoothstep(0.1, 0.2, abs(spiral) - dist * 0.5);
     vec3 neonPurple = vec3(value_alpha_r, value_alpha_g, value_alpha_b);
     vec3 originalTexture = texture(samp, uv).rgb;
     vec3 blendedColor = overlayBlend(originalTexture, neonPurple, mask);
+
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    blendedColor *= 1.0 + _ab * 0.6;
+    blendedColor = mix(blendedColor, blendedColor * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
+
     color = vec4(blendedColor, 1.0);
 }

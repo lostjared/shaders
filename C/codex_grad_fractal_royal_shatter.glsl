@@ -25,8 +25,7 @@ void main(void) {
     float shard = floor((shardSignal + 1.0) * 11.0);
     float h = hash(vec2(shard, floor(time_f * 2.0)));
     vec2 z = mat2(cos(h * 0.45), -sin(h * 0.45), sin(h * 0.45), cos(h * 0.45)) * dir * r;
-    for (int i = 0; i < 4; ++i)
-        z = abs(z * (1.7 + h * 0.2)) - vec2(0.52, 0.33);
+    for (int i = 0; i < 4; ++i) z = abs(z * (1.7 + h * 0.2)) - vec2(0.52, 0.33);
     float edge = smoothstep(0.03, 0.0, abs(z.x + z.y));
     vec2 uv = abs(fract(z / vec2(aspect, 1.0) + 0.5) * 2.0 - 1.0);
     uv += (mouseP - p) * 0.03 * smoothstep(1.25, 0.0, length(p - mouseP));

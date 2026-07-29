@@ -10,7 +10,7 @@ use File::Spec;
 use File::Basename qw(basename);
 use Getopt::Long qw(GetOptions);
 
-my $default_src = '~/gpu/acidcam-gpu/shaders';
+my $default_src = '~/gpu/acidcam-gpu/shaders_new';
 my $default_dst = '~/gpu/shaders_repo/shaders';
 
 my $src     = $default_src;

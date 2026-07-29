@@ -12,6 +12,7 @@ float pingPong(float value, float range) {
     return range - abs(modValue - range);
 }
 
+
 void main() {
     vec2 uv = tc;
     vec4 pixelColor = texture(samp, uv);

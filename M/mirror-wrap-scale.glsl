@@ -25,7 +25,7 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution) {
                                     1.5, 2.5, 3.0, 3.5, 4.0, 4.0, 3.5, 3.0, 2.5, 1.5,
                                     1.0, 2.0, 2.5, 3.0, 3.5, 3.5, 3.0, 2.5, 2.0, 1.0,
                                     0.5, 1.0, 1.5, 2.0, 2.5, 2.5, 2.0, 1.5, 1.0, 0.5);
-
+    
     for (int i = 0; i < 100; i++) {
         kernel[i] = kernelVals[i];
     }
@@ -50,7 +50,8 @@ vec4 colorShift(vec4 col) {
         0.5 + 0.5 * cos(col.r * 3.14159265 * 0.5),
         0.5 + 0.5 * cos(col.g * 3.14159265 * 0.5),
         0.5 + 0.5 * cos(col.b * 3.14159265 * 0.5),
-        col.a);
+        col.a
+    );
 }
 
 void main(void) {
@@ -59,7 +60,7 @@ void main(void) {
     pix = pix * time_t;
     pix = colorShift(pix);
     vec2 uv = 1.0 - abs(1.0 - 2.0 * tc);
-    uv = uv - floor(uv);
+    uv = uv - floor(uv);     
     pix.rgb = mix(texture(samp, tc).rgb, pix.rgb, 0.8);
     color = pix;
 }

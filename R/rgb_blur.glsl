@@ -20,7 +20,8 @@ uniform float restore_black;
 uniform vec4 inc_valuex;
 uniform vec4 inc_value;
 
-void main(void) {
+void main(void)
+{
     color = texture(samp, tc);
     vec2 pos1 = tc;
     vec2 pos2 = tc;
@@ -31,3 +32,4 @@ void main(void) {
     color[1] = color2[1];
     color[2] = color3[2];
 }
+

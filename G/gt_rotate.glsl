@@ -25,3 +25,4 @@ void main(void) {
     vec4 texColor = texture(samp, tc_rotated);
     color = texColor;
 }
+

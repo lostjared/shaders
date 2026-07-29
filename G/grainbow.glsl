@@ -34,3 +34,4 @@ void main(void) {
     vec3 final_color = mix(prism_color, rainbow_color, rainbow_factor);
     color = vec4(final_color, 1.0);
 }
+

@@ -6,6 +6,13 @@ uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform float time_f;
 uniform vec4 iMouse;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 const float PI = 3.1415926535897932384626433832795;
 
@@ -44,7 +51,7 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
 vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
     for (int i = 0; i < 3; i++) {
-        p = abs((p - c) * (zoom + 0.15 * sin(t * 0.35 + float(i)))) - 0.5 + c;
+        p = abs((p - c) * (zoom + 0.15 * sin(t * (0.35 + amp_low * 0.2) + float(i)))) - 0.5 + c;
         p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
     }
     return p;
@@ -81,8 +88,7 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x)
-        p = p.yx;
+    if (p.y > p.x) p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -92,10 +98,10 @@ vec3 xorBlend(vec3 colorA, vec3 colorB) {
     // 1. Scale up to integer range (0-255)
     ivec3 iA = ivec3(colorA * 255.0);
     ivec3 iB = ivec3(colorB * 255.0);
-
+    
     // 2. Perform Bitwise XOR
     ivec3 iXor = iA ^ iB;
-
+    
     // 3. Scale back down to float
     return vec3(iXor) / 255.0;
 }
@@ -108,54 +114,61 @@ void main(void) {
     vec2 uv = tc * 2.0 - 1.0;
     float aspect = iResolution.x / iResolution.y;
     uv.x *= aspect;
-
+    
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
     vec2 ar = vec2(aspect, 1.0);
-
-    float seg = 4.0 + 2.0 * sin(time_f * 0.33);
+    
+    float seg = 4.0 + (2.0 + amp_mid * 2.0) * sin(time_f * 0.33);
     vec2 kUV = reflectUV(tc, seg, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-
-    float foldZoom = 1.3 + 0.3 * sin(time_f * 0.42);
+    
+    float foldZoom = 1.3 + (0.3 + amp_low * 0.4) * sin(time_f * 0.42);
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
-    kUV = rotateUV(kUV, time_f * 0.23, m, aspect);
+    kUV = rotateUV(kUV, time_f * (0.23 + amp_low * 0.15), m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-
+    
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x)
-        q = q.yx;
-
-    float base = 1.82;
+    if (q.y > q.x) q = q.yx;
+    
+    float base = 1.82; 
     float period = log(base);
-    float tz = time_f * 0.65;
+    float tz = time_f * (0.65 + amp_low * 0.3);
     float rD = diamondRadius(p) + 1e-6;
     float ang = atan(q.y, q.x) + tz * 0.35 + 0.35 * sin(rD * 18.0 + time_f * 0.6);
     float k = fract((log(rD) - tz) / period);
     float rw = exp(k * period);
-
+    
     vec2 pwrap = vec2(cos(ang), sin(ang)) * rw;
     vec2 dir = normalize(pwrap + 1e-6);
-    vec2 off = dir * (0.0015 + 0.001 * sin(time_f * 1.3)) * vec2(1.0, 1.0 / aspect);
-
+    vec2 off = dir * ((0.0015 + amp_high * 0.002) + 0.001 * sin(time_f * 1.3)) * vec2(1.0, 1.0 / aspect);
+    
     vec2 u0 = fract(pwrap / ar + m);
     vec2 u1 = fract((pwrap * 1.045) / ar + m);
     vec2 u2 = fract((pwrap * 0.955) / ar + m);
-
+    
     vec3 rC = preBlendColor(u0 + off);
     vec3 gC = preBlendColor(u1);
     vec3 bC = preBlendColor(u2 - off);
     vec3 fractalRGB = vec3(rC.r, gC.g, bC.b);
-
+    
     float vign = 1.0 - smoothstep(0.75, 1.2, length((tc - m) * ar));
-    vign = mix(0.9, 1.15, vign);
-    float pulse = 0.5 + 0.5 * sin(time_f * 2.0 + rD * 28.0 + k * 12.0);
-    fractalRGB *= (0.8 + 0.2 * pulse) * vign;
+    vign = mix(0.9, (1.15 + amp_smooth * 0.2), vign);
+    float pulse = 0.5 + (0.5 + amp_rms * 0.3) * sin(time_f * 2.0 + rD * 28.0 + k * 12.0);
+    fractalRGB *= (0.8 + 0.2 * pulse) * vign; 
     fractalRGB = clamp(fractalRGB, 0.0, 1.0);
 
     // 3. Permanent XOR Blend
     // Directly blending original + fractal using XOR logic
     vec3 finalRGB = xorBlend(baseTex.rgb, fractalRGB);
+    
+
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    finalRGB *= 1.0 + _ab * 0.6;
+    finalRGB = mix(finalRGB, finalRGB * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
 
     color = vec4(finalRGB, baseTex.a);
 }

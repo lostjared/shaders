@@ -50,16 +50,16 @@ void main(void) {
 
     // 2. Automatic Gain Control: Dampen bright flashes
     // Threshold determines the luminance level where dimming begins
-    float threshold = 0.45;
+    float threshold = 0.45; 
     float exposure = 1.0;
 
     if (frameLuma > threshold) {
         // Calculate a reduction multiplier
         float targetExposure = threshold / (frameLuma + 0.001);
-
+        
         // Mix ratio (0.8) controls how aggressively the flash is suppressed.
         // 1.0 = strict cap at threshold, lower values allow some brightness through.
-        exposure = mix(1.0, targetExposure, 0.8);
+        exposure = mix(1.0, targetExposure, 0.8); 
     }
 
     // Apply the global exposure reduction

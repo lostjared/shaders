@@ -17,7 +17,9 @@ uniform float time_f;
 
 uniform float restore_black;
 
-void main(void) {
+void main(void)
+{
     color = texture(samp, tc);
     color[0] = 0.1;
 }
+

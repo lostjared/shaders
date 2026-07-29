@@ -20,15 +20,15 @@ mat2 rot(float a) {
 }
 
 void main() {
-    float bass = texture(spectrum, 0.03).r;
-    float mid = texture(spectrum, 0.22).r;
+    float bass   = texture(spectrum, 0.03).r;
+    float mid    = texture(spectrum, 0.22).r;
     float treble = texture(spectrum, 0.58).r;
 
     float aspect = iResolution.x / iResolution.y;
     vec2 uv = (tc - 0.5) * vec2(aspect, 1.0);
 
     float r = length(uv);
-
+    
     // Rotate the UV space to spin the tunnel
     vec2 rotatedUV = rot(iTime * 0.2 + mid * 0.5) * uv;
     float angle = atan(rotatedUV.y, rotatedUV.x);
@@ -43,7 +43,7 @@ void main() {
     // Texture mapped through the tunnel
     // tunnelAngle wraps it radially, tunnelDepth stretches it longitudinally
     vec2 sampUV = vec2(tunnelAngle * 0.5 + 0.5, fract(tunnelDepth * 0.2));
-
+    
     // Retained the chromatic aberration for the texture sampling
     float chroma = treble * 0.04 / (r + 0.1);
     vec3 col;
@@ -58,7 +58,7 @@ void main() {
     // Outer vignette and audio-reactive flashes
     col *= smoothstep(2.0, 0.3, r);
     col *= 0.85 + amp_smooth * 0.35;
-
+    
     // Invert colors on heavy audio peaks
     col = mix(col, vec3(1.0) - col, smoothstep(0.92, 1.0, amp_peak));
 

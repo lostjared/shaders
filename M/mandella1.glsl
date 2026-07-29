@@ -11,3 +11,4 @@ uniform float uamp;
 void main(void) {
     color = texture(samp, tc);
 }
+

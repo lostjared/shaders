@@ -8,35 +8,28 @@ in vec2 tc;
 out vec4 color;
 
 uniform sampler2D samp;
-uniform sampler2D samp1;
-uniform sampler2D samp2;
-uniform sampler2D samp3;
-uniform sampler2D samp4;
-uniform sampler2D samp5;
-uniform sampler2D samp6;
-uniform sampler2D samp7;
-uniform sampler2D samp8;
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
 
 uniform sampler1D spectrum;
 uniform vec2 iResolution;
 uniform float time_f;
 
 vec4 sampleCache(int idx, vec2 uv) {
-    if (idx == 0)
-        return texture(samp1, uv);
-    if (idx == 1)
-        return texture(samp2, uv);
-    if (idx == 2)
-        return texture(samp3, uv);
-    if (idx == 3)
-        return texture(samp4, uv);
-    if (idx == 4)
-        return texture(samp5, uv);
-    if (idx == 5)
-        return texture(samp6, uv);
-    if (idx == 6)
-        return texture(samp7, uv);
-    return texture(samp8, uv);
+    if (idx == 0) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(0))));
+    if (idx == 1) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(1))));
+    if (idx == 2) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(2))));
+    if (idx == 3) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(3))));
+    if (idx == 4) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(4))));
+    if (idx == 5) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(5))));
+    if (idx == 6) return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(6))));
+    return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(7))));
 }
 
 void main(void) {
@@ -44,14 +37,14 @@ void main(void) {
 
     // Sample 8 frequency bands — low to high
     float bands[8];
-    bands[0] = texture(spectrum, 0.03).r; // sub-bass
-    bands[1] = texture(spectrum, 0.10).r; // bass
-    bands[2] = texture(spectrum, 0.18).r; // low-mid
-    bands[3] = texture(spectrum, 0.28).r; // mid
-    bands[4] = texture(spectrum, 0.40).r; // upper-mid
-    bands[5] = texture(spectrum, 0.55).r; // presence
-    bands[6] = texture(spectrum, 0.72).r; // treble
-    bands[7] = texture(spectrum, 0.90).r; // air
+    bands[0] = texture(spectrum, 0.03).r;  // sub-bass
+    bands[1] = texture(spectrum, 0.10).r;  // bass
+    bands[2] = texture(spectrum, 0.18).r;  // low-mid
+    bands[3] = texture(spectrum, 0.28).r;  // mid
+    bands[4] = texture(spectrum, 0.40).r;  // upper-mid
+    bands[5] = texture(spectrum, 0.55).r;  // presence
+    bands[6] = texture(spectrum, 0.72).r;  // treble
+    bands[7] = texture(spectrum, 0.90).r;  // air
 
     // Each cache frame drifts in a direction modulated by its band energy
     vec3 accum = vec3(0.0);

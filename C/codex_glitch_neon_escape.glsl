@@ -21,8 +21,7 @@ void main(void) {
     for (int i = 0; i < 28; ++i) {
         p = vec2(p.x * p.x - p.y * p.y, 2.0 * p.x * p.y) + cst;
         p += 0.035 * sin(p.yx * 5.0 + t);
-        if (dot(p, p) > 8.0)
-            break;
+        if (dot(p, p) > 8.0) break;
         it += 1.0;
     }
     float n = it / 28.0;

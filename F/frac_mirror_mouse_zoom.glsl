@@ -6,13 +6,20 @@ uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform float time_f;
 uniform vec4 iMouse;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
-float pingPong(float x, float length) {
-    float m = mod(x, length * 2.0);
-    return m <= length ? m : length * 2.0 - m;
+float pingPong(float x, float length){
+    float m = mod(x, length*2.0);
+    return m <= length ? m : length*2.0 - m;
 }
 
-vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect) {
+vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect){
     float s = sin(angle), cc = cos(angle);
     vec2 p = uv - c;
     p.x *= aspect;
@@ -21,7 +28,7 @@ vec2 rotateUV(vec2 uv, float angle, vec2 c, float aspect) {
     return p + c;
 }
 
-vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
+vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect){
     vec2 p = uv - c;
     p.x *= aspect;
     float ang = atan(p.y, p.x);
@@ -34,16 +41,16 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
     return r + c;
 }
 
-vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
+vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect){
     vec2 p = uv;
-    for (int i = 0; i < 5; i++) {
+    for(int i=0;i<5;i++){
         p = abs((p - c) * zoom) - 0.5 + c;
-        p = rotateUV(p, t * 0.1, c, aspect);
+        p = rotateUV(p, t*0.1, c, aspect);
     }
     return p;
 }
 
-void main() {
+void main(){
     float aspect = iResolution.x / iResolution.y;
     vec2 ar = vec2(aspect, 1.0);
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
@@ -52,7 +59,7 @@ void main() {
     vec4 originalTexture = texture(samp, tc);
 
     vec2 kUV = reflectUV(uv, 6.0, m, aspect);
-    float foldZoom = 1.5 + 0.5 * sin(time_f * 0.5);
+    float foldZoom = 1.5 + (0.5 + amp_low * 0.4) * sin(time_f * 0.5);
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
     kUV = rotateUV(kUV, time_f * 0.2, m, aspect);
 
@@ -78,20 +85,28 @@ void main() {
     color = color * t * 0.8;
     color = sin(color * pingPong(time_f, 15.0));
 
-    if (color[0] > 0.8)
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    color.rgb *= 1.0 + _ab * 0.6;
+    color.rgb = mix(color.rgb, color.rgb * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
+
+
+    if(color[0] > 0.8)
         color[0] = 0.8;
 
-    if (color[1] > 0.8)
+    if(color[1] > 0.8)
         color[1] = 0.8;
 
-    if (color[2] > 0.8)
+    if(color[2] > 0.8)
         color[2] = 0.8;
 
-    if (color[0] < 0.1)
+    if(color[0] < 0.1)
         color[0] = 0.1;
-    if (color[1] < 0.1)
+    if(color[1] < 0.1)
         color[1] = 0.1;
-    if (color[2] < 0.1)
+    if(color[2] < 0.1)
         color[2] = 0.1;
 
     color.a = 1.0;

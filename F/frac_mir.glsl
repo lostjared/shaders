@@ -6,6 +6,13 @@ in vec2 tc;
 uniform vec2 iResolution;
 uniform float time_f;
 uniform sampler2D samp;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 vec2 kaleidoscope(vec2 uv, float segments) {
     float angle = atan(uv.y, uv.x);
@@ -50,6 +57,14 @@ void main() {
     blendedColor.r += sin(uv.x * 2.0 + time_f) * 0.2;
     blendedColor.g += sin(uv.y * 2.0 + time_f * 0.5) * 0.2;
     blendedColor.b += sin((uv.x + uv.y) * 0.5 + time_f) * 0.2;
+
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    blendedColor *= 1.0 + _ab * 0.6;
+    blendedColor = mix(blendedColor, blendedColor * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
+
     color = vec4(blendedColor, 1.0);
     color = mix(color, texture(samp, tc), 0.5);
     float time_t = pingPong(time_f, 5.0) + 1.5;

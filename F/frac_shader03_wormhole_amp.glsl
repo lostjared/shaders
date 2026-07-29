@@ -8,6 +8,13 @@ uniform float time_f;
 uniform vec4 iMouse;
 uniform float amp;
 uniform float uamp;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 const float PI = 3.1415926535897932384626433832795;
 
@@ -53,7 +60,7 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
 vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
     for (int i = 0; i < 6; i++) {
-        p = abs((p - c) * (zoom + 0.15 * sin(t * 0.35 + float(i)))) - 0.5 + c;
+        p = abs((p - c) * (zoom + 0.15 * sin(t * (0.35 + amp_low * 0.2) + float(i)))) - 0.5 + c;
         p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
     }
     return p;
@@ -102,7 +109,7 @@ vec3 preBlendColor(vec2 uv) {
     float t = time_f;
     vec3 neon = neonPalette(t + r * 1.3);
     float neonAmt = smoothstep(0.1, 0.8, r);
-    neonAmt = 0.3 + 0.4 * (1.0 - neonAmt);
+    neonAmt = (0.3 + amp_mid * 0.15) + 0.4 * (1.0 - neonAmt);
     vec3 grad = mix(tex, neon, neonAmt);
     grad = mix(grad, tex, 0.2);
     grad = softTone(grad);
@@ -118,8 +125,7 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x)
-        p = p.yx;
+    if (p.y > p.x) p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -133,11 +139,12 @@ vec2 wormholeUV(vec2 uv, vec2 c, float aspect, float t) {
     float swirl = 0.22 / r;
 
     float spinBase = 0.15 + 0.35 * gAmp01;
-    float spinHit = 0.2 + 2.2 * gInstAmp;
+    float spinHit  = 0.2 + 2.2 * gInstAmp;
 
     a += t * (spinBase + spinHit) + swirl;
 
-    float z = 0.65 + 0.35 * sin(t * 0.6) + 0.15 * sin(r * 12.0 - t * (2.5 + 1.5 * gAmp01 + 2.0 * gInstAmp));
+    float z = 0.65 + 0.35 * sin(t * 0.6)
+              + 0.15 * sin(r * 12.0 - t * (2.5 + 1.5 * gAmp01 + 2.0 * gInstAmp));
     float rr = 1.0 / (r * 3.5 + 0.06) + 0.08 * z;
 
     vec2 q = vec2(cos(a), sin(a)) * rr;
@@ -147,8 +154,7 @@ vec2 wormholeUV(vec2 uv, vec2 c, float aspect, float t) {
 
 vec3 limitHighlights(vec3 c) {
     float m = max(c.r, max(c.g, c.b));
-    if (m > 0.9)
-        c *= 0.9 / m;
+    if (m > 0.9) c *= 0.9 / m;
     return c;
 }
 
@@ -159,9 +165,9 @@ void main(void) {
     gAmp01 = clamp(ampMix / 2.5, 0.0, 1.0);
     gInstAmp = clamp(aInst / 2.5, 0.0, 1.0);
 
-    gSlow = time_f * mix(0.15, 0.7, gAmp01);
-    gFast = time_f * mix(0.6, 3.5, gAmp01);
-    gDetail = time_f * mix(0.3, 2.0, gAmp01);
+    gSlow   = time_f * mix(0.15, 0.7, gAmp01);
+    gFast   = time_f * mix(0.6,  3.5, gAmp01);
+    gDetail = time_f * mix(0.3,  2.0, gAmp01);
 
     vec4 baseTex = texture(samp, tc);
 
@@ -170,7 +176,7 @@ void main(void) {
     uv.x *= aspect;
     float r = pingPong(sin(length(uv) * gSlow), 5.0);
     float radius = sqrt(aspect * aspect + 1.0) + 0.5;
-    float glow = smoothstep(radius, radius - 0.25, r);
+    float glow = smoothstep(radius, radius - (0.25 + amp_low * 0.3), r);
 
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
     vec2 ar = vec2(aspect, 1.0);
@@ -188,15 +194,15 @@ void main(void) {
 
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x)
-        q = q.yx;
+    if (q.y > q.x) q = q.yx;
 
     float base = 1.82 + 0.18 * pingPong(sin(gSlow * 0.2) * (PI * gSlow), 5.0);
     float period = log(base) * pingPong(gSlow * PI, 5.0);
     float tz = gSlow * 0.65;
     float rD = diamondRadius(p) + 1e-6;
 
-    float ang = atan(q.y, q.x) + tz * 0.35 + 0.35 * sin(rD * 18.0 + gFast * 0.6);
+    float ang = atan(q.y, q.x) + tz * 0.35
+              + 0.35 * sin(rD * 18.0 + gFast * 0.6);
     float k = fract((log(rD) - tz) / period);
     float rw = exp(k * period);
     vec2 pwrap = vec2(cos(ang), sin(ang)) * rw;
@@ -205,10 +211,11 @@ void main(void) {
     vec2 u1 = fract((pwrap * 1.045) / ar + m);
     vec2 u2 = fract((pwrap * 0.955) / ar + m);
     vec2 dir = normalize(pwrap + 1e-6);
-    vec2 off = dir * (0.0015 + 0.001 * sin(gFast * 1.3)) * vec2(1.0, 1.0 / aspect);
+    vec2 off = dir * (0.0015 + 0.001 * sin(gFast * 1.3))
+              * vec2(1.0, 1.0 / aspect);
 
     float vign = 1.0 - smoothstep(0.75, 1.2, length((tc - m) * ar));
-    vign = mix(0.9, 1.15, vign);
+    vign = mix(0.9, (1.15 + amp_smooth * 0.2), vign);
 
     vec3 rC = preBlendColor(u0 + off);
     vec3 gC = preBlendColor(u1);
@@ -224,9 +231,10 @@ void main(void) {
     vec3 outCol = kaleidoRGB;
     outCol *= (0.75 + 0.25 * ring) * (0.85 + 0.15 * pulse) * vign;
 
-    vec3 bloom = outCol * outCol * 0.10 + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * 0.07;
+    vec3 bloom = outCol * outCol * 0.10
+               + pow(max(outCol - 0.6, 0.0), vec3(2.0)) * 0.07;
 
-    vec2 wh0 = wormholeUV(tc, m, aspect, gSlow);
+    vec2 wh0 = wormholeUV(tc,                    m, aspect, gSlow);
     vec2 wh1 = wormholeUV(tc + vec2(0.0009, 0.0), m, aspect, gSlow + 0.03);
     vec2 wh2 = wormholeUV(tc - vec2(0.0009, 0.0), m, aspect, gSlow - 0.03);
 
@@ -239,9 +247,10 @@ void main(void) {
     float throat = smoothstep(0.38, 0.06, rCenter);
 
     float swirlGate = smoothstep(0.9, 1.6,
-                                 gSlow * 0.25 + 0.35 * sin(gSlow * 0.7));
+        gSlow * 0.25 + 0.35 * sin(gSlow * 0.7));
 
-    float gateBase = clamp(throat * (0.55 + 0.45 * pingPong(gSlow * PI, 5.0)) + swirlGate * 0.15, 0.0, 1.0);
+    float gateBase = clamp(throat * (0.55 + 0.45 * pingPong(gSlow * PI, 5.0))
+                           + swirlGate * 0.15, 0.0, 1.0);
 
     float hitBoost = clamp(aInst * 0.6, 0.0, 1.2);
     float gate = clamp(gateBase * (0.6 + 0.9 * gAmp01) + hitBoost, 0.0, 1.0);
@@ -255,6 +264,14 @@ void main(void) {
     vec3 finalRGB = mix(baseTex.rgb, outCol, pingPong(glow * PI, 5.0) * 0.8);
     finalRGB = limitHighlights(finalRGB);
     finalRGB = clamp(finalRGB, 0.0, 1.0);
+
+
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    finalRGB *= 1.0 + _ab * 0.6;
+    finalRGB = mix(finalRGB, finalRGB * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
 
     color = vec4(finalRGB, baseTex.a);
 }

@@ -5,7 +5,14 @@
 in vec2 tc;
 out vec4 color;
 uniform sampler2D samp;
-uniform sampler2D textures[SIZE];
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
 uniform vec2 iResolution;
 uniform float time_f;
 vec2 mir(vec2 u) { return 1. - abs(mod(u, 2.) - 1.); }
@@ -22,7 +29,7 @@ void main() {
         z = abs(z);
         z *= 1.2 + q;
         z.y += .06 * sin(z.x * 25. - t + n);
-        vec3 h = texture(textures[i], mir(z / vec2(iResolution.x / iResolution.y, 1.) + .5)).rgb;
+        vec3 h = texture(history, vec3(mir(z / vec2(iResolution.x / iResolution.y, 1.) + .5), float(CACHE_HISTORY_LAYER(i)))).rgb;
         float k = pow(.88, n);
         a += h * P(q + z.x * 1.2 + t * .04) * k;
         w += k;

@@ -48,7 +48,8 @@ vec3 palette(float t) {
     return mix(c3, c4, (t - 0.66) / 0.34);
 }
 
-void main(void) {
+void main(void)
+{
     vec2 res = max(iResolution, vec2(1.0));
     vec2 px = 1.0 / res;
     vec4 src = texture(samp, tc);
@@ -58,10 +59,10 @@ void main(void) {
     float mouseOrbit = smoothstep(0.9, 0.0, length((tc * 2.0 - 1.0) * vec2(res.x / res.y, 1.0) - mouseP));
 
     vec3 blur = src.rgb * 4.0;
-    blur += sampleClamp(tc + vec2(px.x, 0.0));
-    blur += sampleClamp(tc + vec2(-px.x, 0.0));
-    blur += sampleClamp(tc + vec2(0.0, px.y));
-    blur += sampleClamp(tc + vec2(0.0, -px.y));
+    blur += sampleClamp(tc + vec2( px.x,  0.0));
+    blur += sampleClamp(tc + vec2(-px.x,  0.0));
+    blur += sampleClamp(tc + vec2( 0.0,  px.y));
+    blur += sampleClamp(tc + vec2( 0.0, -px.y));
     blur *= 0.125;
 
     float lum = luma(blur);
@@ -74,13 +75,13 @@ void main(void) {
     toon = mix(toon, palette(tone + mouseOrbit * 0.55), mouseOrbit * 0.28);
 
     float tl = luma(sampleClamp(tc + px * vec2(-1.0, -1.0)));
-    float t = luma(sampleClamp(tc + px * vec2(0.0, -1.0)));
-    float tr = luma(sampleClamp(tc + px * vec2(1.0, -1.0)));
-    float l = luma(sampleClamp(tc + px * vec2(-1.0, 0.0)));
-    float r = luma(sampleClamp(tc + px * vec2(1.0, 0.0)));
-    float bl = luma(sampleClamp(tc + px * vec2(-1.0, 1.0)));
-    float b = luma(sampleClamp(tc + px * vec2(0.0, 1.0)));
-    float br = luma(sampleClamp(tc + px * vec2(1.0, 1.0)));
+    float t  = luma(sampleClamp(tc + px * vec2( 0.0, -1.0)));
+    float tr = luma(sampleClamp(tc + px * vec2( 1.0, -1.0)));
+    float l  = luma(sampleClamp(tc + px * vec2(-1.0,  0.0)));
+    float r  = luma(sampleClamp(tc + px * vec2( 1.0,  0.0)));
+    float bl = luma(sampleClamp(tc + px * vec2(-1.0,  1.0)));
+    float b  = luma(sampleClamp(tc + px * vec2( 0.0,  1.0)));
+    float br = luma(sampleClamp(tc + px * vec2( 1.0,  1.0)));
     float gx = -tl - 2.0 * l - bl + tr + 2.0 * r + br;
     float gy = -tl - 2.0 * t - tr + bl + 2.0 * b + br;
     float edge = smoothstep(0.14, 0.42, length(vec2(gx, gy)));

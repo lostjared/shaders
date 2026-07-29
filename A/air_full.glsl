@@ -19,3 +19,4 @@ void main(void) {
 
     color = texColor2;
 }
+

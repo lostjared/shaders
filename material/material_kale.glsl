@@ -25,6 +25,7 @@ void main(void) {
     pos = rot * pos;
     vec4 texColor = texture(samp, pos + center);
     vec4 mColor = texture(mat_samp, pos + center);
-
+    
     color = mix(texColor, mColor, 0.5);
 }
+

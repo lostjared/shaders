@@ -26,7 +26,8 @@ void main(void) {
     vec3 psychedelicColor = vec3(
         sin(colorIntensity * 6.28318 + 0.0) * 0.5 + 0.5,
         sin(colorIntensity * 6.28318 + 2.09439) * 0.5 + 0.5,
-        sin(colorIntensity * 6.28318 + 4.18879) * 0.5 + 0.5);
+        sin(colorIntensity * 6.28318 + 4.18879) * 0.5 + 0.5
+    );
     vec3 baseColor = psychedelicColor;
     uv = tc * 2.0 - 1.0;
     float t = mod(time_f, 20);

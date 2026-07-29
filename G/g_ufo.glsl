@@ -27,3 +27,4 @@ void main(void) {
     pos = (pos - vec2(0.5)) * scale + vec2(0.5);
     color = texture(samp, pos);
 }
+

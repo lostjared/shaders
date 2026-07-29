@@ -11,6 +11,7 @@ float pingPong(float x, float length) {
     return modVal <= length ? modVal : length * 2.0 - modVal;
 }
 
+
 void main() {
     vec2 uv = gl_FragCoord.xy / iResolution;
     vec4 texColor = texture(samp, uv);
@@ -28,7 +29,8 @@ void main() {
     vec3 strobingGradient = vec3(
         0.5 + 0.5 * sin(time_f + uv.x * 10.0),
         0.5 + 0.5 * cos(time_f + uv.y * 10.0),
-        0.5 + 0.5 * sin(time_f + (uv.x + uv.y) * 10.0));
+        0.5 + 0.5 * sin(time_f + (uv.x + uv.y) * 10.0)
+    );
 
     vec3 auraGlow = mix(aura1 + aura2 + aura3, strobingGradient, 0.5);
     float auraStrength = 0.4 + 0.3 * sin(time_f * 4.0 + length(uv - 0.5) * 10.0);
@@ -36,3 +38,4 @@ void main() {
     vec3 finalAura = auraGlow * auraStrength;
     color = vec4(sin(finalAura * (pingPong(time_f, 8.0) + 2.0)), 0.5 * texColor.a);
 }
+

@@ -8,6 +8,13 @@ uniform float time_f;
 uniform vec4 iMouse;
 uniform float amp;
 uniform float uamp;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 const float PI = 3.1415926535897932384626433832795;
 
@@ -47,7 +54,7 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
 vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
     for (int i = 0; i < 6; i++) {
-        p = abs((p - c) * (zoom + 0.15 * sin(t * 0.35 + float(i)))) - 0.5 + c;
+        p = abs((p - c) * (zoom + 0.15 * sin(t * (0.35 + amp_low * 0.2) + float(i)))) - 0.5 + c;
         p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
     }
     return p;
@@ -96,7 +103,7 @@ vec3 preBlendColor(vec2 uv) {
     float t = time_f;
     vec3 neon = neonPalette(t + r * 1.3);
     float neonAmt = smoothstep(0.1, 0.8, r);
-    neonAmt = 0.3 + 0.4 * (1.0 - neonAmt);
+    neonAmt = (0.3 + amp_mid * 0.15) + 0.4 * (1.0 - neonAmt);
     vec3 grad = mix(tex, neon, neonAmt);
     grad = mix(grad, tex, 0.2);
     grad = softTone(grad);
@@ -111,8 +118,7 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x)
-        p = p.yx;
+    if (p.y > p.x) p = p.yx;
     p.x /= aspect;
     return p + c;
 }
@@ -136,25 +142,24 @@ void main(void) {
     uv.x *= aspect;
     float r = pingPong(sin(length(uv) * time_f), 5.0);
     float radius = sqrt(aspect * aspect + 1.0) + 0.5;
-    float glow = smoothstep(radius, radius - 0.25, r);
+    float glow = smoothstep(radius, radius - (0.25 + amp_low * 0.3), r);
 
     vec2 m = (iMouse.z > 0.5) ? (iMouse.xy / iResolution) : vec2(0.5);
     vec2 ar = vec2(aspect, 1.0);
 
     vec3 baseCol = preBlendColor(tcWave);
 
-    float seg = 4.0 + 2.0 * sin(time_f * 0.33 + uNorm * 0.5);
+    float seg = 4.0 + (2.0 + amp_mid * 2.0) * sin(time_f * 0.33 + uNorm * 0.5);
     vec2 kUV = reflectUV(tcWave, seg, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    float foldZoom = 1.35 + 0.65 * sin(time_f * 0.42 + uNorm * 0.8);
+    float foldZoom = 1.35 + (0.65 + amp_low * 0.4) * sin(time_f * 0.42 + uNorm * 0.8);
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
     kUV = rotateUV(kUV, time_f * (0.18 + 0.10 * aNorm), m, aspect);
     kUV = diamondFold(kUV, m, aspect);
 
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x)
-        q = q.yx;
+    if (q.y > q.x) q = q.yx;
 
     float base = 1.75 + 0.25 * pingPong(sin(time_f * 0.2) * (PI * time_f), 5.0);
     float period = log(base) * pingPong(time_f * PI, 5.0);
@@ -183,7 +188,7 @@ void main(void) {
     float ring = smoothstep(0.0, 0.7, sin(log(rD + 1e-3) * 9.5 + time_f * 1.2));
     ring *= pingPong(time_f * PI + uNorm * 2.5, 5.0);
 
-    float pulse = 0.5 + 0.5 * sin(time_f * 2.0 + rD * 28.0 + k * 12.0 + aNorm * 1.5);
+    float pulse = 0.5 + (0.5 + amp_rms * 0.3) * sin(time_f * 2.0 + rD * 28.0 + k * 12.0 + aNorm * 1.5);
 
     vec3 outCol = kaleidoRGB;
     float gain = 0.7 + 0.3 * uNorm;
@@ -200,6 +205,14 @@ void main(void) {
     float mixK = pingPong(glow * PI, 5.0) * (0.45 + 0.35 * uNorm);
     vec3 finalRGB = mix(baseTex.rgb, outCol, mixK);
     finalRGB = clamp(finalRGB, vec3(0.03), vec3(0.97));
+
+
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    finalRGB *= 1.0 + _ab * 0.6;
+    finalRGB = mix(finalRGB, finalRGB * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
 
     color = vec4(finalRGB, baseTex.a);
 }

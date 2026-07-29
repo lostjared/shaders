@@ -42,18 +42,15 @@ vec3 saturdayPalette(float t) {
     vec3 p4 = vec3(0.30, 0.88, 0.62);
     vec3 p5 = vec3(0.98, 0.95, 0.82);
 
-    if (t < 0.20)
-        return mix(p0, p1, t / 0.20);
-    if (t < 0.40)
-        return mix(p1, p2, (t - 0.20) / 0.20);
-    if (t < 0.60)
-        return mix(p2, p3, (t - 0.40) / 0.20);
-    if (t < 0.80)
-        return mix(p3, p4, (t - 0.60) / 0.20);
+    if (t < 0.20) return mix(p0, p1, t / 0.20);
+    if (t < 0.40) return mix(p1, p2, (t - 0.20) / 0.20);
+    if (t < 0.60) return mix(p2, p3, (t - 0.40) / 0.20);
+    if (t < 0.80) return mix(p3, p4, (t - 0.60) / 0.20);
     return mix(p4, p5, (t - 0.80) / 0.20);
 }
 
-void main(void) {
+void main(void)
+{
     vec2 res = max(iResolution, vec2(1.0));
     vec2 px = 1.0 / res;
 
@@ -77,10 +74,10 @@ void main(void) {
 
     vec3 c = sampleClamp(uv);
     vec3 blur = c * 4.0;
-    blur += sampleClamp(uv + vec2(px.x, 0.0));
-    blur += sampleClamp(uv + vec2(-px.x, 0.0));
-    blur += sampleClamp(uv + vec2(0.0, px.y));
-    blur += sampleClamp(uv + vec2(0.0, -px.y));
+    blur += sampleClamp(uv + vec2( px.x,  0.0));
+    blur += sampleClamp(uv + vec2(-px.x,  0.0));
+    blur += sampleClamp(uv + vec2( 0.0,  px.y));
+    blur += sampleClamp(uv + vec2( 0.0, -px.y));
     blur *= 0.125;
 
     float lum = luma(blur);
@@ -93,13 +90,13 @@ void main(void) {
     toon += mouseGlow * vec3(0.07, 0.04, 0.03);
 
     float tl = luma(sampleClamp(clamp(uv + px * vec2(-1.0, -1.0), vec2(0.0), vec2(1.0))));
-    float t = luma(sampleClamp(clamp(uv + px * vec2(0.0, -1.0), vec2(0.0), vec2(1.0))));
-    float tr = luma(sampleClamp(clamp(uv + px * vec2(1.0, -1.0), vec2(0.0), vec2(1.0))));
-    float l = luma(sampleClamp(clamp(uv + px * vec2(-1.0, 0.0), vec2(0.0), vec2(1.0))));
-    float r = luma(sampleClamp(clamp(uv + px * vec2(1.0, 0.0), vec2(0.0), vec2(1.0))));
-    float bl = luma(sampleClamp(clamp(uv + px * vec2(-1.0, 1.0), vec2(0.0), vec2(1.0))));
-    float b = luma(sampleClamp(clamp(uv + px * vec2(0.0, 1.0), vec2(0.0), vec2(1.0))));
-    float br = luma(sampleClamp(clamp(uv + px * vec2(1.0, 1.0), vec2(0.0), vec2(1.0))));
+    float t  = luma(sampleClamp(clamp(uv + px * vec2( 0.0, -1.0), vec2(0.0), vec2(1.0))));
+    float tr = luma(sampleClamp(clamp(uv + px * vec2( 1.0, -1.0), vec2(0.0), vec2(1.0))));
+    float l  = luma(sampleClamp(clamp(uv + px * vec2(-1.0,  0.0), vec2(0.0), vec2(1.0))));
+    float r  = luma(sampleClamp(clamp(uv + px * vec2( 1.0,  0.0), vec2(0.0), vec2(1.0))));
+    float bl = luma(sampleClamp(clamp(uv + px * vec2(-1.0,  1.0), vec2(0.0), vec2(1.0))));
+    float b  = luma(sampleClamp(clamp(uv + px * vec2( 0.0,  1.0), vec2(0.0), vec2(1.0))));
+    float br = luma(sampleClamp(clamp(uv + px * vec2( 1.0,  1.0), vec2(0.0), vec2(1.0))));
     float gx = -tl - 2.0 * l - bl + tr + 2.0 * r + br;
     float gy = -tl - 2.0 * t - tr + bl + 2.0 * b + br;
     float edge = smoothstep(0.10, 0.34, length(vec2(gx, gy)));

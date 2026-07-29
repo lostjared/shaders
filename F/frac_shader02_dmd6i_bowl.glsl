@@ -9,15 +9,19 @@ uniform vec4 iMouse;
 uniform float amp;
 uniform float uamp;
 uniform float seed;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 const float PI = 3.1415926535897932384626433832795;
 
-float h1(float n) { return fract(sin(n * 91.345 + 37.12) * 43758.5453123); }
-vec2 h2(vec2 p) { return fract(sin(vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)))) * 43758.5453); }
-vec2 rot(vec2 v, float a) {
-    float c = cos(a), s = sin(a);
-    return vec2(c * v.x - s * v.y, s * v.x + c * v.y);
-}
+float h1(float n){return fract(sin(n*91.345+37.12)*43758.5453123);}
+vec2 h2(vec2 p){return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);}
+vec2 rot(vec2 v,float a){float c=cos(a),s=sin(a);return vec2(c*v.x-s*v.y,s*v.x+c*v.y);}
 
 float pingPong(float x, float length) {
     float modVal = mod(x, length * 2.0);
@@ -55,7 +59,7 @@ vec2 reflectUV(vec2 uv, float segments, vec2 cent, float aspect) {
 vec2 fractalFold(vec2 uv, float zoom, float t, vec2 cent, float aspect) {
     vec2 p = uv;
     for (int i = 0; i < 6; i++) {
-        p = abs((p - cent) * (zoom + 0.15 * sin(t * 0.35 + float(i)))) - 0.5 + cent;
+        p = abs((p - cent) * (zoom + 0.15 * sin(t * (0.35 + amp_low * 0.2) + float(i)))) - 0.5 + cent;
         p = rotateUV(p, t * 0.12 + float(i) * 0.07, cent, aspect);
     }
     return p;
@@ -104,7 +108,7 @@ vec3 preBlendColor(vec2 uv) {
     float t = time_f;
     vec3 neon = neonPalette(t + r * 1.3);
     float neonAmt = smoothstep(0.1, 0.8, r);
-    neonAmt = 0.3 + 0.4 * (1.0 - neonAmt);
+    neonAmt = (0.3 + amp_mid * 0.15) + 0.4 * (1.0 - neonAmt);
     vec3 grad = mix(tex, neon, neonAmt);
     grad = mix(grad, tex, 0.2);
     grad = softTone(grad);
@@ -119,15 +123,14 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 cent, float aspect) {
     vec2 p = (uv - cent) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x)
-        p = p.yx;
+    if (p.y > p.x) p = p.yx;
     p.x /= aspect;
     return p + cent;
 }
 
-void main(void) {
-    float a = clamp(amp, 0.0, 1.0);
-    float ua = clamp(uamp, 0.0, 1.0);
+void main(void){
+    float a = clamp(amp,0.0,1.0);
+    float ua = clamp(uamp,0.0,1.0);
     float t = time_f;
 
     vec2 center = vec2(0.5, 0.5);
@@ -137,14 +140,14 @@ void main(void) {
     float radius = length(offset);
     float normalizedRadius = radius / maxRadius;
 
-    float distortion = 0.25 + 0.45 * ua + 0.3 * a;
+    float distortion = 0.25 + 0.45*ua + 0.3*a;
     float distortedRadius = normalizedRadius + distortion * normalizedRadius * normalizedRadius;
     distortedRadius = clamp(distortedRadius, 0.0, 1.0);
     distortedRadius *= maxRadius;
     vec2 normDir = radius > 0.0 ? offset / radius : vec2(0.0);
     vec2 distortedCoords = center + distortedRadius * normDir;
 
-    float spinSpeed = 0.6 + 1.8 * (0.3 + 0.7 * a);
+    float spinSpeed = 0.6 + 1.8*(0.3 + 0.7*a);
     float modulatedTime = pingPong(t * spinSpeed, 5.0);
     float angSpin = atan(distortedCoords.y - center.y, distortedCoords.x - center.x) + modulatedTime;
 
@@ -152,63 +155,63 @@ void main(void) {
     rotatedTC.x = cos(angSpin) * (distortedCoords.x - center.x) - sin(angSpin) * (distortedCoords.y - center.y) + center.x;
     rotatedTC.y = sin(angSpin) * (distortedCoords.x - center.x) + cos(angSpin) * (distortedCoords.y - center.y) + center.y;
 
-    float warpAmp = 0.02 + 0.06 * ua + 0.04 * a;
+    float warpAmp = 0.02 + 0.06*ua + 0.04*a;
     vec2 uvWarp;
-    uvWarp.x = pingPong(rotatedTC.x + t * 0.12 * (1.0 + warpAmp * 5.0), 1.0);
-    uvWarp.y = pingPong(rotatedTC.y + t * 0.12 * (1.0 + warpAmp * 5.0), 1.0);
+    uvWarp.x = pingPong(rotatedTC.x + t * 0.12 * (1.0 + warpAmp*5.0), 1.0);
+    uvWarp.y = pingPong(rotatedTC.y + t * 0.12 * (1.0 + warpAmp*5.0), 1.0);
 
     vec2 uv = uvWarp;
 
-    float speedR = 5.0, ampR = 0.03, waveR = 10.0;
-    float speedG = 6.5, ampG = 0.025, waveG = 12.0;
-    float speedB = 4.0, ampB = 0.035, waveB = 8.0;
+    float speedR=5.0, ampR=0.03, waveR=10.0;
+    float speedG=6.5, ampG=0.025, waveG=12.0;
+    float speedB=4.0, ampB=0.035, waveB=8.0;
 
-    float rR = sin(uv.x * waveR + t * speedR) * ampR + sin(uv.y * waveR * 0.8 + t * speedR * 1.2) * ampR;
-    float rG = sin(uv.x * waveG * 1.5 + t * speedG) * ampG + sin(uv.y * waveG * 0.3 + t * speedG * 0.7) * ampG;
-    float rB = sin(uv.x * waveB * 0.5 + t * speedB) * ampB + sin(uv.y * waveB * 1.7 + t * speedB * 1.3) * ampB;
+    float rR=sin(uv.x*waveR+t*speedR)*ampR + sin(uv.y*waveR*0.8+t*speedR*1.2)*ampR;
+    float rG=sin(uv.x*waveG*1.5+t*speedG)*ampG + sin(uv.y*waveG*0.3+t*speedG*0.7)*ampG;
+    float rB=sin(uv.x*waveB*0.5+t*speedB)*ampB + sin(uv.y*waveB*1.7+t*speedB*1.3)*ampB;
 
-    vec2 tcR = uv + vec2(rR, rR);
-    vec2 tcG = uv + vec2(rG, -0.5 * rG);
-    vec2 tcB = uv + vec2(0.3 * rB, rB);
+    vec2 tcR=uv+vec2(rR,rR);
+    vec2 tcG=uv+vec2(rG,-0.5*rG);
+    vec2 tcB=uv+vec2(0.3*rB,rB);
 
-    vec3 pats[4] = vec3[](vec3(1, 0, 1), vec3(0, 1, 0), vec3(1, 0, 0), vec3(0, 0, 1));
-    float pspd = 4.0;
-    int pidx = int(mod(floor(t * pspd + seed * 4.0), 4.0));
-    vec3 mir = pats[pidx];
+    vec3 pats[4]=vec3[](vec3(1,0,1),vec3(0,1,0),vec3(1,0,0),vec3(0,0,1));
+    float pspd=4.0;
+    int pidx=int(mod(floor(t*pspd+seed*4.0),4.0));
+    vec3 mir=pats[pidx];
 
-    vec2 m = iMouse.z > 0.5 ? (iMouse.xy / iResolution) : fract(vec2(0.37 + 0.11 * sin(t * 0.63 + seed), 0.42 + 0.13 * cos(t * 0.57 + seed * 2.0)));
-    vec2 dR = tcR - m, dG = tcG - m, dB = tcB - m;
+    vec2 m = iMouse.z>0.5 ? (iMouse.xy/iResolution) : fract(vec2(0.37+0.11*sin(t*0.63+seed),0.42+0.13*cos(t*0.57+seed*2.0)));
+    vec2 dR=tcR-m, dG=tcG-m, dB=tcB-m;
 
-    float fallR = smoothstep(0.55, 0.0, length(dR));
-    float fallG = smoothstep(0.55, 0.0, length(dG));
-    float fallB = smoothstep(0.55, 0.0, length(dB));
+    float fallR=smoothstep(0.55,0.0,length(dR));
+    float fallG=smoothstep(0.55,0.0,length(dG));
+    float fallB=smoothstep(0.55,0.0,length(dB));
 
-    float sw = (0.12 + 0.38 * ua + 0.25 * a);
-    vec2 tangR = rot(normalize(dR + 1e-4), 1.5707963);
-    vec2 tangG = rot(normalize(dG + 1e-4), 1.5707963);
-    vec2 tangB = rot(normalize(dB + 1e-4), 1.5707963);
+    float sw=(0.12+0.38*ua+0.25*a);
+    vec2 tangR=rot(normalize(dR+1e-4),1.5707963);
+    vec2 tangG=rot(normalize(dG+1e-4),1.5707963);
+    vec2 tangB=rot(normalize(dB+1e-4),1.5707963);
 
-    vec2 airR = tangR * sw * fallR * (0.06 + 0.22 * a) * (0.6 + 0.4 * cos(uv.y * 40.0 + t * 3.0 + seed));
-    vec2 airG = tangG * sw * fallG * (0.06 + 0.22 * a) * (0.6 + 0.4 * cos(uv.y * 38.0 + t * 3.3 + seed * 1.7));
-    vec2 airB = tangB * sw * fallB * (0.06 + 0.22 * a) * (0.6 + 0.4 * cos(uv.y * 42.0 + t * 2.9 + seed * 0.9));
+    vec2 airR=tangR*sw*fallR*(0.06+0.22*a)*(0.6+0.4*cos(uv.y*40.0+t*3.0+seed));
+    vec2 airG=tangG*sw*fallG*(0.06+0.22*a)*(0.6+0.4*cos(uv.y*38.0+t*3.3+seed*1.7));
+    vec2 airB=tangB*sw*fallB*(0.06+0.22*a)*(0.6+0.4*cos(uv.y*42.0+t*2.9+seed*0.9));
 
-    vec2 jit = (h2(uv * vec2(233.3, 341.9) + t + seed) - 0.5) * (0.0006 + 0.004 * ua);
+    vec2 jit = (h2(uv*vec2(233.3,341.9)+t+seed)-0.5)*(0.0006+0.004*ua);
     tcR += airR + jit;
     tcG += airG + jit;
     tcB += airB + jit;
 
-    vec2 fR = vec2(mir.r > 0.5 ? 1.0 - tcR.x : tcR.x, tcR.y);
-    vec2 fG = vec2(mir.g > 0.5 ? 1.0 - tcG.x : tcG.x, tcG.y);
-    vec2 fB = vec2(mir.b > 0.5 ? 1.0 - tcB.x : tcB.x, tcB.y);
+    vec2 fR=vec2(mir.r>0.5?1.0-tcR.x:tcR.x, tcR.y);
+    vec2 fG=vec2(mir.g>0.5?1.0-tcG.x:tcG.x, tcG.y);
+    vec2 fB=vec2(mir.b>0.5?1.0-tcB.x:tcB.x, tcB.y);
 
-    float ca = 0.0015 + 0.004 * a;
-    vec4 C = texture(samp, uv);
-    C.r = texture(samp, fR + vec2(ca, 0)).r;
-    C.g = texture(samp, fG).g;
-    C.b = texture(samp, fB + vec2(-ca, 0)).b;
+    float ca=0.0015+0.004*a;
+    vec4 C=texture(samp,uv);
+    C.r=texture(samp,fR+vec2( ca,0)).r;
+    C.g=texture(samp,fG              ).g;
+    C.b=texture(samp,fB+vec2(-ca,0)).b;
 
-    float pulseChrom = 0.004 * (0.5 + 0.5 * sin(t * 3.7 + seed));
-    C.rgb += pulseChrom * ua;
+    float pulseChrom=0.004*(0.5+0.5*sin(t*3.7+seed));
+    C.rgb+=pulseChrom*ua;
     vec3 chromRGB = C.rgb;
 
     vec4 baseTex = texture(samp, uv);
@@ -221,22 +224,21 @@ void main(void) {
 
     vec2 ar = vec2(aspect, 1.0);
     vec3 baseCol = preBlendColor(uv);
-    float seg = 4.0 + 2.0 * sin(time_f * 0.33);
+    float seg = 4.0 + (2.0 + amp_mid * 2.0) * sin(time_f * 0.33);
     vec2 kUV = reflectUV(uv, seg, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    float foldZoom = 1.45 + 0.55 * sin(time_f * 0.42);
+    float foldZoom = 1.45 + (0.55 + amp_low * 0.4) * sin(time_f * 0.42);
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
-    kUV = rotateUV(kUV, time_f * 0.23, m, aspect);
+    kUV = rotateUV(kUV, time_f * (0.23 + amp_low * 0.15), m, aspect);
     kUV = diamondFold(kUV, m, aspect);
 
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x)
-        q = q.yx;
+    if (q.y > q.x) q = q.yx;
 
     float baseZ = 1.82 + 0.18 * pingPong(sin(time_f * 0.2) * (PI * time_f), 5.0);
     float period = log(baseZ) * pingPong(time_f * PI, 5.0);
-    float tz = time_f * 0.65;
+    float tz = time_f * (0.65 + amp_low * 0.3);
     float rD = diamondRadius(p) + 1e-6;
     float ang = atan(q.y, q.x) + tz * 0.35 + 0.35 * sin(rD * 18.0 + time_f * 0.6);
     float k = fract((log(rD) - tz) / period);
@@ -246,10 +248,10 @@ void main(void) {
     vec2 u1 = fract((pwrap * 1.045) / ar + m);
     vec2 u2 = fract((pwrap * 0.955) / ar + m);
     vec2 dir = normalize(pwrap + 1e-6);
-    vec2 off = dir * (0.0015 + 0.001 * sin(time_f * 1.3)) * vec2(1.0, 1.0 / aspect);
+    vec2 off = dir * ((0.0015 + amp_high * 0.002) + 0.001 * sin(time_f * 1.3)) * vec2(1.0, 1.0 / aspect);
 
     float vign = 1.0 - smoothstep(0.75, 1.2, length((tc - m) * ar));
-    vign = mix(0.9, 1.15, vign);
+    vign = mix(0.9, (1.15 + amp_smooth * 0.2), vign);
 
     vec3 rC = preBlendColor(u0 + off);
     vec3 gC = preBlendColor(u1);
@@ -257,8 +259,8 @@ void main(void) {
     vec3 kaleidoRGB = vec3(rC.r, gC.g, bC.b);
 
     float ring = smoothstep(0.0, 0.7, sin(log(rD + 1e-3) * 9.5 + time_f * 1.2));
-    ring = ring * pingPong((time_f * PI), 5.0);
-    float pulse = 0.5 + 0.5 * sin(time_f * 2.0 + rD * 28.0 + k * 12.0);
+    ring = ring * pingPong((time_f * PI), 5.0) * (1.0 + amp_mid * 0.3);
+    float pulse = 0.5 + (0.5 + amp_rms * 0.3) * sin(time_f * 2.0 + rD * 28.0 + k * 12.0);
 
     vec3 outCol = kaleidoRGB;
     outCol *= (0.75 + 0.25 * ring) * (0.85 + 0.15 * pulse) * vign;
@@ -266,15 +268,23 @@ void main(void) {
     outCol += bloom;
 
     float mixNeonBase = pingPong(pulse * PI, 5.0) * 0.18;
-    vec3 neonBaseMix = mix(baseCol, outCol, 0.65 + 0.35 * ua);
+    vec3 neonBaseMix = mix(baseCol, outCol, 0.65 + 0.35*ua);
     vec3 neonOut = mix(baseTex.rgb, neonBaseMix, mixNeonBase + 0.45);
     neonOut = clamp(neonOut, vec3(0.05), vec3(0.97));
 
     float glowMix = pingPong(glow * PI, 5.0) * 0.8;
     vec3 neonFinal = mix(baseTex.rgb, neonOut, glowMix);
 
-    float layerMix = clamp(0.35 + 0.4 * a + 0.25 * ua, 0.0, 1.0);
+    float layerMix = clamp(0.35 + 0.4*a + 0.25*ua, 0.0, 1.0);
     vec3 finalRGB = mix(neonFinal, chromRGB, layerMix);
+
+
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    finalRGB *= 1.0 + _ab * 0.6;
+    finalRGB = mix(finalRGB, finalRGB * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
 
     color = vec4(finalRGB, 1.0);
 }

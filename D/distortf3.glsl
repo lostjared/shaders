@@ -26,3 +26,4 @@ void main() {
 
     color = vec4(texColor.rgb, texColor.a);
 }
+

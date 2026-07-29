@@ -14,3 +14,4 @@ void main(void) {
     vec2 new_tc = center + dir;
     color = texture(samp, new_tc);
 }
+

@@ -5,7 +5,7 @@ in vec2 tc;
 uniform sampler2D samp;
 uniform float time_f;
 uniform vec2 iResolution;
-
+ 
 vec2 vortexDistortion(vec2 uv, float time) {
     vec2 center = vec2(0.5, 0.5);
     vec2 offset = uv - center;
@@ -32,3 +32,4 @@ void main(void) {
     vec3 quantizedColor = vec3(rVals[idxR], gVals[idxG], bVals[idxB]);
     color = vec4(quantizedColor, texColor.a);
 }
+

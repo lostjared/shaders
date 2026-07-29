@@ -25,8 +25,7 @@ void main(void) {
     a += (h - 0.5) * 0.7;
     r = abs(fract(r * (3.0 + h * 5.0) - t * 0.4) - 0.5);
     vec2 q = vec2(cos(a), sin(a)) * r;
-    for (int i = 0; i < 3; ++i)
-        q = abs(q * 1.7) - 0.5;
+    for (int i = 0; i < 3; ++i) q = abs(q * 1.7) - 0.5;
     vec2 uv = wrapMirror(q / vec2(aspect, 1.0) + 0.5);
     uv += (mouseP - p) * 0.03 * smoothstep(1.25, 0.0, length(p - mouseP));
     vec2 off = vec2(0.018 + h * 0.035, 0.0);

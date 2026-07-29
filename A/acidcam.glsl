@@ -7,3 +7,4 @@ uniform sampler2D samp;
 void main(void) {
     color = texture(samp, tc);
 }
+

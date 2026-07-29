@@ -36,3 +36,4 @@ void main(void) {
 
     color = (0.5 * blendedColor) + (0.5 * baseColor);
 }
+

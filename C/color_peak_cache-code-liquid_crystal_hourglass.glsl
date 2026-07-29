@@ -7,23 +7,22 @@ in vec2 tc;
 out vec4 color;
 
 uniform sampler2D samp;
-uniform sampler2D samp1;
-uniform sampler2D samp2;
-uniform sampler2D samp3;
-uniform sampler2D samp4;
-uniform sampler2D samp5;
-uniform sampler2D samp6;
-uniform sampler2D samp7;
-uniform sampler2D samp8;
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
 
 uniform sampler1D spectrum0;
-uniform sampler1D spectrum1;
-uniform sampler1D spectrum2;
-uniform sampler1D spectrum3;
-uniform sampler1D spectrum4;
-uniform sampler1D spectrum5;
-uniform sampler1D spectrum6;
-uniform sampler1D spectrum7;
+uniform sampler1DArray spectrum_history;
+uniform int spectrum_history_head;
+uniform int spectrum_history_size;
+#ifndef SPECTRUM_HISTORY_LAYER
+#define SPECTRUM_HISTORY_LAYER(index) ((spectrum_history_head - ((index) % max(spectrum_history_size, 1)) + max(spectrum_history_size, 1)) % max(spectrum_history_size, 1))
+#endif
 
 uniform float time_f;
 uniform vec2 iResolution;
@@ -95,36 +94,36 @@ vec3 aces(vec3 x) {
 
 vec4 sampleCache(int index, vec2 uv) {
     if (index == 0)
-        return texture(samp1, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(0))));
     if (index == 1)
-        return texture(samp2, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(1))));
     if (index == 2)
-        return texture(samp3, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(2))));
     if (index == 3)
-        return texture(samp4, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(3))));
     if (index == 4)
-        return texture(samp5, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(4))));
     if (index == 5)
-        return texture(samp6, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(5))));
     if (index == 6)
-        return texture(samp7, uv);
-    return texture(samp8, uv);
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(6))));
+    return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(7))));
 }
 
 float sampleHistory(int index, float frequency) {
     if (index == 0)
-        return texture(spectrum1, frequency).r;
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(1)))).r;
     if (index == 1)
-        return texture(spectrum2, frequency).r;
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(2)))).r;
     if (index == 2)
-        return texture(spectrum3, frequency).r;
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(3)))).r;
     if (index == 3)
-        return texture(spectrum4, frequency).r;
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(4)))).r;
     if (index == 4)
-        return texture(spectrum5, frequency).r;
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(5)))).r;
     if (index == 5)
-        return texture(spectrum6, frequency).r;
-    return texture(spectrum7, frequency).r;
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(6)))).r;
+    return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(7)))).r;
 }
 
 float effectField(vec2 p, vec2 origin, float bass, float mid, float treble) {

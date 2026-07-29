@@ -6,6 +6,13 @@ uniform sampler2D samp;
 uniform vec2 iResolution;
 uniform float time_f;
 uniform vec4 iMouse;
+uniform float amp_peak;
+uniform float amp_rms;
+uniform float amp_smooth;
+uniform float amp_low;
+uniform float amp_mid;
+uniform float amp_high;
+uniform float iamp;
 
 const float PI = 3.1415926535897932384626433832795;
 
@@ -67,7 +74,7 @@ vec2 reflectUV(vec2 uv, float segments, vec2 c, float aspect) {
 vec2 fractalFold(vec2 uv, float zoom, float t, vec2 c, float aspect) {
     vec2 p = uv;
     for (int i = 0; i < 6; i++) {
-        p = abs((p - c) * (zoom + 0.15 * sin(t * 0.35 + float(i)))) - 0.5 + c;
+        p = abs((p - c) * (zoom + 0.15 * sin(t * (0.35 + amp_low * 0.2) + float(i)))) - 0.5 + c;
         p = rotateUV(p, t * 0.12 + float(i) * 0.07, c, aspect);
     }
     return p;
@@ -89,7 +96,7 @@ vec3 neonPalette(float t) {
 
 vec3 softTone(vec3 c) {
     // Prevent crushing blacks
-    c = pow(max(c, 0.1), vec3(0.95));
+    c = pow(max(c, 0.1), vec3(0.95)); 
     float l = dot(c, vec3(0.299, 0.587, 0.114));
     c = mix(vec3(l), c, 0.9);
     return clamp(c, 0.1, 1.0); // Floor at 0.1
@@ -102,7 +109,7 @@ vec3 tentBlur3(sampler2D img, vec2 uv, vec2 res) {
     s += texture(img, uv + ts * vec2(-1.0, -1.0)).rgb;
     s += texture(img, uv + ts * vec2(-1.0, 1.0)).rgb;
     s += texture(img, uv + ts * vec2(1.0, -1.0)).rgb;
-    return s / 8.0;
+    return s / 8.0; 
 }
 
 vec3 preBlendColor(vec2 uv) {
@@ -112,13 +119,13 @@ vec3 preBlendColor(vec2 uv) {
     float r = length(p);
     vec3 neon = neonPalette(time_f + r * 1.3);
     float neonAmt = smoothstep(0.1, 0.8, r);
-    neonAmt = 0.3 + 0.4 * (1.0 - neonAmt);
+    neonAmt = (0.3 + amp_mid * 0.15) + 0.4 * (1.0 - neonAmt);
     vec3 grad = mix(tex, neon, neonAmt);
     grad = mix(grad, tex, 0.2);
-
+    
     // FORCE BRIGHTNESS: If result is dark, boost it with the palette
-    grad = max(grad, neon * 0.2);
-
+    grad = max(grad, neon * 0.2); 
+    
     grad = softTone(grad);
     return grad;
 }
@@ -131,15 +138,14 @@ float diamondRadius(vec2 p) {
 vec2 diamondFold(vec2 uv, vec2 c, float aspect) {
     vec2 p = (uv - c) * vec2(aspect, 1.0);
     p = abs(p);
-    if (p.y > p.x)
-        p = p.yx;
+    if (p.y > p.x) p = p.yx;
     p.x /= aspect;
     return p + c;
 }
 
 void main(void) {
     vec4 baseTex = texture(samp, tc);
-
+    
     vec2 uv = tc * 2.0 - 1.0;
     float aspect = iResolution.x / iResolution.y;
     uv.x *= aspect;
@@ -147,46 +153,45 @@ void main(void) {
     vec2 ar = vec2(aspect, 1.0);
 
     // --- FRACTAL GENERATION ---
-    float seg = 4.0 + 2.0 * sin(time_f * 0.33);
-
+    float seg = 4.0 + (2.0 + amp_mid * 2.0) * sin(time_f * 0.33);
+    
     vec2 kUV = reflectUV(tc, seg, m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-    float foldZoom = 1.45 + 0.55 * sin(time_f * 0.42);
+    float foldZoom = 1.45 + (0.55 + amp_low * 0.4) * sin(time_f * 0.42);
     kUV = fractalFold(kUV, foldZoom, time_f, m, aspect);
-    kUV = rotateUV(kUV, time_f * 0.23, m, aspect);
+    kUV = rotateUV(kUV, time_f * (0.23 + amp_low * 0.15), m, aspect);
     kUV = diamondFold(kUV, m, aspect);
-
+    
     vec2 p = (kUV - m) * ar;
     vec2 q = abs(p);
-    if (q.y > q.x)
-        q = q.yx;
-
+    if (q.y > q.x) q = q.yx;
+    
     // Electric Noise
-    float electricity = fbm(p * 5.0 - time_f);
-    float electricPulse = pow(electricity, 3.0);
+    float electricity = fbm(p * 5.0 - time_f); 
+    float electricPulse = pow(electricity, 3.0); 
 
     // Log Polar Tunnel
     float base = 1.82 + 0.18 * pingPong(sin(time_f * 0.2) * (PI * time_f), 5.0);
     float period = log(base) * pingPong(time_f * PI, 5.0);
-    float tz = time_f * 0.65;
+    float tz = time_f * (0.65 + amp_low * 0.3);
     float rD = diamondRadius(p) + 1e-6;
-
+    
     float ang = atan(q.y, q.x) + tz * 0.35 + 0.35 * sin(rD * 18.0 + time_f * 0.6);
     ang += electricPulse * 0.2;
 
     float k = fract((log(rD) - tz) / period);
     float rw = exp(k * period);
-
+    
     vec2 pwrap = vec2(cos(ang), sin(ang)) * rw;
 
     // --- SAMPLING ---
     vec2 u0 = fract(pwrap / ar + m);
-    float spread = 1.045 + (0.05 * electricPulse);
+    float spread = 1.045 + ((0.05 + amp_high * 0.03) * electricPulse); 
     vec2 u1 = fract((pwrap * spread) / ar + m);
-    vec2 u2 = fract((pwrap * (1.0 / spread)) / ar + m);
+    vec2 u2 = fract((pwrap * (1.0/spread)) / ar + m);
 
     vec2 dir = normalize(pwrap + 1e-6);
-    vec2 off = dir * (0.0015 + 0.001 * sin(time_f * 1.3)) * vec2(1.0, 1.0 / aspect);
+    vec2 off = dir * ((0.0015 + amp_high * 0.002) + 0.001 * sin(time_f * 1.3)) * vec2(1.0, 1.0 / aspect);
 
     vec3 rC = preBlendColor(u0 + off);
     vec3 gC = preBlendColor(u1);
@@ -194,28 +199,36 @@ void main(void) {
     vec3 kaleidoRGB = vec3(rC.r, gC.g, bC.b);
 
     // --- COMPOSITING ---
-
+    
     // Mask Logic - FLOORED to prevent 0.0 (Black)
     float ring = smoothstep(0.0, 0.7, sin(log(rD + 1e-3) * 9.5 + time_f * 1.2));
     ring = 0.3 + 0.7 * ring; // Min brightness 0.3
-
-    float pulse = 0.5 + 0.5 * sin(time_f * 2.0 + rD * 28.0 + k * 12.0);
+    
+    float pulse = 0.5 + (0.5 + amp_rms * 0.3) * sin(time_f * 2.0 + rD * 28.0 + k * 12.0);
     pulse = 0.4 + 0.6 * pulse; // Min brightness 0.4
-
+    
     vec3 effectColor = kaleidoRGB;
-    effectColor *= (ring * pulse);
-
+    effectColor *= (ring * pulse); 
+    
     // If effectColor is still too dark (e.g. from texture), fill it with palette
     vec3 fillPalette = neonPalette(length(p) + time_f) * 0.15;
     effectColor = max(effectColor, fillPalette);
 
     // Add bloom
     vec3 bloom = effectColor * effectColor * 0.18 + pow(max(effectColor - 0.6, 0.0), vec3(2.0)) * 0.12;
-    effectColor += bloom * (1.0 + electricPulse);
+    effectColor += bloom * (1.0 + electricPulse + amp_low * 0.5);
 
     // Additive Blend
-    float intensity = 0.6 + 0.4 * pingPong(time_f, 2.0);
+    float intensity = 0.6 + (0.4 + amp_smooth * 0.3) * pingPong(time_f, 2.0);
     vec3 finalRGB = baseTex.rgb + (effectColor * intensity);
+
+
+    // --- Audio Reactivity: direct output modulation ---
+    float _ab = clamp(amp_peak, 0.0, 1.0);
+    float _abass = clamp(amp_low, 0.0, 1.0);
+    finalRGB *= 1.0 + _ab * 0.6;
+    finalRGB = mix(finalRGB, finalRGB * vec3(1.0 + _abass * 0.3, 1.0 - _abass * 0.15, 1.0 + clamp(amp_high, 0.0, 1.0) * 0.25), _ab);
+    // --- End Audio Reactivity ---
 
     color = vec4(clamp(finalRGB, 0.0, 1.0), baseTex.a);
 }

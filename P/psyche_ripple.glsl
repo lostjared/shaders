@@ -18,3 +18,4 @@ void main(void) {
     vec4 color2 = texture(samp, stretchedCoord);
     color = mix(color1, color2, 0.5);
 }
+

@@ -40,16 +40,14 @@ vec3 cartoonPalette(float t) {
     vec3 c = vec3(0.22, 0.65, 0.90);
     vec3 d = vec3(0.98, 0.92, 0.76);
     vec3 e = vec3(0.78, 0.33, 0.82);
-    if (t < 0.25)
-        return mix(a, b, t / 0.25);
-    if (t < 0.50)
-        return mix(b, c, (t - 0.25) / 0.25);
-    if (t < 0.75)
-        return mix(c, d, (t - 0.50) / 0.25);
+    if (t < 0.25) return mix(a, b, t / 0.25);
+    if (t < 0.50) return mix(b, c, (t - 0.25) / 0.25);
+    if (t < 0.75) return mix(c, d, (t - 0.50) / 0.25);
     return mix(d, e, (t - 0.75) / 0.25);
 }
 
-void main(void) {
+void main(void)
+{
     vec2 res = max(iResolution, vec2(1.0));
     vec2 px = 1.0 / res;
 
@@ -102,13 +100,13 @@ void main(void) {
     cartoon = mix(cartoon, blur, 0.11);
 
     float tl = luma(sampleClamp(clamp(tape + px * vec2(-1.0, -1.0), vec2(0.0), vec2(1.0))));
-    float t = luma(sampleClamp(clamp(tape + px * vec2(0.0, -1.0), vec2(0.0), vec2(1.0))));
-    float tr = luma(sampleClamp(clamp(tape + px * vec2(1.0, -1.0), vec2(0.0), vec2(1.0))));
-    float l = luma(sampleClamp(clamp(tape + px * vec2(-1.0, 0.0), vec2(0.0), vec2(1.0))));
-    float r = luma(sampleClamp(clamp(tape + px * vec2(1.0, 0.0), vec2(0.0), vec2(1.0))));
-    float bl = luma(sampleClamp(clamp(tape + px * vec2(-1.0, 1.0), vec2(0.0), vec2(1.0))));
-    float b = luma(sampleClamp(clamp(tape + px * vec2(0.0, 1.0), vec2(0.0), vec2(1.0))));
-    float br = luma(sampleClamp(clamp(tape + px * vec2(1.0, 1.0), vec2(0.0), vec2(1.0))));
+    float t  = luma(sampleClamp(clamp(tape + px * vec2( 0.0, -1.0), vec2(0.0), vec2(1.0))));
+    float tr = luma(sampleClamp(clamp(tape + px * vec2( 1.0, -1.0), vec2(0.0), vec2(1.0))));
+    float l  = luma(sampleClamp(clamp(tape + px * vec2(-1.0,  0.0), vec2(0.0), vec2(1.0))));
+    float r  = luma(sampleClamp(clamp(tape + px * vec2( 1.0,  0.0), vec2(0.0), vec2(1.0))));
+    float bl = luma(sampleClamp(clamp(tape + px * vec2(-1.0,  1.0), vec2(0.0), vec2(1.0))));
+    float b  = luma(sampleClamp(clamp(tape + px * vec2( 0.0,  1.0), vec2(0.0), vec2(1.0))));
+    float br = luma(sampleClamp(clamp(tape + px * vec2( 1.0,  1.0), vec2(0.0), vec2(1.0))));
     float gx = -tl - 2.0 * l - bl + tr + 2.0 * r + br;
     float gy = -tl - 2.0 * t - tr + bl + 2.0 * b + br;
     float edge = smoothstep(0.16, 0.44, length(vec2(gx, gy)));

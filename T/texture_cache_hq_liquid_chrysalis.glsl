@@ -11,7 +11,14 @@ in vec2 tc;
 out vec4 color;
 
 uniform sampler2D samp;
-uniform sampler2D textures[SIZE];
+uniform sampler2DArray history;
+uniform int history_head;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
 uniform float time_f;
 uniform vec2 iResolution;
 
@@ -81,7 +88,7 @@ void main(void) {
         q *= 1.0 + (baseField * 0.025 - 0.065 * age);
 
         vec2 historyUV = mirrorUV(q / aspectScale + 0.5);
-        vec3 memory = texture(textures[index], historyUV).rgb;
+        vec3 memory = texture(history, vec3(historyUV, float(CACHE_HISTORY_LAYER(index)))).rgb;
         vec3 film = palette(baseField * 0.30 + age * 0.84 + t * 0.015);
         float weight = pow(0.89, layer) * (0.78 + 0.22 * cos(phase) * cos(phase));
 
