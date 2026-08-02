@@ -1988,6 +1988,16 @@ P/psyche-bubble-cache-soap-kaleidoscope.glsl
 P/psyche-bubble-cache-spectral-sonar.glsl
 P/psyche-bubble-cache-tesseract-bloom.glsl
 P/psyche-bubble-cache-yin-yang-vortex.glsl
+P/psyche-cache-code-aurora-mobius.glsl
+P/psyche-cache-code-chromatic-echo-well.glsl
+P/psyche-cache-code-cosmic-stained-glass.glsl
+P/psyche-cache-code-fractal-sonar-orchid.glsl
+P/psyche-cache-code-kaleido-bloom.glsl
+P/psyche-cache-code-liquid-mandala.glsl
+P/psyche-cache-code-neon-dream-weave.glsl
+P/psyche-cache-code-plasma-time-flower.glsl
+P/psyche-cache-code-prism-memory-tunnel.glsl
+P/psyche-cache-code-spectral-mycelium.glsl
 P/psyche_ripple.glsl
 P/psyche_wave.glsl
 P/psych.glsl
@@ -2334,6 +2344,7 @@ S/spectrum_cache1.glsl
 S/spectrum_cache2.glsl
 S/spectrum_cache3.glsl
 S/spectrum_cache4.glsl
+S/spectrum-cache-breathe.glsl
 S/spiral-aura.glsl
 S/spiral_by_time.glsl
 S/spiral-center.glsl
@@ -2435,6 +2446,7 @@ T/timeval_alpha.glsl
 T/time_xor.glsl
 T/today.glsl
 T/tornado.glsl
+T/trail-cache-blur.glsl
 T/trail-cache-code-aurora-drift.glsl
 T/trail-cache-code-chromatic-comet.glsl
 T/trail-cache-code-crystal-zoom.glsl
@@ -2460,6 +2472,7 @@ T/trail-cache-code-spectral-hourglass.glsl
 T/trail-cache-code-strobe-helix.glsl
 T/trail-cache-code-temporal-cube.glsl
 T/trail-cache-code-tesseract-orbit.glsl
+T/trail-cache-expand.glsl
 T/trail-cache.glsl
 T/trail-cache-invert.glsl
 T/tremor1.glsl
