@@ -1808,6 +1808,7 @@
       "M/mirror_r4.glsl",
       "M/mirror_r8.glsl",
       "M/mirror_rad.glsl",
+      "M/mirror-repeat.glsl",
       "M/mirror_rev2.glsl",
       "M/mirror_rev2y.glsl",
       "M/mirror_rev.glsl",
