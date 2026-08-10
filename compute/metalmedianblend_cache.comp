@@ -1,0 +1,84 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+
+const float INV_255 = 1.0 / 255.0;
+
+ivec2 clampPos(ivec2 p, ivec2 size) {
+    return clamp(p, ivec2(0), size - ivec2(1));
+}
+
+vec2 pixelUv(ivec2 p, ivec2 size) {
+    return (vec2(clampPos(p, size)) + 0.5) / vec2(size);
+}
+
+vec3 sampleSource(ivec2 p, ivec2 size) {
+    return textureLod(samp, pixelUv(p, size), 0.0).rgb;
+}
+
+uvec3 toU8(vec3 color) {
+    return uvec3(clamp(color * 255.0 + 0.5, 0.0, 255.0));
+}
+
+vec3 toRGB(uvec3 color) {
+    return vec3(color) * INV_255;
+}
+
+uvec3 sampleSourceU8(ivec2 p, ivec2 size) {
+    return toU8(sampleSource(p, size));
+}
+
+#ifndef SIZE
+#define SIZE 8
+#endif
+
+#ifndef USE_HISTORY_TEXTURE_ARRAY
+#define USE_HISTORY_TEXTURE_ARRAY 0
+#endif
+
+#if USE_HISTORY_TEXTURE_ARRAY
+uniform sampler2DArray history;
+uniform int history_head;
+#else
+uniform sampler2D textures[SIZE];
+#endif
+
+vec3 sampleHistory(int index, ivec2 p, ivec2 size) {
+    vec2 uv = pixelUv(p, size);
+    index = clamp(index, 0, SIZE - 1);
+#if USE_HISTORY_TEXTURE_ARRAY
+    int layer = (history_head + index) % SIZE;
+    return textureLod(history, vec3(uv, float(layer)), 0.0).rgb;
+#else
+    return textureLod(textures[index], uv, 0.0).rgb;
+#endif
+}
+
+uvec3 sampleHistoryU8(int index, ivec2 p, ivec2 size) {
+    return toU8(sampleHistory(index, p, size));
+}
+
+vec3 metalMedianBlend(ivec2 p, ivec2 size) {
+    uvec3 current = sampleSourceU8(p, size);
+    uint scale = uint(round(mix(1.0, 16.0, clamp(alpha, 0.0, 1.0))));
+    uvec3 scaled = (current * scale) % uvec3(255u);
+    uvec3 blended = ((25u * scaled + 75u * current) / 100u) % uvec3(255u);
+    uvec3 sum = uvec3(0u);
+    for (int index = 0; index < SIZE; ++index)
+        sum += sampleHistoryU8(index, p, size);
+    uvec3 result = (blended ^ ((sum + uvec3(1u)) & uvec3(255u))) & uvec3(255u);
+    return toRGB(result).bgr;
+}
+
+void main() {
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(p, size)))
+        return;
+    vec3 color = metalMedianBlend(p, size);
+    imageStore(outputImage, p, vec4(clamp(color, 0.0, 1.0), 1.0));
+}

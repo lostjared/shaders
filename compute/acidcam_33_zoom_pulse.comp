@@ -1,0 +1,37 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform float iTime;
+
+ivec2 clampPos(ivec2 p, ivec2 size) {
+    return clamp(p, ivec2(0), size - ivec2(1));
+}
+
+vec2 pixelUv(ivec2 p, ivec2 size) {
+    return (vec2(clampPos(p, size)) + 0.5) / vec2(size);
+}
+
+vec3 sampleSource(ivec2 p, ivec2 size) {
+    return textureLod(samp, pixelUv(p, size), 0.0).rgb;
+}
+
+vec3 zoomPulse(ivec2 p, ivec2 size) {
+    vec2 center = vec2(size) * 0.5;
+    vec2 delta = vec2(p) - center;
+    float pulse = 1.0 + 0.12 * sin(iTime * 2.0);
+    float scale = mix(1.0, pulse, clamp(alpha, 0.0, 1.0));
+    return sampleSource(ivec2(center + delta / scale), size);
+}
+
+void main() {
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(p, size)))
+        return;
+    vec3 color = zoomPulse(p, size);
+    imageStore(outputImage, p, vec4(clamp(color, 0.0, 1.0), 1.0));
+}

@@ -1,0 +1,91 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+const float INV_255 = 1.0 / 255.0;
+
+ivec2 clampPos(ivec2 p, ivec2 size) {
+    return clamp(p, ivec2(0), size - ivec2(1));
+}
+
+vec2 pixelUv(ivec2 p, ivec2 size) {
+    return (vec2(clampPos(p, size)) + 0.5) / vec2(size);
+}
+
+vec3 sampleSource(ivec2 p, ivec2 size) {
+    return textureLod(samp, pixelUv(p, size), 0.0).rgb;
+}
+
+uvec3 toU8(vec3 color) {
+    return uvec3(clamp(color * 255.0 + 0.5, 0.0, 255.0));
+}
+
+vec3 toRGB(uvec3 color) {
+    return vec3(color) * INV_255;
+}
+
+uvec3 sampleSourceU8(ivec2 p, ivec2 size) {
+    return toU8(sampleSource(p, size));
+}
+
+uvec3 mul8(uvec3 value, int scale) {
+    return (value * uint(max(scale, 1))) & uvec3(255u);
+}
+
+int effectBlockSize() {
+    return max(int(round(mix(2.0, 64.0, clamp(alpha, 0.0, 1.0)))), 1);
+}
+
+#ifndef SIZE
+#define SIZE 8
+#endif
+
+#ifndef USE_HISTORY_TEXTURE_ARRAY
+#define USE_HISTORY_TEXTURE_ARRAY 0
+#endif
+
+#if USE_HISTORY_TEXTURE_ARRAY
+uniform sampler2DArray history;
+uniform int history_head;
+#else
+uniform sampler2D textures[SIZE];
+#endif
+
+int effectHistoryIndex() {
+    return (iFrame / 2) % max(SIZE, 1);
+}
+
+vec3 sampleHistory(int index, ivec2 p, ivec2 size) {
+    vec2 uv = pixelUv(p, size);
+    index = clamp(index, 0, SIZE - 1);
+#if USE_HISTORY_TEXTURE_ARRAY
+    int layer = (history_head + index) % SIZE;
+    return textureLod(history, vec3(uv, float(layer)), 0.0).rgb;
+#else
+    return textureLod(textures[index], uv, 0.0).rgb;
+#endif
+}
+
+uvec3 sampleHistoryU8(int index, ivec2 p, ivec2 size) {
+    return toU8(sampleHistory(index, p, size));
+}
+
+vec3 historyXor(ivec2 p, ivec2 size) {
+    uvec3 current = sampleSourceU8(p, size);
+    uvec3 previous = sampleHistoryU8(effectHistoryIndex(), p, size);
+    return toRGB(mul8(current ^ previous, effectBlockSize()));
+}
+
+void main() {
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(p, size)))
+        return;
+    vec3 color = historyXor(p, size);
+    imageStore(outputImage, p, vec4(clamp(color, 0.0, 1.0), 1.0));
+}
