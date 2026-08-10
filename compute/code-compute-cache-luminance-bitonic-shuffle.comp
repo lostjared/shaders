@@ -1,0 +1,128 @@
+// Cooperative compute effect inspired by shaders_new; requires workgroup synchronization.
+#version 430 core
+
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float time_f;
+uniform float alpha;
+uniform int iFrame;
+uniform vec2 iResolution;
+
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef USE_HISTORY_TEXTURE_ARRAY
+#define USE_HISTORY_TEXTURE_ARRAY 0
+#endif
+
+#if USE_HISTORY_TEXTURE_ARRAY
+uniform sampler2DArray history;
+uniform int history_head;
+#else
+uniform sampler2D textures[SIZE];
+#endif
+
+shared vec4 tile[10][10];
+
+ivec2 clamp_position(ivec2 position, ivec2 size) {
+    return clamp(position, ivec2(0), size - ivec2(1));
+}
+
+vec4 source_at(ivec2 position, ivec2 size) {
+    vec2 uv = (vec2(clamp_position(position, size)) + 0.5) / vec2(size);
+    return textureLod(samp, uv, 0.0);
+}
+
+vec4 history_at(int index, ivec2 position, ivec2 size) {
+    vec2 uv = (vec2(clamp_position(position, size)) + 0.5) / vec2(size);
+    index = clamp(index, 0, min(SIZE, 8) - 1);
+#if USE_HISTORY_TEXTURE_ARRAY
+    return textureLod(history, vec3(uv, float((history_head + index) % SIZE)), 0.0);
+#else
+    if (index == 0) return textureLod(textures[0], uv, 0.0);
+#if SIZE > 1
+    if (index == 1) return textureLod(textures[1], uv, 0.0);
+#endif
+#if SIZE > 2
+    if (index == 2) return textureLod(textures[2], uv, 0.0);
+#endif
+#if SIZE > 3
+    if (index == 3) return textureLod(textures[3], uv, 0.0);
+#endif
+#if SIZE > 4
+    if (index == 4) return textureLod(textures[4], uv, 0.0);
+#endif
+#if SIZE > 5
+    if (index == 5) return textureLod(textures[5], uv, 0.0);
+#endif
+#if SIZE > 6
+    if (index == 6) return textureLod(textures[6], uv, 0.0);
+#endif
+#if SIZE > 7
+    return textureLod(textures[7], uv, 0.0);
+#else
+    return textureLod(textures[0], uv, 0.0);
+#endif
+#endif
+}
+
+float luminance(vec3 color_value) {
+    return dot(color_value, vec3(0.2126, 0.7152, 0.0722));
+}
+
+vec3 acid_palette(float phase) {
+    return 0.5 + 0.5 * cos(6.2831853 * (phase + vec3(0.02, 0.35, 0.68)));
+}
+
+void load_tile(ivec2 size) {
+    uint linear_index = gl_LocalInvocationIndex;
+    ivec2 origin = ivec2(gl_WorkGroupID.xy) * 8 - 1;
+    for (uint index = linear_index; index < 100u; index += 64u) {
+        ivec2 local_position = ivec2(int(index % 10u), int(index / 10u));
+        tile[local_position.y][local_position.x] =
+            source_at(origin + local_position, size);
+    }
+    barrier();
+}
+shared vec4 sorted_pixels[64];
+
+bool comes_after(vec4 first, vec4 second) {
+    return luminance(first.rgb) > luminance(second.rgb);
+}
+void main() {
+    ivec2 size = imageSize(outputImage);
+    load_tile(size);
+    uint lane = gl_LocalInvocationIndex;
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 local_position = ivec2(gl_LocalInvocationID.xy) + 1;
+    sorted_pixels[lane] = tile[local_position.y][local_position.x];
+    barrier();
+
+    for (uint sequence = 2u; sequence <= 64u; sequence <<= 1u) {
+        for (uint stride = sequence >> 1u; stride > 0u; stride >>= 1u) {
+            uint partner = lane ^ stride;
+            if (partner > lane) {
+                bool ascending = (lane & sequence) == 0u;
+                bool swap_values =
+                    ascending ? comes_after(sorted_pixels[lane], sorted_pixels[partner])
+                              : comes_after(sorted_pixels[partner], sorted_pixels[lane]);
+                if (swap_values) {
+                    vec4 temporary = sorted_pixels[lane];
+                    sorted_pixels[lane] = sorted_pixels[partner];
+                    sorted_pixels[partner] = temporary;
+                }
+            }
+            barrier();
+        }
+    }
+    if (any(greaterThanEqual(pixel, size)))
+        return;
+
+    uint phase = uint(iFrame / 3) & 7u;
+    uint shuffled_lane = (lane + phase * 9u) & 63u;
+    vec3 result = sorted_pixels[shuffled_lane].rgb;
+    result *= 0.65 + 0.55 * acid_palette(float(lane) / 64.0 + time_f * 0.02);
+    imageStore(outputImage, pixel, vec4(clamp(result, 0.0, 1.0), 1.0));
+}

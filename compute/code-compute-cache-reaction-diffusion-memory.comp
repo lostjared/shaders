@@ -1,0 +1,101 @@
+// Stateful cooperative compute effect inspired by shaders_new.
+#version 430 core
+
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+uniform sampler2D samp;
+uniform float time_f;
+uniform float alpha;
+uniform int iFrame;
+uniform vec2 iResolution;
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef USE_HISTORY_TEXTURE_ARRAY
+#define USE_HISTORY_TEXTURE_ARRAY 0
+#endif
+#if USE_HISTORY_TEXTURE_ARRAY
+uniform sampler2DArray history;
+uniform int history_head;
+#else
+uniform sampler2D textures[SIZE];
+#endif
+shared vec4 tile[10][10];
+ivec2 clamp_position(ivec2 p, ivec2 s) { return clamp(p, ivec2(0), s - 1); }
+vec4 source_at(ivec2 p, ivec2 s) {
+    vec2 uv = (vec2(clamp_position(p, s)) + 0.5) / vec2(s);
+    return textureLod(samp, uv, 0.0);
+}
+vec4 history_at(int index, ivec2 p, ivec2 s) {
+    vec2 uv = (vec2(clamp_position(p, s)) + 0.5) / vec2(s);
+    index = clamp(index, 0, min(SIZE, 8) - 1);
+#if USE_HISTORY_TEXTURE_ARRAY
+    return textureLod(history, vec3(uv, float((history_head + index) % SIZE)), 0.0);
+#else
+    if (index == 0) return textureLod(textures[0], uv, 0.0);
+#if SIZE > 1
+    if (index == 1) return textureLod(textures[1], uv, 0.0);
+#endif
+#if SIZE > 2
+    if (index == 2) return textureLod(textures[2], uv, 0.0);
+#endif
+#if SIZE > 3
+    if (index == 3) return textureLod(textures[3], uv, 0.0);
+#endif
+#if SIZE > 4
+    if (index == 4) return textureLod(textures[4], uv, 0.0);
+#endif
+#if SIZE > 5
+    if (index == 5) return textureLod(textures[5], uv, 0.0);
+#endif
+#if SIZE > 6
+    if (index == 6) return textureLod(textures[6], uv, 0.0);
+#endif
+#if SIZE > 7
+    return textureLod(textures[7], uv, 0.0);
+#else
+    return textureLod(textures[0], uv, 0.0);
+#endif
+#endif
+}
+float luminance(vec3 c) { return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
+vec3 acid_palette(float p) { return 0.5 + 0.5 * cos(6.2831853 * (p + vec3(0.04, 0.37, 0.71))); }
+void load_tile(ivec2 size) {
+    uint lane = gl_LocalInvocationIndex;
+    ivec2 origin = ivec2(gl_WorkGroupID.xy) * 8 - 1;
+    for (uint index = lane; index < 100u; index += 64u) {
+        ivec2 q = ivec2(int(index % 10u), int(index / 10u));
+        tile[q.y][q.x] = source_at(origin + q, size);
+    }
+    barrier();
+}
+shared float chemical_a[8][8];
+shared float chemical_b[8][8];
+void main() {
+    ivec2 size = imageSize(outputImage);
+    load_tile(size);
+    ivec2 local_id = ivec2(gl_LocalInvocationID.xy);
+    ivec2 tile_position = local_id + 1;
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    vec3 old_color = history_at(1, pixel, size).rgb;
+    chemical_a[local_id.y][local_id.x] = luminance(old_color);
+    chemical_b[local_id.y][local_id.x] =
+        length(tile[tile_position.y][tile_position.x].rg - old_color.rg);
+    barrier();
+
+    float a = chemical_a[local_id.y][local_id.x];
+    float b = chemical_b[local_id.y][local_id.x];
+    float laplace_a = -a;
+    float laplace_b = -b;
+    if (local_id.x > 0) { laplace_a += chemical_a[local_id.y][local_id.x - 1] * 0.25; laplace_b += chemical_b[local_id.y][local_id.x - 1] * 0.25; }
+    if (local_id.x < 7) { laplace_a += chemical_a[local_id.y][local_id.x + 1] * 0.25; laplace_b += chemical_b[local_id.y][local_id.x + 1] * 0.25; }
+    if (local_id.y > 0) { laplace_a += chemical_a[local_id.y - 1][local_id.x] * 0.25; laplace_b += chemical_b[local_id.y - 1][local_id.x] * 0.25; }
+    if (local_id.y < 7) { laplace_a += chemical_a[local_id.y + 1][local_id.x] * 0.25; laplace_b += chemical_b[local_id.y + 1][local_id.x] * 0.25; }
+    float reaction = a * b * b;
+    a = clamp(a + 0.8 * laplace_a - reaction + 0.035 * (1.0 - a), 0.0, 1.0);
+    b = clamp(b + 0.42 * laplace_b + reaction - 0.062 * b, 0.0, 1.0);
+    if (any(greaterThanEqual(pixel, size))) return;
+    vec3 result = mix(tile[tile_position.y][tile_position.x].rgb,
+                      acid_palette(a - b + time_f * 0.025), clamp(b * 2.2, 0.0, 0.85));
+    imageStore(outputImage, pixel, vec4(result, 1.0));
+}
