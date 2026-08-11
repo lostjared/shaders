@@ -1,0 +1,34 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+float hash11(float value) {
+    return fract(sin(value * 91.3458) * 47453.5453);
+}
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    vec2 uv = (vec2(position) + 0.5) / vec2(size);
+    return textureLod(samp, uv, 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    int band_height = max(4, int(mix(48.0, 7.0, clamp(alpha, 0.0, 1.0))));
+    int band = position.y / band_height;
+    float seed = hash11(float(band + (iFrame / 3) * 17));
+    int shift = int((seed - 0.5) * float(size.x) * 0.32 * alpha);
+    int drag = int(hash11(float(band * 31)) * float(band_height));
+    ivec2 displaced = position + ivec2(shift, seed > 0.72 ? -drag : 0);
+    vec3 color = source_at(displaced, size);
+    if (seed > 0.82) color.gb = source_at(displaced - ivec2(shift / 5, 0), size).gb;
+    imageStore(outputImage, position, vec4(color, 1.0));
+}

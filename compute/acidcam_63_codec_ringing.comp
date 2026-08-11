@@ -1,0 +1,34 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+
+float luminance(vec3 color) {
+    return dot(color, vec3(0.2126, 0.7152, 0.0722));
+}
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    vec2 uv = (vec2(position) + 0.5) / vec2(size);
+    return textureLod(samp, uv, 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    vec3 center = source_at(position, size);
+    float horizontal_edge = luminance(source_at(position + ivec2(1, 0), size)) -
+                            luminance(source_at(position - ivec2(1, 0), size));
+    float vertical_edge = luminance(source_at(position + ivec2(0, 1), size)) -
+                          luminance(source_at(position - ivec2(0, 1), size));
+    float edge = abs(horizontal_edge) + abs(vertical_edge);
+    vec3 echo = source_at(position + ivec2(4, 0), size) - source_at(position + ivec2(8, 0), size);
+    vec3 color = center + echo * edge * alpha * 2.4;
+    color = floor(clamp(color, 0.0, 1.0) * mix(255.0, 31.0, alpha) + 0.5) / mix(255.0, 31.0, alpha);
+    imageStore(outputImage, position, vec4(color, 1.0));
+}

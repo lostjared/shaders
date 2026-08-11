@@ -1,0 +1,29 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    vec2 uv = (vec2(position) + 0.5) / vec2(size);
+    return textureLod(samp, uv, 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    int step_width = max(3, int(mix(24.0, 7.0, alpha)));
+    int stair = ((position.y / step_width) + iFrame / 6) % 9 - 4;
+    int offset = int(float(stair * step_width) * alpha);
+    vec3 color;
+    color.r = source_at(position + ivec2(offset, 0), size).r;
+    color.g = source_at(position + ivec2(offset / 3, 0), size).g;
+    color.b = source_at(position - ivec2(offset, 0), size).b;
+    imageStore(outputImage, position, vec4(color, 1.0));
+}

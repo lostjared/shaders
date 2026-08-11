@@ -1,0 +1,29 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform float time_f;
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    vec2 uv = (vec2(position) + 0.5) / vec2(size);
+    return textureLod(samp, uv, 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    float normalized_y = float(position.y) / float(max(size.y, 1));
+    float carrier = sin(normalized_y * 290.0 + time_f * 20.0);
+    float envelope = pow(abs(sin(normalized_y * 9.0 - time_f * 1.7)), 12.0);
+    int shift = int(carrier * envelope * 72.0 * alpha);
+    ivec2 sample_position = position + ivec2(shift, 0);
+    vec3 color = source_at(sample_position, size);
+    color.rb = mix(color.rb, color.br, envelope * alpha * 0.65);
+    imageStore(outputImage, position, vec4(color, 1.0));
+}

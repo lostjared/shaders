@@ -1,0 +1,28 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform float time_f;
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    vec2 uv = (vec2(position) + 0.5) / vec2(size);
+    return textureLod(samp, uv, 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    int field = position.y & 1;
+    float wave = sin(float(position.y) * 0.071 + time_f * (field == 0 ? 5.0 : -4.0));
+    int shift = int(wave * mix(2.0, 38.0, alpha));
+    ivec2 sample_position = position + ivec2(field == 0 ? shift : -shift, 0);
+    vec3 color = source_at(sample_position, size);
+    color *= field == 0 ? 1.08 : 0.86;
+    imageStore(outputImage, position, vec4(clamp(color, 0.0, 1.0), 1.0));
+}

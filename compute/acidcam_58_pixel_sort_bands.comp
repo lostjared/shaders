@@ -1,0 +1,40 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+float luminance(vec3 color) {
+    return dot(color, vec3(0.2126, 0.7152, 0.0722));
+}
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    vec2 uv = (vec2(position) + 0.5) / vec2(size);
+    return textureLod(samp, uv, 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    int span = 16;
+    ivec2 origin = ivec2((position.x / span) * span, position.y);
+    vec3 selected = source_at(position, size);
+    float selected_luma = luminance(selected);
+    bool choose_high = ((position.x / span + position.y / 8 + iFrame / 9) & 1) == 0;
+    for (int index = 0; index < span; ++index) {
+        vec3 candidate = source_at(origin + ivec2(index, 0), size);
+        float candidate_luma = luminance(candidate);
+        if ((choose_high && candidate_luma > selected_luma) || (!choose_high && candidate_luma < selected_luma)) {
+            selected = candidate;
+            selected_luma = candidate_luma;
+        }
+    }
+    vec3 source = source_at(position, size);
+    imageStore(outputImage, position, vec4(mix(source, selected, alpha * 0.85), 1.0));
+}

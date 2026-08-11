@@ -1,0 +1,34 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+float hash12(vec2 value) {
+    return fract(sin(dot(value, vec2(127.1, 311.7))) * 43758.5453);
+}
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    vec2 uv = (vec2(position) + 0.5) / vec2(size);
+    return textureLod(samp, uv, 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    int block = max(8, int(mix(40.0, 12.0, alpha)));
+    ivec2 cell = position / block;
+    ivec2 inside = position % block;
+    float phase = float(iFrame / 5);
+    float activity = step(0.52, hash12(vec2(cell) + phase));
+    ivec2 drift = ivec2(int((hash12(vec2(cell.yx) + phase) - 0.5) * 5.0) * block,
+                         int((hash12(vec2(cell) - phase) - 0.5) * 3.0) * block);
+    ivec2 sample_position = cell * block + inside + ivec2(vec2(drift) * activity * alpha);
+    imageStore(outputImage, position, vec4(source_at(sample_position, size), 1.0));
+}

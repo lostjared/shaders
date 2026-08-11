@@ -1,0 +1,33 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform float time_f;
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    vec2 uv = (vec2(position) + 0.5) / vec2(size);
+    return textureLod(samp, uv, 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    vec2 center = vec2(size) * 0.5;
+    vec2 delta = vec2(position) + 0.5 - center;
+    float radius = length(delta);
+    float angle = atan(delta.y, delta.x);
+    float sector = floor((angle + 3.14159265) * 12.0 / 6.2831853);
+    float ring = floor(radius / 22.0);
+    float glitch = sin(sector * 9.7 + ring * 2.3 + floor(time_f * 8.0));
+    float angle_offset = glitch * 0.075 * alpha * step(0.15, abs(glitch));
+    vec2 rotated = mat2(cos(angle_offset), -sin(angle_offset), sin(angle_offset), cos(angle_offset)) * delta;
+    ivec2 sample_position = ivec2(center + rotated);
+    vec3 color = source_at(sample_position, size);
+    imageStore(outputImage, position, vec4(color, 1.0));
+}
