@@ -1,10 +1,10 @@
 # GLSL Shader Collection
 
-A collection of **2900+ OpenGL GLSL fragment shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
+A collection of **2900+ OpenGL GLSL fragment shaders** and **128 GLSL compute shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
 
 ## Overview
 
-All shaders are written in **GLSL (OpenGL Shading Language)** and operate as fragment shaders. They take texture input (typically a webcam or video source) and apply various visual transformations in real time. Many shaders support interactive control via mouse input and react to time-based animation.
+All shaders are written in **GLSL (OpenGL Shading Language)**. Most are fragment shaders; the programs in `compute/` are OpenGL 4.3 compute shaders. They take texture input (typically a webcam or video source) and apply various visual transformations in real time. Many shaders support interactive control via mouse input and react to time-based animation.
 
 ## Directory Structure
 
@@ -14,7 +14,84 @@ Shaders are organized alphabetically into folders by the first character of thei
 |--------|----------|
 | `0-9/` | Shaders starting with a digit |
 | `A/`–`Z/` | Shaders starting with the corresponding letter (case-insensitive) |
+| `compute/` | OpenGL 4.3 compute-shader effects and their separate manifests |
 | `material/` | Material-based texture blending and compositing shaders |
+
+## Compute Shaders (`compute/`)
+
+The `compute/` directory contains 128 image-processing compute shaders. They use GLSL 4.30 and write directly to an `rgba16f` image, making them suitable for effects that benefit from integer pixel addressing, shared workgroup memory, atomics, or explicit synchronization. They are separate from the fragment-shader library and use their own `compute/library.json` and `compute/index.txt` manifests.
+
+### Families
+
+| Family | Count | Workgroup | Description |
+|--------|------:|-----------|-------------|
+| `acidcam_00_*` – `acidcam_49_*` | 46 | 16×16 | Core pixel, mirror, color, convolution, morphology, warp, and temporal effects. Numbers 12, 18, 36, and 47 are not present. |
+| `acidcam_50_*` – `acidcam_99_*` | 50 | 16×16 | Digital-glitch effects including datamoshing, packet loss, channel displacement, block corruption, scanline failures, pixel-address scrambling, and terminal-meltdown styles. |
+| `code-compute-cache-*` | 25 | 8×8 | Cache-aware cooperative effects that use shared tiles, barriers, reductions, scans, sorting, histograms, or atomics. Examples include optical-flow trails, reaction-diffusion memory, tile histogram prism, bitonic luminance shuffle, and wavefront propagation. |
+| Standalone utilities | 7 | 16×16 | `compute_blur`, `compute_temporal_blend_cache`, the `metalmedianblend_*` and `xorblend_*` pairs, and `square_block_resize_dir_cache`. |
+
+Thirty-seven shaders are frame-cache-aware: the eight cache members of `acidcam_00_*` – `acidcam_49_*`, all 25 `code-compute-cache-*` shaders, and four standalone utilities whose names end in `_cache`.
+
+### Host interface
+
+Every compute shader has the following core interface:
+
+```glsl
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in; // 8x8 for code-compute-cache-*
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+```
+
+The host must bind a distinct input texture to `samp` and a writable `GL_RGBA16F` texture to image unit 0. Do not read from and write to the same texture in one dispatch. Set any additional uniforms declared by the selected shader; the compute collection uses `alpha`, `iFrame`, `time_f`, `iTime`, and `iResolution`. `alpha` is effect-specific: depending on the shader it controls blend strength, block size, threshold, or another intensity parameter. Current compute shaders write an opaque alpha value.
+
+Dispatch enough workgroups to cover the output dimensions. Each shader checks its global invocation against `imageSize(outputImage)`, so rounding up is supported:
+
+```cpp
+// Use 8 instead of 16 for code-compute-cache-*.
+const GLuint localX = 16;
+const GLuint localY = 16;
+glDispatchCompute((width  + localX - 1) / localX,
+                  (height + localY - 1) / localY,
+                  1);
+glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT |
+                GL_TEXTURE_FETCH_BARRIER_BIT);
+```
+
+The barrier makes the output visible to later image operations and texture sampling. The `code-compute-cache-*` shaders also synchronize invocations internally; their declared 8×8 workgroup size must not be overridden.
+
+### Frame-cache variants
+
+Cache-aware compute shaders support both frame-history representations at compile time. `SIZE` is the cache depth (default 8), and `USE_HISTORY_TEXTURE_ARRAY` selects the interface:
+
+```glsl
+#ifndef SIZE
+#define SIZE 8
+#endif
+
+#ifndef USE_HISTORY_TEXTURE_ARRAY
+#define USE_HISTORY_TEXTURE_ARRAY 0
+#endif
+
+#if USE_HISTORY_TEXTURE_ARRAY
+uniform sampler2DArray history;
+uniform int history_head;
+#else
+uniform sampler2D textures[SIZE];
+#endif
+```
+
+- With `USE_HISTORY_TEXTURE_ARRAY=0` (the default), bind `textures[0]` through `textures[SIZE - 1]` in logical oldest-to-newest order.
+- With `USE_HISTORY_TEXTURE_ARRAY=1`, bind the array texture to `history` and set `history_head` to the physical layer containing logical index 0, the oldest retained frame. Shaders map logical index `i` to `(history_head + i) % SIZE`.
+- Compile `SIZE` to match the number of bound history entries. The cooperative `code-compute-cache-*` effects use at most the first eight logical history frames even when `SIZE` is larger.
+
+The current input remains the separate `samp` texture and is not an additional history entry.
+
+### Compute manifests
+
+`compute/library.json` lists all 128 compute shaders. `compute/index.txt` currently lists 78 and does not yet include `acidcam_50_*` through `acidcam_99_*`; hosts that need the complete compute collection should use the JSON manifest or enumerate the `.comp` files directly. `.shader_cache_*` files are generated cache artifacts, not shaders.
 
 ## Effect Categories
 
