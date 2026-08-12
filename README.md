@@ -1,6 +1,6 @@
 # GLSL Shader Collection
 
-A collection of **2900+ OpenGL GLSL fragment shaders** and **128 GLSL compute shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
+A collection of **2900+ OpenGL GLSL fragment shaders** and **182 GLSL compute shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
 
 ## Overview
 
@@ -14,94 +14,22 @@ Shaders are organized alphabetically into folders by the first character of thei
 |--------|----------|
 | `0-9/` | Shaders starting with a digit |
 | `A/`–`Z/` | Shaders starting with the corresponding letter (case-insensitive) |
-| `compute/` | OpenGL 4.3 compute-shader effects and their separate manifests |
+| `compute/` | 182 OpenGL 4.3 compute-shader effects and their separate manifests |
 | `material/` | Material-based texture blending and compositing shaders |
 
-## Compute Shaders (`compute/`)
+## Fragment Shaders (`*.glsl`)
 
-The `compute/` directory contains 128 image-processing compute shaders. They use GLSL 4.30 and write directly to an `rgba16f` image, making them suitable for effects that benefit from integer pixel addressing, shared workgroup memory, atomics, or explicit synchronization. They are separate from the fragment-shader library and use their own `compute/library.json` and `compute/index.txt` manifests.
+Fragment shaders make up the main library in the alphabetical directories and the separate `material/` collection. The following categories, families, history interfaces, and uniform reference apply to fragment shaders; compute shaders have their own interface later in this document.
 
-### Families
+### Effect Categories
 
-| Family | Count | Workgroup | Description |
-|--------|------:|-----------|-------------|
-| `acidcam_00_*` – `acidcam_49_*` | 46 | 16×16 | Core pixel, mirror, color, convolution, morphology, warp, and temporal effects. |
-| `acidcam_50_*` – `acidcam_99_*` | 50 | 16×16 | Digital-glitch effects including datamoshing, packet loss, channel displacement, block corruption, scanline failures, pixel-address scrambling, and terminal-meltdown styles. |
-| `code-compute-cache-*` | 25 | 8×8 | Cache-aware cooperative effects that use shared tiles, barriers, reductions, scans, sorting, histograms, or atomics. Examples include optical-flow trails, reaction-diffusion memory, tile histogram prism, bitonic luminance shuffle, and wavefront propagation. |
-| Standalone utilities | 7 | 16×16 | `compute_blur`, `compute_temporal_blend_cache`, the `metalmedianblend_*` and `xorblend_*` pairs, and `square_block_resize_dir_cache`. |
-
-Thirty-seven shaders are frame-cache-aware: the eight cache members of `acidcam_00_*` – `acidcam_49_*`, all 25 `code-compute-cache-*` shaders, and four standalone utilities whose names end in `_cache`.
-
-### Host interface
-
-Every compute shader has the following core interface:
-
-```glsl
-#version 430 core
-
-layout(local_size_x = 16, local_size_y = 16) in; // 8x8 for code-compute-cache-*
-layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
-
-uniform sampler2D samp;
-```
-
-The host must bind a distinct input texture to `samp` and a writable `GL_RGBA16F` texture to image unit 0. Do not read from and write to the same texture in one dispatch. Set any additional uniforms declared by the selected shader; the compute collection uses `alpha`, `iFrame`, `time_f`, `iTime`, and `iResolution`. `alpha` is effect-specific: depending on the shader it controls blend strength, block size, threshold, or another intensity parameter. Current compute shaders write an opaque alpha value.
-
-Dispatch enough workgroups to cover the output dimensions. Each shader checks its global invocation against `imageSize(outputImage)`, so rounding up is supported:
-
-```cpp
-// Use 8 instead of 16 for code-compute-cache-*.
-const GLuint localX = 16;
-const GLuint localY = 16;
-glDispatchCompute((width  + localX - 1) / localX,
-                  (height + localY - 1) / localY,
-                  1);
-glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT |
-                GL_TEXTURE_FETCH_BARRIER_BIT);
-```
-
-The barrier makes the output visible to later image operations and texture sampling. The `code-compute-cache-*` shaders also synchronize invocations internally; their declared 8×8 workgroup size must not be overridden.
-
-### Frame-cache variants
-
-Cache-aware compute shaders support both frame-history representations at compile time. `SIZE` is the cache depth (default 8), and `USE_HISTORY_TEXTURE_ARRAY` selects the interface:
-
-```glsl
-#ifndef SIZE
-#define SIZE 8
-#endif
-
-#ifndef USE_HISTORY_TEXTURE_ARRAY
-#define USE_HISTORY_TEXTURE_ARRAY 0
-#endif
-
-#if USE_HISTORY_TEXTURE_ARRAY
-uniform sampler2DArray history;
-uniform int history_head;
-#else
-uniform sampler2D textures[SIZE];
-#endif
-```
-
-- With `USE_HISTORY_TEXTURE_ARRAY=0` (the default), bind `textures[0]` through `textures[SIZE - 1]` in logical oldest-to-newest order.
-- With `USE_HISTORY_TEXTURE_ARRAY=1`, bind the array texture to `history` and set `history_head` to the physical layer containing logical index 0, the oldest retained frame. Shaders map logical index `i` to `(history_head + i) % SIZE`.
-- Compile `SIZE` to match the number of bound history entries. The cooperative `code-compute-cache-*` effects use at most the first eight logical history frames even when `SIZE` is larger.
-
-The current input remains the separate `samp` texture and is not an additional history entry.
-
-### Compute manifests
-
-`compute/library.json` and `compute/index.txt` provide manifests for the compute-shader collection. `.shader_cache_*` files are generated cache artifacts, not shaders.
-
-## Effect Categories
-
-### Color Manipulation
+#### Color Manipulation
 - **Color shifting & grading** — `color_shift_fade`, `color_grad_rainbow`, `color_increase`, `chue`, `hue-mouse`, `sepia`, `grayscale`, `negative`
 - **RGB channel effects** — `rgb`, `rgb_blur`, `rgb_fade`, `rgb_control`, `rgb_time`, `rgbchecker`
 - **Strobe & flash** — `strobe`, `strobe_colors`, `strobe_light`, `flash`, `flash_gradient_strobe`, `blue_strobe`, `red_strobe`, `purple_strobe`
 - **Rainbow effects** — `rainbow_blur`, `rainbow_bright`, `rainbow_spiral`, `rainbow_fractal`, `rainbow_ink`, `rainbow_prisim`, `bright_rainbow`
 
-### Geometric Distortion
+#### Geometric Distortion
 - **Mirror effects** — `mirror1`–`mirror3`, `mirror-twist`, `mirror-wrap`, `mirror-spiral`, `mirror-zoom`, `mirror-bowl`, `funny_mirror`
 - **Fisheye & lens** — `fisheye`, `fisheye_mouse`, `fisheye_warp`, `bubble`, `bubble-zoom-mouse`, `thick_glass`, `prism_glass`
 - **Warp & twist** — `twist`, `twist_full`, `warp_tunnel`, `warpcursor`, `bend`, `bend_twist`, `elastic`
@@ -109,41 +37,41 @@ The current input remains the separate `samp` texture and is not an additional h
 - **Spiral & swirl** — `spiral_wave`, `spiral_mirror`, `spiral-code-*`, `swirl_by_mouse`, `color_swirl_beautiful`, `gptswirl`, `g_swirl`
 - **Page turn & fold** — `page_turn`, `fold`, `fold-mirror`, `fold-spin`, `tex_fold`
 
-### Fractal & Mathematical
+#### Fractal & Mathematical
 - **Fractal patterns** — `fractal`, `frac_shader01`–`frac_shader05`, `frac_zoom1`–`frac_zoom8`, `fractal-code-large-*`, `new_fractal`, `fractal_diamond_rainbow`
 - **Mandelbrot / Julia** — `mandella1`, `julia`, `brot-zoom-mouse`, `frac_shader02_dmd_mandella`
 - **Geometric patterns** — `geometric`–`geometric5`, `grid_pattern`, `grid_spiral`, `diamond`, `prism_quad`
 - **Kaleidoscope** — `kale`, `kale2`–`kale4`, `kscopic`, `gkale`, `gkalei`
 
-### Video Echo & Feedback
+#### Video Echo & Feedback
 - **Echo effects** — `echo_color`, `echo_mirror`, `echo_mix`, `echo_rainbow_spin`, `echo_xor`, `echo_shift`, `echo_sin`
 - **Feedback loops** — `echo_loop`, `echo_loop2`, `gpt_echo`
 - **Trail effects** — `gtrail`, `gtrail2`, `HyperFocusTrails`
 
-### Glitch & Digital
+#### Glitch & Digital
 - **Glitch effects** — `glitch1`, `glitch_boil`, `glitch_effect`, `glitch_wave`, `glitch-react`, `new_glitch`, `atan-glitch`
 - **VHS & retro** — `vhs`, `vhs2`, `vhs_damage`, `vhs-palette`, `old-film`, `snes`, `8bit`, `analog`
 - **Pixel & block** — `pixels`, `block_pixels`, `smooth_pixel`, `random_pixels_static`
 - **XOR operations** — `xor_rgb`, `xor_sine_swirl`, `xorstrobe`, `xorsheet`, `subtle_xor`, `alpha_xor`
 
-### Lighting & Atmosphere
+#### Lighting & Atmosphere
 - **Glow & bloom** — `glow`, `bloom`, `bright`, `brighten`, `whitelight`, `light_pulse`
 - **Aura effects** — `aura`–`aura9`, `auraXi1`–`auraXi3`, `green_aura`, `gem-aura`
 - **Neon** — `neon`, `neon_mouse`, `frac_shader01_smooth_neon`
 - **Fire & energy** — `genergy`, `material_energy`, `heat`, `heat-wave`
 
-### Motion & Animation
+#### Motion & Animation
 - **Wave effects** — `wave_diag`, `wave_spiral`, `blue_wave`, `code_wave`, `psyche_wave`, `spiral_wave`
 - **Ripple effects** — `ripple`, `ripple_cycle`, `ripple_rainbow`, `ripple_prisim`, `c_ripple`, `psyche_ripple`
 - **Shake & tremor** — `shake`, `tremor1`–`tremor4`, `tearing`
 - **Rotation & spin** — `rotate_xyz`, `rotate_xyz_zoom`, `fold-spin`, `rainbow_cd_spin`
 
-### Nature & Organic
+#### Nature & Organic
 - **Water effects** — `water`, `water_full`, `water_rgb`, `water_hq_01`–`water_hq_25`, `waterbend`, `underwater`, `ocean`, `fold-water`
 - **Smoke & air** — `smoke`, `air`, `air_full`, `air-bowl`
 - **Psychedelic** — `psych`, `psyche_ripple`, `psyche_wave`, `acid_color2`, `acidcam`, `acidcolor`, `halluc_gem`, `halluc_liquid`
 
-### Blending & Compositing (material/)
+#### Blending & Compositing (`material/`)
 The `material/` folder contains **200+ shaders** focused on texture blending and compositing techniques:
 - **Alpha blending** — `material_alphablend`, `material_alphablend_xor`, `material_alphablend_bright`
 - **Echo compositing** — `material_echo`, `material_echo_half`, `material_echo_mirror`, `material_echo_xor`
@@ -152,51 +80,51 @@ The `material/` folder contains **200+ shaders** focused on texture blending and
 - **XOR blending** — `material_xor`, `material_xor_blend`, `material_xor_rgb`
 - **Special** — `material_matrix`, `material_psychedelic`, `material_underwater`, `material_ripple`
 
-### Interactive (Mouse-Controlled)
+#### Interactive (Mouse-Controlled)
 Many shaders respond to mouse position for real-time control:
 - `air_full_mouse`, `audio_mouse`, `apart_mouse`, `bubble-zoom-mouse`, `code_flux_mouse`, `fisheye_mouse`, `hue-mouse`, `kale_mouse`, `matrix_mouse`, `neon_mouse`, `spiral-mouse`, `swirlMouse`, `xorMouse`, `zoom_in_out_mouse`
 
-### Gem & Crystal
+#### Gem & Crystal
 - `gem-color-spiral`, `gem-deep`, `gem-fish`, `gem-ripple`, `gem_frac`, `gem_glass`, `gem_metal`, `gem_rainbow_metal`, `gem_polar`, `halluc_gem`
 
-## Additional Shader Families
+### Additional Shader Families
 
 The categories above are summaries — the collection contains many large named series that share a common style. The sections below describe those families. Each family has many numbered/themed members; only representative names are shown.
 
-### `ant_gem_*` series (48 shaders)
+#### `ant_gem_*` series (48 shaders)
 Audio-reactive layered overlays that combine the geometry of the `ant_*` shaders with the saturated palette of the `gem_*` shaders. They drive a multi-pass color/warp on top of the camera frame using `amp_*` audio uniforms. Representative members: `ant_gem_aurora_tunnel`, `ant_gem_chrome_wave`, `ant_gem_cosmic_web`, `ant_gem_crystal_pulse`, `ant_gem_deep_bloom`, `ant_gem_diamond_storm`, `ant_gem_fire_spoke`, `ant_gem_fractal_ocean`, `ant_gem_glass_mandala`, `ant_gem_metal_*` (many subvariants: `_aurora`, `_cascade`, `_chrome`, `_coil`, `_crystal`, `_ember`, `_flux`, `_forge`, `_fracture`, `_glacier`, `_helix`, `_inferno`, `_lattice`, `_nebula`, `_opal`, `_orbital`, `_prism`, `_pulse`, `_ripple`, `_shard`, `_storm`, `_tessera`, `_vortex`, `_weave`).
 
-### `game_*` and `game_ant_*` series (146 shaders)
+#### `game_*` and `game_ant_*` series (146 shaders)
 Gameplay-friendly post-process variants — calibrated to be visible without significantly distorting screen-space gameplay (no aggressive UV warping, controlled alpha, no gameplay-occluding overlays). Two sub-families:
 
 - **Tone / film looks** — `game_amber_mono`, `game_anamorphic`, `game_anime_cel`, `game_arcade_crt`, `game_bleach_bypass`, `game_chroma_split`, `game_cinema_wide`, `game_color_grade_*`, `game_film_grain`, `game_lcd_subpixel`, `game_lo_fi`, `game_neon_outline`, `game_night_vision`, `game_paper_sketch`, `game_retro_vhs`, `game_thermal`, `game_tilt_shift`, `game_vignette_*`.
 - **`game_ant_*` boosted overlays** — gameplay-tuned versions of the `ant_gem_*` family (same names: `aurora_tunnel`, `chrome_wave`, `cosmic_web`, `metal_*`, `gem_*`, `frac_*`). Higher base alpha so the effect is visible during gameplay but the underlying scene remains readable.
 
-### `react*` series (40 shaders)
+#### `react*` series (40 shaders)
 This group contains the numbered audio-reactive shaders (`react`, `react2` … `react20`) plus the 20-member `react_x_*` family. Each reacts to `amp` / `amp_*` uniforms with a different visual response (color shift, warp, bloom, kaleidoscope, wave). Useful as drop-in audio-visualizer post-effects.
 
-### `random_*` series (61 shaders)
+#### `random_*` series (61 shaders)
 Hash- or noise-driven randomized effects. Examples: `random_colors`, `random_pos_fish`, `random_resize`, `random_rgb`, `random_rgb_strobe`, `random_soul`, `random_soul_by_mouse`, `random_spectrum_deep_melt`, `random_pixels_static`. Many use `seed` / `random_seed` to reproducibly drive pixel scrambling, color jitter, or position shuffling.
 
-### `Liquid_*` series (11 shaders)
+#### `Liquid_*` series (11 shaders)
 Liquid / molten distortion overlays — `Liquid_Censorship`, `Liquid_Crystal`, `Liquid_Crystal_2`, `Liquid_Crystal_Rainbow1`, `Liquid_Fractal_Tunnel`, `Liquid_Heat`, `Liquid_Heat_blend`, `Liquid_Light_Rainbow_Blend`. These animate flowing UV warps with chromatic separation.
 
-### `drain*` series (9 shaders)
+#### `drain*` series (9 shaders)
 Whirlpool / drain swirls pulling toward screen center: `drain`, `drain_bend`, `drain_mandella`, `drain_mirror`, `drain_mirror_amp`, `drain_mirror_top`, `drain_mouse`, `drain_rainbow`. The `_amp` and `_mouse` variants drive the swirl center / strength via audio or pointer.
 
-### `huri*` series (8 shaders)
+#### `huri*` series (8 shaders)
 Hurricane-style rotating swirl/zoom effects — `huri`, `huri1`–`huri3`, `huri_af`, `huri_create_mouse`, `hurixyz`, `huriz`. The `_af` variant uses audio-frequency drive (`amp_high`/`amp_low`); the `_mouse` variant tracks the pointer.
 
-### `af_scale*` series (59 shaders)
+#### `af_scale*` series (59 shaders)
 Audio-frequency-driven scale shaders. The core set is `af_scale`, `af_scale2`, `af_scale3`, `af_scale_puple`, and `af_scale_spectrum`; newer additions include `af_scale2_dark`, `af_scale2_react`, `af_scale_pulse`, and 51 `af_scale-cache-*` temporal variants. They scale, fold, or layer the frame using amplitude, spectrum energy, and (for cache variants) frame history.
 
 ---
 
-## Frame Cache & Spectrum History
+### Frame Cache & Spectrum History
 
 ACMX2 now exposes both histories as array textures. The array form keeps the complete ring on one texture unit, supports a runtime-selected depth, and avoids moving every stored frame when the ring advances. The older fixed sampler names are retained only as a compatibility mode.
 
-### Frame history (`history`)
+#### Frame history (`history`)
 
 Current array-cache shaders declare:
 
@@ -223,7 +151,7 @@ Enable this interface with `--texture-cache --texture-cache-array`. The cache st
 
 Legacy mode (without `--texture-cache-array`) binds separate `sampler2D` values. `samp1` is the oldest entry and `samp8` is the newest for the default eight-frame cache. `textures[SIZE]` is the scalable legacy array-of-samplers spelling with the same oldest-to-newest ordering. These declarations are not interchangeable with `sampler2DArray history`: use the representation selected by the host. New shaders in this repository use `history` and `history_head`.
 
-### Spectrum history (`spectrum_history`)
+#### Spectrum history (`spectrum_history`)
 
 The live FFT remains available through `sampler1D spectrum`; `spectrum0` is an alias of that same current-spectrum texture. Historical FFT frames now use a runtime-sized 1-D array texture:
 
@@ -273,19 +201,19 @@ float histEnergy(float freq) {
 
 ---
 
-## New Shader Families (Added 2026)
+### New Shader Families (Added 2026)
 
-### `ant_cache_spectrum8_*` series (35 shaders)
+#### `ant_cache_spectrum8_*` series (35 shaders)
 Audio-reactive shaders that combine frame history (`history`) with FFT history (`spectrum_history`). Each shader has a distinct visual theme but shares the same feedback architecture: the frame cache is used for zoom/rotate layering and FFT history modulates per-layer hue shift, zoom depth, and rotation speed. The `spectrum8` part of the family name is historical; shaders use the runtime array interfaces described above. All use `iTime` for smooth animation.
 
 Members: `acid_rain`, `caustic_storm`, `chromatic_pulse`, `cosmic_web`, `echo_quad_mirror`, `fractal`, `fractal_xor_fold`, `galaxy_swirl`, `geometric_polar`, `glitch_boil`, `glitch_storm`, `hex_grid`, `holographic`, `kaleido_sin_osc`, `kaleidoscope`, `lava_flow`, `lightning`, `liquid_light`, `mandala`, `mirror_tile_rotor`, `neon_grid`, `neural`, `oilslick`, `plasma`, `radial_echo`, `spectrum_rings`, `starburst`, `strobe_tunnel`, `tremor_storm`, `tunnel`, `vignette_calm`, `voronoi_pulse`, `vortex`, `warp_drive`, `zebra_wave`.
 
-### `ant_peak_inversion_cache_spectrum_time_*` series (25 shaders)
+#### `ant_peak_inversion_cache_spectrum_time_*` series (25 shaders)
 Built on the same architecture as `ant_cache_spectrum8_*` but with effects tuned to be approximately 5× more intense. Historical FFT energy is accumulated across the available spectrum-history layers and then used with large multipliers for zoom collapse, rotation snap, and color inversion. Uses `iTime`. Adds hard peak inversion (`mix(color, 1-color, ...)`) at `amp_peak` thresholds.
 
 Members: `acid_rain_flood`, `caustic_drowning`, `chromatic_quake`, `fractal_inferno`, `galaxy_devourer`, `glitch_apocalypse`, `hex_seizure`, `hologram_collapse`, `hyperspace_tunnel`, `kaleidoscope_storm`, `lightning_god`, `magma_eruption`, `mandala_pulse`, `neon_grid_inferno`, `neural_overload`, `oilslick_meltdown`, `plasma_furnace`, `radial_echo_chamber`, `spectrum_visualizer`, `starburst_supernova`, `strobe_void`, `voronoi_seizure`, `vortex_singularity`, `warp_drive_overload`, `zebra_riot`.
 
-### `ant_time_f_color_*` series (25 shaders)
+#### `ant_time_f_color_*` series (25 shaders)
 A family that makes frame and FFT history **visually obvious and structural**: history is the primary compositional device rather than a subtle modifier. It uses `time_f`, which ACMX2 wraps at `65536 × 2π` to preserve useful continuity for trigonometric and `mod()` animation. The original effects were designed around eight cached frames and eight FFT ages; ACMX2 maps those logical indices through the array heads.
 
 | Shader | How history is shown |
@@ -316,7 +244,7 @@ A family that makes frame and FFT history **visually obvious and structural**: h
 | `spectrogram_paint` | Full 2-D spectrogram (x = frequency, y = age 0–7) |
 | `holo_replay` | 9 transparent holographic layers with chromatic aberration per layer |
 
-### Additional 2026 shader families
+#### Additional 2026 shader families
 
 These newer families extend the collection with high-detail, audio-reactive, cache-driven, and gameplay-oriented effects. The filename prefix identifies the shared rendering approach; the remainder of each name describes that shader's visual theme.
 
@@ -346,7 +274,7 @@ These newer families extend the collection with high-detail, audio-reactive, cac
 | `water_hq_*` | 25 | High-quality, time-animated water refraction effects that preserve the input alpha and use mirrored UVs for safe edge sampling. The numbered set covers caustic shallows, ocean swell, rain ripples, glass refraction, currents, whirlpools, droplet lenses, shoreline, storm water, waterfall, and coral-lagoon looks using only `samp` and `time_f`. |
 | `xor_code_*` | 15 | Byte-level XOR color transforms combined with procedural spatial masks. Includes bit-plane, halftone, circuit, kaleidoscope, feedback, solarized, and smooth pastel/prismatic variants. |
 
-### Cache-array shader families not covered above
+#### Cache-array shader families not covered above
 
 The following current families use `--texture-cache-array`; audio-reactive members additionally require audio and spectrum-history buffers. They use `history`/`history_head` and, where applicable, `spectrum_history`/`spectrum_history_head`/`spectrum_history_size`.
 
@@ -364,13 +292,13 @@ The following current families use `--texture-cache-array`; audio-reactive membe
 
 Recent standalone array-cache additions include `acid-crown-cache`, `darkstar_trail_cache`, `glitch-dragon-cache`, `phantom_drift_cache`, `spectrum-cache-breathe`, `trail-cache-blur`, `trail-cache-expand`, `trail-cache-realism`, `trail-cache-vibration`, `warp_cache`, and `warp_cache_intense`. Recent non-array additions that were previously absent from this overview include `af_scale2_dark`, `darkstar_cache`, `mirror-repeat`, and the 80-member `pilot_effect_*` family.
 
-### Library manifests and omitted files
+#### Library manifests and omitted files
 
 `index.txt` and `library.json` currently contain the same 2,773 main-library fragment shaders. The 205 shaders under `material/` are overlay/material programs and are intentionally managed separately rather than listed in the main shader manifest. `M/material.glsl`, `P/purple_material.glsl`, and the root `vertex.glsl` are support programs, not selectable fragment effects.
 
 Two selectable-looking fragment files are present on disk but missing from both main manifests: `D/DigitalLight.glsl` and `D/DigitalLightStorm.glsl`. They will not appear during normal library navigation unless the manifests are regenerated or the files are loaded directly with `--fragment`. Both also use the legacy `uamp` name as if it were instantaneous amplitude; current ACMX2 supplies audio sensitivity in `uamp`, so their audio response does not match their source comments.
 
-### Other recent additions
+#### Other recent additions
 
 | Shaders | Description |
 |---------|-------------|
@@ -384,25 +312,25 @@ Two selectable-looking fragment files are present on disk but missing from both 
 | `mirror-wrap-scale`, `pond`, `tunnel_x` | A scaled mirror-wrap, an extreme mouse/audio/cache-driven water ripple, and a tunnel distortion. |
 | `vhs-color-mode` | A sharpened cyan-shadow/magenta-highlight VHS grade with chroma styling and analog noise. |
 
-### `crystal*` series
+#### `crystal*` series
 Crystal lattice / refraction overlays — `crystal`, `crystal-2`, `crystal-3`, `crystal-4`, `crystalball`, `crystalbend`, `crystalblend2`, `crystalprism`. Faceted UV reflections, often combined with chromatic dispersion.
 
-### `plasma*` series
+#### `plasma*` series
 Classic plasma-field overlays — `plasma`, `plasma2`, `plasma3`, `plasma_prism`, `plasma_rainbow`, `plasma_xor`. Sine-mixed sample positions yield the canonical demo-scene plasma color field.
 
-### `comb3*` series
+#### `comb3*` series
 Three-tap comb-filter / lattice samplers (`comb3`, `comb3-frac-mouse`, `comb3-frac-mouse2`, `comb3_geo_mouse`, `comb3_mouse`). Sample the input at three offset positions and recombine — pointer-controlled in `_mouse` variants.
 
-### `composite*` series
+#### `composite*` series
 NTSC / CRT / VHS composite-video emulators: `composite`, `composite-static`, `composite2`, `composite3`, `composite_crt`, `composite_vhs`, `composite_vhs_flat`. Each adds chroma bleed, scanlines, and noise characteristic of analog signal degradation.
 
-### `pong-atan*` series
+#### `pong-atan*` series
 ATAN-based wave shapers reminiscent of CRT scope output: `pong-ataan-ex`, `pong-atan`, `pong-atan2`, `pong-atan3`, `pong_tex`. Polar-coordinate atan2 warps create rolling wave bands across the frame.
 
-### `fat-*` series
+#### `fat-*` series
 Thick / blocky color variants: `fat`, `fat-blue`, `fat-green`, `fat-red`, `fat-rgb`, `fat-slow`. Quantize and saturate the frame into chunky color regions.
 
-### Smaller named families
+#### Smaller named families
 Each of these is a small set (3–6 shaders) following the same naming pattern:
 
 | Family | Members | Description |
@@ -420,17 +348,17 @@ Each of these is a small set (3–6 shaders) following the same naming pattern:
 | `gpt*` | `gpt_echo`, `gptswirl`, … | AI-generated / experimental shaders. |
 | `dream*`, `ghost*`, `magic*`, `light*`, `lightfade*` | various | Atmospheric soft-glow overlays. |
 
-### Standalone named shaders
+#### Standalone named shaders
 Notable individual shaders not part of a family that may not be in the categories above: `wormhole`, `tornado`, `tridim`, `triwavedistort`, `twirl`, `twarp`, `twarp2`, `tv`, `weirdlines`, `whirlx`, `wlight`, `wrap`, `wspiral`, `xcordstrobe`, `yin`, `zigzag`, `today`, `timeval`, `underwaterenchanced`. Each is a single-file effect — see the source for specific behavior.
 
-### `material/` folder additions
+#### `material/` folder additions
 Beyond the blending categories listed earlier, the `material/` folder also contains many less-common compositors. Patterns include `material_*_xor`, `material_*_blend`, `material_*_alpha`, `material_*_strobe`, and effect-specific variants such as `material_psychedelic`, `material_underwater`, `material_ripple`, `material_matrix`, `material_energy`, `material_pencil_*`. Most expect both `samp` (current frame) and `mat_samp` (overlay texture) plus `mat_size` and `image_pos`.
 
-## Uniforms Reference
+### Fragment-shader uniforms reference
 
 The shaders in this collection expect the uniforms listed below. Not every shader uses every uniform — most use a small subset (typically `samp`, `time_f`, `iResolution`, and optionally `iMouse` or one of the `amp_*` audio uniforms). Hosts loading these shaders should provide whichever of these uniforms are referenced by the shader being run.
 
-### Core Inputs
+#### Core Inputs
 
 | Uniform | Type | Description |
 |---------|------|-------------|
@@ -444,14 +372,14 @@ The shaders in this collection expect the uniforms listed below. Not every shade
 | `iDate` | `vec4` | Wall-clock date packed as `(year, month, day, seconds-since-midnight)`. |
 | `time_speed` | `float` | Multiplier controlling the rate at which `time_f` advances (used by hosts that scrub or accelerate animation). |
 
-### Mouse / Pointer
+#### Mouse / Pointer
 
 | Uniform | Type | Description |
 |---------|------|-------------|
 | `iMouse` | `vec2` / `vec4` | Mouse position. As `vec2`: current pointer in pixels. As `vec4`: `(xy = current position, zw = last click position; z/w sign indicates button state)`. |
 | `iMouseClick` | `vec2` | Position of the last mouse click in pixels. |
 
-### Additional Texture Samplers
+#### Additional Texture Samplers
 
 Some shaders blend, echo, or composite multiple textures. Hosts should bind these as needed.
 
@@ -466,7 +394,7 @@ Some shaders blend, echo, or composite multiple textures. Hosts should bind thes
 | `mat_size` | `vec2` | Pixel dimensions of `mat_samp`. |
 | `image_pos` | `vec2` | Position offset (in pixels or normalized coords) at which the material texture should be placed. |
 
-### Audio Reactivity
+#### Audio Reactivity
 
 Shaders that respond to live audio expect any subset of these. Values are typically in the range `[0.0, 1.0]` unless noted.
 
@@ -490,7 +418,7 @@ Shaders that respond to live audio expect any subset of these. Values are typica
 | `iChannelTime[4]` | `float[4]` | Playback time for each texture channel (Shadertoy-compatible). |
 | `iChannelResolution[4]` | `vec3[4]` | Resolution of each texture channel. |
 
-### Color / Channel Controls
+#### Color / Channel Controls
 
 Used by shaders that expose per-channel mixing, fading, or alpha blending.
 
@@ -505,7 +433,7 @@ Used by shaders that expose per-channel mixing, fading, or alpha blending.
 | `inc_value`, `inc_valuex` | `vec4` | Color/parameter offsets accumulated per frame (used by stateful color-shift shaders). |
 | `optx` | `vec4` | Generic 4-component option vector (shader-specific). |
 
-### Effect / Animation Parameters
+#### Effect / Animation Parameters
 
 Common tweak knobs exposed by individual effects.
 
@@ -523,7 +451,7 @@ Common tweak knobs exposed by individual effects.
 | `index_value` | `float` | Discrete index input (selector for palettes, modes, etc.). |
 | `restore_black` | `float` | Toggle (0/1) used by the "strip black / restore black" pipeline so cropped letterboxing can be re-applied after a color-altering pass. |
 
-### 3-D / Geometry (rarely used)
+#### 3-D / Geometry (rarely used)
 
 A handful of shaders expect a model-view-projection setup for vertex transforms.
 
@@ -531,6 +459,83 @@ A handful of shaders expect a model-view-projection setup for vertex transforms.
 |---------|------|-------------|
 | `mv_matrix` | `mat4` | Model-view matrix. |
 | `proj_matrix` | `mat4` | Projection matrix. |
+
+## Compute Shaders (`compute/*.comp`)
+
+The `compute/` directory is a separate collection of **182 image-processing compute shaders**. Every file targets GLSL 4.30, reads a source texture, and writes an opaque result directly to a binding-0 `rgba16f` image. Compute shaders are useful for effects that benefit from integer pixel addressing, shared workgroup memory, atomics, or explicit synchronization; they are not part of the fragment-shader manifests or uniform reference above.
+
+### Compute families
+
+| Family | Count | Workgroup | Description |
+|--------|------:|-----------|-------------|
+| `acidcam_000_*` – `acidcam_049_*` | 50 | 16×16 | Pixel, mirror, color, convolution, morphology, warp, noise, gradient, and temporal effects. |
+| `acidcam_050_*` – `acidcam_099_*` | 50 | 16×16 | Digital glitches including datamoshing, packet loss, channel displacement, block corruption, scanline failure, address scrambling, and terminal-meltdown styles. |
+| `acidcam_100_*` – `acidcam_149_*` | 50 | 16×16 | Channel sorting and shuffling, random-pixel and bar effects, strobe/XOR processing, RGB and mirror variants, line blending, and gradient corruption. |
+| `code-compute-cache-*` | 25 | 8×8 | Cache-aware cooperative effects using shared tiles, barriers, reductions, scans, sorting, histograms, or atomics. Examples include optical-flow trails, reaction-diffusion memory, tile-histogram prism, bitonic luminance shuffle, and wavefront propagation. |
+| Standalone utilities | 7 | 16×16 | `compute_blur`, `compute_temporal_blend_cache`, the `metalmedianblend_*` and `xorblend_*` pairs, and `square_block_resize_dir_cache`. |
+
+Thirty-seven shaders are frame-cache-aware: eight `acidcam_000_*`–`acidcam_049_*` shaders, all 25 `code-compute-cache-*` shaders, and four standalone `_cache` utilities. The remaining 145 shaders use only the current source frame.
+
+### Compute host interface
+
+Every compute shader declares this core interface:
+
+```glsl
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in; // 8x8 for code-compute-cache-*
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+```
+
+Bind the current input texture to `samp` and a distinct `GL_RGBA16F` texture to image unit 0. Do not read from and write to the same texture in one dispatch. Every shader bounds-checks its global invocation against the output image size, so the host can round dispatch dimensions up to a whole workgroup:
+
+```cpp
+// Use 8 for both values when dispatching code-compute-cache-* shaders.
+const GLuint localX = 16;
+const GLuint localY = 16;
+glDispatchCompute((width  + localX - 1) / localX,
+                  (height + localY - 1) / localY,
+                  1);
+glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT |
+                GL_TEXTURE_FETCH_BARRIER_BIT);
+```
+
+The barrier makes writes visible to later image operations and texture sampling. The 25 `code-compute-cache-*` shaders also synchronize invocations inside each 8×8 workgroup, so dispatch them with the workgroup size compiled into the shader.
+
+Set only the optional uniforms declared by the selected file. Across the current collection these are `alpha` (152 shaders), `iFrame` (104), `time_f` (55), `iResolution` (10), and `iTime` (6). A uniform can occur alongside any of the others. `alpha` is effect-specific and may control blending, block size, thresholds, or general intensity rather than output transparency; all current compute shaders write alpha as 1.0.
+
+### Compute frame history
+
+The 37 cache-aware compute shaders support two compile-time frame-history representations. `SIZE` is the cache depth (default 8), and `USE_HISTORY_TEXTURE_ARRAY` selects the interface:
+
+```glsl
+#ifndef SIZE
+#define SIZE 8
+#endif
+
+#ifndef USE_HISTORY_TEXTURE_ARRAY
+#define USE_HISTORY_TEXTURE_ARRAY 0
+#endif
+
+#if USE_HISTORY_TEXTURE_ARRAY
+uniform sampler2DArray history;
+uniform int history_head;
+#else
+uniform sampler2D textures[SIZE];
+#endif
+```
+
+- With `USE_HISTORY_TEXTURE_ARRAY=0` (the default), bind `textures[0]` through `textures[SIZE - 1]` in logical oldest-to-newest order.
+- With `USE_HISTORY_TEXTURE_ARRAY=1`, bind the array texture to `history` and set `history_head` to the physical layer containing logical index 0, the oldest retained frame. Shaders map logical index `i` to `(history_head + i) % SIZE`.
+- Compile `SIZE` to match the number of bound history entries. The cooperative `code-compute-cache-*` effects use at most the first eight logical history frames even when `SIZE` is larger.
+
+The current input remains the separate `samp` texture and is not an additional history entry.
+
+### Compute manifests
+
+`compute/library.json` is the complete version-1 compute manifest and lists all 182 `.comp` files. The legacy `compute/index.txt` currently lists 82 files: `acidcam_000_*`–`acidcam_049_*`, the seven standalone utilities, and the 25 `code-compute-cache-*` shaders. It does not currently include `acidcam_050_*`–`acidcam_149_*`; use the JSON manifest or enumerate `compute/*.comp` when the complete collection is required. Files named `.shader_cache_*`, if present, are generated cache artifacts rather than shader sources.
 
 ## License
 
