@@ -1,0 +1,54 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+const float TAU = 6.28318530718;
+
+float hash11(float value) {
+    return fract(sin(value * 127.31) * 43758.5453);
+}
+
+vec3 source_at(vec2 position, ivec2 size) {
+    vec2 bounded_position = clamp(position, vec2(0.0), vec2(size - 1));
+    return textureLod(samp, (bounded_position + 0.5) / vec2(size), 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size)))
+        return;
+
+    float strength = clamp(alpha, 0.0, 1.0);
+    vec2 center = vec2(size) * 0.5;
+    vec2 delta = vec2(position) - center;
+    float radius = length(delta);
+    float angle = atan(delta.y, delta.x);
+    float slice_width = TAU / 10.0;
+    float slice = floor((angle + 0.5 * TAU) / slice_width);
+    float local_angle = mod(angle + 0.5 * TAU, slice_width);
+    local_angle = abs(local_angle - 0.5 * slice_width);
+
+    float frame_step = floor(float(iFrame) / 5.0);
+    float random_value = hash11(slice * 19.0 + frame_step);
+    float angle_error = (random_value - 0.5) * 0.75 * strength;
+    float radial_error = (hash11(slice * 43.0 + frame_step) - 0.5) *
+                         min(vec2(size).x, vec2(size).y) * 0.18 * strength;
+    vec2 sample_position = center +
+                           vec2(cos(local_angle + angle_error),
+                                sin(local_angle + angle_error)) *
+                               (radius + radial_error);
+
+    float channel_shift = (random_value - 0.5) * 30.0 * strength;
+    vec2 tangent = vec2(-sin(local_angle), cos(local_angle));
+    vec3 color;
+    color.r = source_at(sample_position + tangent * channel_shift, size).r;
+    color.g = source_at(sample_position, size).g;
+    color.b = source_at(sample_position - tangent * channel_shift, size).b;
+    imageStore(outputImage, position, vec4(clamp(color, 0.0, 1.0), 1.0));
+}

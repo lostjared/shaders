@@ -1,0 +1,44 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+float hash11(float value) {
+    return fract(sin(value * 73.156) * 43758.5453);
+}
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return texelFetch(samp, position, 0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size)))
+        return;
+
+    float strength = clamp(alpha, 0.0, 1.0);
+    int band_height = max(3, int(mix(28.0, 5.0, strength)));
+    int band = position.y / band_height;
+    float frame_step = floor(float(iFrame) / 4.0);
+    float random_value = hash11(float(band) * 31.0 + frame_step);
+    int tear = int((random_value - 0.5) * float(size.x) * 0.22 * strength);
+    int phase = max(1, int(3.0 + 18.0 * strength));
+
+    ivec2 red_position = position + ivec2(tear + phase, 0);
+    ivec2 green_position = position + ivec2(tear / 3, 0);
+    ivec2 blue_position = position + ivec2(tear - phase, 0);
+    vec3 color = vec3(source_at(red_position, size).r,
+                      source_at(green_position, size).g,
+                      source_at(blue_position, size).b);
+
+    float tear_edge = step(float(band_height - 2), float(position.y % band_height));
+    vec3 inverted = vec3(1.0) - color.brg;
+    color = mix(color, inverted, tear_edge * step(0.76, random_value) * strength);
+    imageStore(outputImage, position, vec4(clamp(color, 0.0, 1.0), 1.0));
+}

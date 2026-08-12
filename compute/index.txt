@@ -10,11 +10,13 @@ acidcam_08_horizontal_mirror.comp
 acidcam_09_vertical_mirror.comp
 acidcam_10_kaleidoscope.comp
 acidcam_11_dynamic_kaleidoscope.comp
+acidcam_12_kaleido_slice_glitch.comp
 acidcam_13_posterize.comp
 acidcam_14_threshold.comp
 acidcam_15_gamma_darken.comp
 acidcam_16_brightness_contrast.comp
 acidcam_17_sepia.comp
+acidcam_18_chroma_phase_tear.comp
 acidcam_19_hue_rotate.comp
 acidcam_20_saturate.comp
 acidcam_21_desaturate.comp
@@ -32,6 +34,7 @@ acidcam_32_twirl.comp
 acidcam_33_zoom_pulse.comp
 acidcam_34_crosshatch.comp
 acidcam_35_noise_grain.comp
+acidcam_36_noise_block_displacement.comp
 acidcam_37_scanline_xor.comp
 acidcam_38_block_shuffle.comp
 acidcam_39_diagonal_slice.comp
@@ -42,6 +45,7 @@ acidcam_43_row_blend_cache.comp
 acidcam_44_column_blend_cache.comp
 acidcam_45_color_cycle.comp
 acidcam_46_gradient_ramp.comp
+acidcam_47_gradient_bit_corruption.comp
 acidcam_48_xor_grid.comp
 acidcam_49_mirror_trail_cache.comp
 compute_blur.comp
