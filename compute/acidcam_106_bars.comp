@@ -1,0 +1,10 @@
+#version 430 core
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+uniform sampler2D samp; uniform float alpha; uniform int iFrame;
+vec3 source_at(ivec2 p, ivec2 s) { return texelFetch(samp, clamp(p, ivec2(0), s - 1), 0).rgb; }
+void main() {
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy), s = imageSize(outputImage); if (any(greaterThanEqual(p, s))) return;
+    vec3 src = source_at(p, s), bars = src; int channel = (p.x / 3 + iFrame / 6) % 3; if ((p.x % 3) == 0) bars[channel] = 1.0;
+    imageStore(outputImage, p, vec4(mix(src, bars, alpha), 1.0));
+}

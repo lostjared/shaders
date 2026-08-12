@@ -1,0 +1,10 @@
+#version 430 core
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+uniform sampler2D samp; uniform float alpha; uniform float time_f;
+vec3 source_at(ivec2 p, ivec2 s) { return texelFetch(samp, clamp(p, ivec2(0), s - 1), 0).rgb; }
+void main() {
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy), s = imageSize(outputImage); if (any(greaterThanEqual(p, s))) return;
+    ivec2 q = ivec2(s.x - 1 - p.x, p.y); vec3 blur = vec3(0.0); for (int y = -1; y <= 1; ++y) for (int x = -1; x <= 1; ++x) blur += source_at(q + ivec2(x, y), s); blur /= 9.0;
+    float gamma_value = 0.55 + 1.65 * (0.5 + 0.5 * sin(time_f)); imageStore(outputImage, p, vec4(mix(source_at(p, s), pow(max(blur, 0.0), vec3(gamma_value)), alpha), 1.0));
+}

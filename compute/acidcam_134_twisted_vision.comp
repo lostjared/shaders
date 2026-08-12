@@ -1,0 +1,10 @@
+#version 430 core
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+uniform sampler2D samp; uniform float alpha; uniform float time_f;
+vec3 source_at(ivec2 p, ivec2 s) { return texelFetch(samp, clamp(p, ivec2(0), s - 1), 0).rgb; }
+void main() {
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy), s = imageSize(outputImage); if (any(greaterThanEqual(p, s))) return;
+    vec2 center = (vec2(s) - 1.0) * 0.5, d = vec2(p) - center; float radius = length(d), angle = atan(d.y, d.x) + sin(radius * 0.025 - time_f * 2.0) * alpha;
+    ivec2 q = ivec2(center + vec2(cos(angle), sin(angle)) * radius); imageStore(outputImage, p, vec4(source_at(q, s), 1.0));
+}

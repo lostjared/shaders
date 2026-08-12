@@ -1,0 +1,10 @@
+#version 430 core
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+uniform sampler2D samp; uniform float alpha; uniform int iFrame;
+vec3 source_at(ivec2 p, ivec2 s) { return texelFetch(samp, clamp(p, ivec2(0), s - 1), 0).rgb; }
+void main() {
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy), s = imageSize(outputImage); if (any(greaterThanEqual(p, s))) return;
+    vec3 src = source_at(p, s); int mode = (iFrame / 4) % 3; vec3 shuffled = mode == 0 ? src.gbr : mode == 1 ? src.brg : 1.0 - src.rbg;
+    imageStore(outputImage, p, vec4(mix(src, shuffled, alpha * 0.5), 1.0));
+}
