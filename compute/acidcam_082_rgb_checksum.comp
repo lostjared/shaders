@@ -9,7 +9,7 @@ uniform int iFrame;
 
 vec3 source_at(ivec2 position, ivec2 size) {
     position = clamp(position, ivec2(0), size - 1);
-    return texelFetch(samp, position, 0).rgb;
+    return textureLod(samp, (vec2(position) + 0.5) / vec2(size), 0.0).rgb;
 }
 
 void main() {

@@ -2,7 +2,7 @@
 layout(local_size_x = 16, local_size_y = 16) in;
 layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
 uniform sampler2D samp; uniform float alpha; uniform int iFrame;
-vec3 source_at(ivec2 p, ivec2 s) { return texelFetch(samp, clamp(p, ivec2(0), s - 1), 0).rgb; }
+vec3 source_at(ivec2 p, ivec2 s) { p = clamp(p, ivec2(0), s - 1); return textureLod(samp, (vec2(p) + 0.5) / vec2(s), 0.0).rgb; }
 float hash(vec2 p) { return fract(sin(dot(p, vec2(83.1, 29.7))) * 43758.5453); }
 void main() {
     ivec2 p = ivec2(gl_GlobalInvocationID.xy), s = imageSize(outputImage); if (any(greaterThanEqual(p, s))) return;
