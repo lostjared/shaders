@@ -1,0 +1,34 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+float hash11(float value) {
+    return fract(sin(value * 91.3458) * 47453.5453);
+}
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return texelFetch(samp, position, 0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    int band = position.y / 3;
+    float noise = hash11(float(band + iFrame / 4));
+    float dropout = step(mix(0.98, 0.58, alpha), noise);
+    int source_y = (band * 17 + iFrame * 3) % max(size.y, 1);
+    ivec2 smear_position = ivec2(position.x + int((noise - 0.5) * 100.0), source_y);
+    vec3 source = source_at(position, size);
+    vec3 smear = source_at(smear_position, size);
+    float dash = step(0.35, fract(float(position.x) / mix(80.0, 9.0, alpha) + noise));
+    vec3 color = mix(source, smear * (0.55 + 0.45 * dash), dropout * alpha);
+    imageStore(outputImage, position, vec4(color, 1.0));
+}

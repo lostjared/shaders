@@ -1,0 +1,31 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform float time_f;
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return texelFetch(samp, position, 0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    vec3 source = source_at(position, size);
+    float luma = dot(source, vec3(0.299, 0.587, 0.114));
+    float threshold = 0.5 + sin(float(position.y) * 0.037 + time_f * 4.0) * 0.22;
+    float binary = step(threshold, luma);
+    int direction = binary > 0.5 ? 1 : -1;
+    int tear = int((abs(luma - threshold) + 0.08) * 180.0 * alpha) * direction;
+    vec3 shifted = source_at(position + ivec2(tear, direction * (position.y % 5)), size);
+    vec3 duotone = binary > 0.5 ? shifted.brg : shifted.grb * 0.22;
+    float boundary = 1.0 - smoothstep(0.0, 0.08, abs(luma - threshold));
+    vec3 color = mix(source, duotone + vec3(boundary * 0.25), alpha);
+    imageStore(outputImage, position, vec4(color, 1.0));
+}

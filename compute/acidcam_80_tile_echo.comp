@@ -1,0 +1,29 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform float time_f;
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return texelFetch(samp, position, 0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    ivec2 tile_size = ivec2(32);
+    ivec2 tile = position / tile_size;
+    float phase = float(tile.x * 5 + tile.y * 11) + time_f * 4.0;
+    ivec2 step_offset = ivec2(cos(phase), sin(phase)) * int(8.0 + 36.0 * alpha);
+    vec3 color = source_at(position, size);
+    color = mix(color, source_at(position + step_offset, size).gbr, alpha * 0.42);
+    color = mix(color, source_at(position + step_offset * 2, size).brg, alpha * 0.28);
+    color = mix(color, source_at(position + step_offset * 3, size), alpha * 0.18);
+    imageStore(outputImage, position, vec4(color, 1.0));
+}

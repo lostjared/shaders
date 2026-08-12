@@ -1,0 +1,31 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return texelFetch(samp, position, 0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    int lane = position.y / 6;
+    int phase = (lane * 13 + iFrame) & 63;
+    int direction = ((lane & 1) == 0) ? 1 : -1;
+    int braid = int(sin(float(position.x) * 0.035 + float(phase) * 0.21) * 18.0 * alpha);
+    ivec2 sample_position = position + ivec2(direction * (phase + braid), braid / 3);
+    vec3 source = source_at(position, size);
+    vec3 shifted = source_at(sample_position, size);
+    int bit = (position.x + lane + iFrame / 3) & 7;
+    float gate = float(bit < int(2.0 + alpha * 5.0));
+    vec3 color = mix(source, shifted.gbr, gate * alpha);
+    imageStore(outputImage, position, vec4(color, 1.0));
+}

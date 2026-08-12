@@ -1,0 +1,31 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return texelFetch(samp, position, 0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    int band = position.y / 12;
+    int phase = (band * 7 + iFrame / 2) % 61;
+    int drift = int(sin(float(phase) * 0.31) * 45.0 * alpha);
+    vec3 channels = vec3(source_at(position + ivec2(drift, 0), size).r,
+                         source_at(position - ivec2(drift / 2, 0), size).g,
+                         source_at(position + ivec2(0, drift / 3), size).b);
+    vec3 levels = vec3(3.0 + float(phase % 5), 4.0 + float((phase + 2) % 6),
+                       2.0 + float((phase + 4) % 7));
+    vec3 quantized = floor(channels * levels + 0.5) / levels;
+    vec3 source = source_at(position, size);
+    imageStore(outputImage, position, vec4(mix(source, quantized, alpha), 1.0));
+}

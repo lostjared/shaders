@@ -1,0 +1,39 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+uint hash_u32(uint value) {
+    value ^= value >> 16;
+    value *= 0x7feb352du;
+    value ^= value >> 15;
+    value *= 0x846ca68bu;
+    return value ^ (value >> 16);
+}
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return texelFetch(samp, position, 0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    ivec2 tile_size = ivec2(20);
+    ivec2 tile_count = max((size + tile_size - 1) / tile_size, ivec2(1));
+    ivec2 tile = position / tile_size;
+    uint key = uint(tile.x + tile.y * tile_count.x) ^ uint(iFrame / 6) * 2654435761u;
+    uint shuffled = hash_u32(key);
+    ivec2 source_tile = ivec2(int(shuffled % uint(tile_count.x)),
+                              int((shuffled >> 16) % uint(tile_count.y)));
+    ivec2 mosaic_position = source_tile * tile_size + position % tile_size;
+    float gate = step(mix(0.96, 0.30, alpha), float(shuffled & 255u) / 255.0);
+    vec3 color = mix(source_at(position, size), source_at(mosaic_position, size), gate * alpha);
+    imageStore(outputImage, position, vec4(color, 1.0));
+}

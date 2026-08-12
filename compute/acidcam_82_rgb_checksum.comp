@@ -1,0 +1,31 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return texelFetch(samp, position, 0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    vec3 source = source_at(position, size);
+    uvec3 bytes = uvec3(clamp(source, 0.0, 1.0) * 255.0);
+    uint address = uint(position.x * 131 + position.y * 197 + iFrame * 17);
+    uint checksum = bytes.r ^ (bytes.g << 1) ^ (bytes.b << 2) ^ address;
+    uint mask = (checksum >> uint((position.x + position.y) & 7)) & 7u;
+    vec3 corrupt = vec3(uvec3(bytes.r ^ (mask * 17u),
+                              bytes.g ^ (mask * 29u),
+                              bytes.b ^ (mask * 43u))) / 255.0;
+    float gate = step(mix(7.0, 2.0, alpha), float(checksum & 7u));
+    vec3 color = mix(source, corrupt, gate * alpha);
+    imageStore(outputImage, position, vec4(color, 1.0));
+}
