@@ -25,7 +25,7 @@ The `compute/` directory contains 128 image-processing compute shaders. They use
 
 | Family | Count | Workgroup | Description |
 |--------|------:|-----------|-------------|
-| `acidcam_00_*` – `acidcam_49_*` | 46 | 16×16 | Core pixel, mirror, color, convolution, morphology, warp, and temporal effects. Numbers 12, 18, 36, and 47 are not present. |
+| `acidcam_00_*` – `acidcam_49_*` | 46 | 16×16 | Core pixel, mirror, color, convolution, morphology, warp, and temporal effects. |
 | `acidcam_50_*` – `acidcam_99_*` | 50 | 16×16 | Digital-glitch effects including datamoshing, packet loss, channel displacement, block corruption, scanline failures, pixel-address scrambling, and terminal-meltdown styles. |
 | `code-compute-cache-*` | 25 | 8×8 | Cache-aware cooperative effects that use shared tiles, barriers, reductions, scans, sorting, histograms, or atomics. Examples include optical-flow trails, reaction-diffusion memory, tile histogram prism, bitonic luminance shuffle, and wavefront propagation. |
 | Standalone utilities | 7 | 16×16 | `compute_blur`, `compute_temporal_blend_cache`, the `metalmedianblend_*` and `xorblend_*` pairs, and `square_block_resize_dir_cache`. |
@@ -91,7 +91,7 @@ The current input remains the separate `samp` texture and is not an additional h
 
 ### Compute manifests
 
-`compute/library.json` lists all 128 compute shaders. `compute/index.txt` currently lists 78 and does not yet include `acidcam_50_*` through `acidcam_99_*`; hosts that need the complete compute collection should use the JSON manifest or enumerate the `.comp` files directly. `.shader_cache_*` files are generated cache artifacts, not shaders.
+`compute/library.json` and `compute/index.txt` provide manifests for the compute-shader collection. `.shader_cache_*` files are generated cache artifacts, not shaders.
 
 ## Effect Categories
 
