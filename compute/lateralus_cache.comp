@@ -1,0 +1,100 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform float alpha;
+uniform int iFrame;
+
+
+ivec2 clampPos(ivec2 p, ivec2 size) {
+    return clamp(p, ivec2(0), size - ivec2(1));
+}
+
+vec2 pixelUv(ivec2 p, ivec2 size) {
+    return (vec2(clampPos(p, size)) + 0.5) / vec2(size);
+}
+
+vec3 sampleSource(ivec2 p, ivec2 size) {
+    return textureLod(samp, pixelUv(p, size), 0.0).rgb;
+}
+
+int effectBlockSize() {
+    int fib[10] = int[](2, 3, 5, 8, 13, 21, 34, 55, 89, 144);
+    int idx = int(clamp(alpha, 0.0, 1.0) * 9.0);
+    return fib[idx];
+}
+
+#ifndef SIZE
+#define SIZE 8
+#endif
+
+#ifndef USE_HISTORY_TEXTURE_ARRAY
+#define USE_HISTORY_TEXTURE_ARRAY 0
+#endif
+
+#if USE_HISTORY_TEXTURE_ARRAY
+uniform sampler2DArray history;
+uniform int history_head;
+#else
+uniform sampler2D textures[SIZE];
+#endif
+
+vec3 sampleHistory(int index, ivec2 p, ivec2 size) {
+    vec2 uv = pixelUv(p, size);
+    index = clamp(index, 0, SIZE - 1);
+#if USE_HISTORY_TEXTURE_ARRAY
+    int layer = (history_head + index) % SIZE;
+    return textureLod(history, vec3(uv, float(layer)), 0.0).rgb;
+#else
+    return textureLod(textures[index], uv, 0.0).rgb;
+#endif
+}
+
+float getSpiral(vec2 uv, float time, float frequency) {
+    vec2 centeredUv = uv - 0.5;
+    float r = length(centeredUv);
+    float angle = atan(centeredUv.y, centeredUv.x);
+    float phi = 1.61803398875;
+    float goldenAngle = 2.0 * 3.14159 / (phi * phi);
+    float targetAngle = (r * frequency * 20.0) + angle - (time * 0.5);
+    float spiralMask = mod(targetAngle, goldenAngle);
+    float thickness = 0.05 + alpha * 0.1;
+    spiralMask = smoothstep(thickness, 0.0, abs(spiralMask - thickness * 0.5));
+    spiralMask *= smoothstep(0.5, 0.4, r) * smoothstep(0.0, 0.1, r);  
+    return spiralMask;
+}
+
+
+vec3 creativeSpiralHistory(ivec2 p, ivec2 size) {
+    vec2 uv = pixelUv(p, size);
+    float time = float(iFrame) * 0.01;
+    float frequency = float(effectBlockSize());
+    int block = effectBlockSize();
+    int blocksPerRow = (size.x + block - 1) / block;
+    int blockIndex = (p.y / block) * blocksPerRow + p.x / block;
+    int maximum = SIZE - 1;
+    int cycle = max(maximum * 2, 1);
+    int stepIndex = (iFrame + blockIndex) % cycle;
+    int textureIndex = stepIndex <= maximum ? stepIndex : cycle - stepIndex;
+    vec3 historyCol = sampleHistory(textureIndex, p, size);
+    float spiral = getSpiral(uv, time, frequency);
+    vec3 spiralColor1 = vec3(0.0, 0.2, 0.4); 
+    vec3 spiralColor2 = vec3(0.7, 0.7, 0.8); 
+    vec3 currentSpiralColor = mix(spiralColor1, spiralColor2, sin(time + frequency * 0.1) * 0.5 + 0.5);
+    vec3 sourceCol = sampleSource(p, size);
+    vec3 colorEffect = mix(sourceCol, currentSpiralColor * 1.5, spiral);
+    float pulse = sin(time * 2.0 + length(uv - 0.5) * frequency * 0.5) * 0.5 + 0.5;
+    colorEffect *= (1.0 + alpha * pulse);
+    return mix(colorEffect, historyCol, 0.5);
+}
+
+void main() {
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(p, size)))
+        return;
+    vec3 color = creativeSpiralHistory(p, size);
+    imageStore(outputImage, p, vec4(clamp(color, 0.0, 1.0), 1.0));
+}
