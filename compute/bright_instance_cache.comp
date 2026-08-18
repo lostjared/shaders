@@ -1,0 +1,102 @@
+#version 430 core
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(rgba16f, binding = 0) writeonly uniform image2D outputImage;
+
+uniform sampler2D samp;
+uniform sampler2DArray history;
+uniform int history_head;
+
+uniform int iFrame;
+uniform float time_f;
+uniform vec4 iMouse;
+
+#ifndef SIZE
+#define SIZE 8
+#endif
+
+const float TAU = 6.28318530718;
+const float PHI = 1.61803398875;
+
+// Keeps the fluid energy pulsing organically over time
+float getTimeEnergy(int i, float t) {
+    float fi = float(i);
+    float wave1 = sin(t * (1.618 + fi * 0.3));
+    float wave2 = cos(t * 0.8 - fi * 1.2);
+    return (wave1 * 0.5 + 0.5) * (wave2 * 0.5 + 0.5);
+}
+
+vec3 fetchHistory(int index, vec2 uv) {
+    index = clamp(index, 0, SIZE - 1);
+    vec2 clampedUv = clamp(uv, 0.0, 1.0);
+    int layer = (history_head + index) % SIZE;
+    return textureLod(history, vec3(clampedUv, float(layer)), 0.0).rgb;
+}
+
+void main() {
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(p, size))) return;
+
+    vec2 uv = (vec2(p) + 0.5) / vec2(size);
+    float aspect = float(size.x) / float(size.y);
+    vec2 aspectUv = (uv - 0.5) * vec2(aspect, 1.0);
+
+    float t = (time_f > 0.0) ? time_f : float(iFrame) * 0.015;
+    
+    // 1. Fetch the raw source frame for blending and anchoring
+    vec3 rawColor = textureLod(samp, clamp(uv, 0.0, 1.0), 0.0).rgb;
+    
+    // 2. Calculate luminance for the anchor
+    float luminance = dot(rawColor, vec3(0.299, 0.587, 0.114));
+    float resistance = smoothstep(0.1, 0.8, luminance);
+    float flowMod = mix(1.0, 0.1, resistance);
+
+    vec3 acc = rawColor * 0.2;
+    float accWeight = 0.2;
+
+    for(int i = 0; i < SIZE; i++) {
+        float fi = float(i);
+        float energy = getTimeEnergy(i, t);
+        
+        // Calculate the invisible gravitational center for this layer
+        float ang = fi * (TAU / PHI) + t * (0.2 + energy * 0.5);
+        float radius = 0.15 + fi * 0.04 + sin(t * 0.5 + fi) * 0.06;
+        vec2 node = radius * vec2(cos(ang), sin(ang));
+        
+        // Pull the UVs toward the invisible node, restricted by flowMod
+        float pullStrength = (0.08 + energy * 0.15) * flowMod;
+        vec2 pullUv = mix(aspectUv, node, pullStrength);
+        
+        vec2 suv = pullUv / vec2(aspect, 1.0) + 0.5;
+        
+        // Twist the UVs, also restricted by flowMod
+        float currentRot = fi * 0.02 * sin(t * 0.8) * flowMod;
+        float c_rot = cos(currentRot);
+        float s_rot = sin(currentRot);
+        vec2 centered = suv - 0.5;
+        centered = vec2(centered.x * c_rot - centered.y * s_rot, centered.x * s_rot + centered.y * c_rot);
+        suv = centered + 0.5;
+
+        // Fetch the twisted history
+        vec3 cached = fetchHistory(i, suv);
+        float weight = pow(0.82, fi);
+        
+        // Pure blending: add a slight energy brightness pulse to the history
+        vec3 layerColor = cached * (1.0 + energy * 0.25);
+        
+        // Re-inject the raw highlight to maintain structure
+        layerColor = mix(layerColor, rawColor, resistance * 0.4);
+
+        acc += layerColor * weight;
+        accWeight += weight;
+    }
+
+    acc /= accWeight;
+    
+    // Final contrast adjustment
+    acc = (acc - 0.5) * 1.15 + 0.5;
+    acc = clamp(acc, 0.0, 1.0);
+    
+    imageStore(outputImage, p, vec4(acc, 1.0));
+}
