@@ -1,6 +1,6 @@
 # GLSL Shader Collection
 
-A collection of **2900+ OpenGL GLSL fragment shaders** and **182 GLSL compute shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
+A collection of **2700+ OpenGL GLSL fragment shaders** and **182 GLSL compute shaders** for real-time video and image processing. These shaders are designed to be used as post-processing effects applied to live camera feeds, video textures, or generated visuals.
 
 ## Overview
 
