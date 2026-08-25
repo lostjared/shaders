@@ -1,0 +1,163 @@
+#version 450
+
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+#define alpha ext.u0.x
+#define history_head int(ext.u3.x)
+#define iFrame int(ext.u2.x)
+
+
+// Lateralus / Fibonacci Spiral Compute Shader
+// Based on the provided block-history buffer shader.
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+// Alpha uniform used to modulate the depth of the spiral effect/color
+
+// iFrame used for animation and driving the spiral growth/rotation
+
+
+// Original utility functions
+ivec2 clampPos(ivec2 p, ivec2 size) {
+    return clamp(p, ivec2(0), size - ivec2(1));
+}
+
+vec2 pixelUv(ivec2 p, ivec2 size) {
+    return (vec2(clampPos(p, size)) + 0.5) / vec2(size);
+}
+
+vec3 sampleSource(ivec2 p, ivec2 size) {
+    return textureLod(samp, pixelUv(p, size), 0.0).rgb;
+}
+
+// Creative modification: effectBlockSize now steps through Fibonacci numbers
+int effectBlockSize() {
+    int fib[10] = int[](2, 3, 5, 8, 13, 21, 34, 55, 89, 144);
+    // Use alpha to select which Fibonacci number defines the block size/frequency
+    int idx = int(clamp(alpha, 0.0, 1.0) * 9.0);
+    return fib[idx];
+}
+
+#ifndef SIZE
+#define SIZE 8
+#endif
+
+// Retaining history texture logic for the "spiral through time" feel
+#ifndef USE_HISTORY_TEXTURE_ARRAY
+#define USE_HISTORY_TEXTURE_ARRAY 1
+#endif
+
+#if USE_HISTORY_TEXTURE_ARRAY
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+
+#else
+uniform sampler2D textures[SIZE];
+#endif
+
+vec3 sampleHistory(int index, ivec2 p, ivec2 size) {
+    vec2 uv = pixelUv(p, size);
+    index = clamp(index, 0, SIZE - 1);
+#if USE_HISTORY_TEXTURE_ARRAY
+    int layer = (history_head + index) % SIZE;
+    return textureLod(history, vec3(uv, float(layer)), 0.0).rgb;
+#else
+    return textureLod(textures[index], uv, 0.0).rgb;
+#endif
+}
+
+// Function to generate the Fibonacci spiral mask/pattern
+// phi (Golden Ratio) = (1 + sqrt(5)) / 2 approx 1.618
+float getSpiral(vec2 uv, float time, float frequency) {
+    vec2 centeredUv = uv - 0.5;
+    float r = length(centeredUv);
+    float angle = atan(centeredUv.y, centeredUv.x);
+
+    // Fibonacci spiral equation: r = a * e^(b * theta)
+    // We use a simplified version: r = a * angle^(1/phi) or modulating angle
+    // In shaders, we map radius to expected angle for a spiral look.
+
+    // A spiral based on the Golden Angle (360 / phi^2) approx 137.5 degrees
+    // Logarithmic spiral approximation:
+    float phi = 1.61803398875;
+    float goldenAngle = 2.0 * 3.14159 / (phi * phi);
+    
+    // Calculate expected angle at this radius based on the spiral properties
+    // We also use time for slow rotation and frequency (Fibonacci number) for density
+    float targetAngle = (r * frequency * 20.0) + angle - (time * 0.5);
+
+    // Modulo the targetAngle by the golden angle to create distinct arms
+    float spiralMask = mod(targetAngle, goldenAngle);
+
+    // Smoothstep to create a line/arm effect
+    float thickness = 0.05 + alpha * 0.1;
+    spiralMask = smoothstep(thickness, 0.0, abs(spiralMask - thickness * 0.5));
+    
+    // Fade the spiral out at the edges and center
+    spiralMask *= smoothstep(0.5, 0.4, r) * smoothstep(0.0, 0.1, r);
+    
+    return spiralMask;
+}
+
+// Main processing function retaining the structure but modifying the concept
+vec3 creativeSpiralHistory(ivec2 p, ivec2 size) {
+    vec2 uv = pixelUv(p, size);
+    float time = float(iFrame) * 0.01;
+    
+    // Frequency of the spiral is determined by the Fibonacci step in alpha
+    float frequency = float(effectBlockSize());
+
+    // Original history blending logic
+    int block = effectBlockSize();
+    int blocksPerRow = (size.x + block - 1) / block;
+    int blockIndex = (p.y / block) * blocksPerRow + p.x / block;
+    int maximum = SIZE - 1;
+    int cycle = max(maximum * 2, 1);
+    int stepIndex = (iFrame + blockIndex) % cycle;
+    int textureIndex = stepIndex <= maximum ? stepIndex : cycle - stepIndex;
+    
+    // Sample history as the base color
+    vec3 historyCol = sampleHistory(textureIndex, p, size);
+    
+    // Creative part: Generate the spiral mask
+    float spiral = getSpiral(uv, time, frequency);
+    
+    // Define Lateralus-inspired colors: Deep blues, silvers, and hints of red/orange
+    vec3 spiralColor1 = vec3(0.0, 0.2, 0.4); // Deep Blue
+    vec3 spiralColor2 = vec3(0.7, 0.7, 0.8); // Silver/Grey
+    vec3 currentSpiralColor = mix(spiralColor1, spiralColor2, sin(time + frequency * 0.1) * 0.5 + 0.5);
+    
+    // Sample source image to integrate into the spiral effect (perhaps in the 'negative' space)
+    vec3 sourceCol = sampleSource(p, size);
+    
+    // Mix the spiral color with the source based on the mask
+    vec3 colorEffect = mix(sourceCol, currentSpiralColor * 1.5, spiral);
+    
+    // We add a subtle glow/pulse effect synced to the 'time' and spiral frequency
+    float pulse = sin(time * 2.0 + length(uv - 0.5) * frequency * 0.5) * 0.5 + 0.5;
+    colorEffect *= (1.0 + alpha * pulse);
+    
+    // Finally blend the new generated effect with the historical average
+    return mix(colorEffect, historyCol, 0.5);
+}
+
+void main() {
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(p, size)))
+        return;
+    
+    // Use the new creative spiral history function
+    vec3 color = creativeSpiralHistory(p, size);
+    
+    // Store the resulting color
+    imageStore(outputImage, p, vec4(clamp(color, 0.0, 1.0), 1.0));
+}

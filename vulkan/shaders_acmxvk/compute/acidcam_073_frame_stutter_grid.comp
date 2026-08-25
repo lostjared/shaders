@@ -1,0 +1,50 @@
+#version 450
+
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+#define alpha ext.u0.x
+#define iFrame int(ext.u2.x)
+
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+
+
+
+float hash12(vec2 value) {
+    return fract(sin(dot(value, vec2(121.7, 318.3))) * 43758.5453);
+}
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    vec2 uv = (vec2(position) + 0.5) / vec2(size);
+    return textureLod(samp, uv, 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    ivec2 cell_size = ivec2(24, 16);
+    ivec2 cell = position / cell_size;
+    ivec2 local_position = position % cell_size;
+    float hold = hash12(vec2(cell) + float(iFrame / 12));
+    int frozen_phase = (iFrame / (2 + int(hold * 7.0))) * (2 + int(hold * 7.0));
+    int jump_x = int((hash12(vec2(cell.y, frozen_phase)) - 0.5) * 7.0) * cell_size.x;
+    int jump_y = int((hash12(vec2(cell.x, frozen_phase + 9)) - 0.5) * 5.0) * cell_size.y;
+    float activity = step(mix(0.94, 0.48, alpha), hold);
+    ivec2 sample_position = cell * cell_size + local_position +
+                            ivec2(vec2(jump_x, jump_y) * activity);
+    vec3 color = source_at(sample_position, size);
+    imageStore(outputImage, position, vec4(color, 1.0));
+}

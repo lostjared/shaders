@@ -1,0 +1,50 @@
+#version 450
+
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+#define alpha ext.u0.x
+#define iFrame int(ext.u2.x)
+
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+
+
+
+float hash12(vec2 value) {
+    return fract(sin(dot(value, vec2(113.5, 271.9))) * 43758.5453);
+}
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return textureLod(samp, (vec2(position) + 0.5) / vec2(size), 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    vec2 center = vec2(size) * 0.5;
+    vec2 delta = vec2(position) - center;
+    float radius = length(delta);
+    float angle = atan(delta.y, delta.x);
+    vec2 polar_cell = vec2(floor(radius / 22.0), floor((angle + 3.14159265) / 0.392699));
+    float seed = hash12(polar_cell + float(iFrame / 9));
+    float angle_shift = (seed - 0.5) * 0.9 * alpha;
+    float radius_shift = (hash12(polar_cell.yx + 8.0) - 0.5) * 70.0 * alpha;
+    float shifted_angle = angle + angle_shift;
+    vec2 shifted = center + (radius + radius_shift) * vec2(cos(shifted_angle), sin(shifted_angle));
+    vec3 source = source_at(position, size);
+    vec3 polar = source_at(ivec2(shifted), size);
+    imageStore(outputImage, position, vec4(mix(source, polar, alpha * 0.88), 1.0));
+}

@@ -1,0 +1,219 @@
+#version 450
+
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+#define amp_peak ext.u2.w
+#define amp_smooth ext.u3.w
+#define history_head int(ext.u3.x)
+#define iResolution ext.u0.zw
+#define iTime ext.u0.y
+#define spectrum_history_head int(ext.audio_history.x)
+#define spectrum_history_size int(ext.audio_history.y)
+#define time_f ext.u2.y
+
+
+// Cache-driven perceptual energy field: phosphene swarm.
+layout(location = 0) in vec2 tc;
+layout(location = 0) out vec4 color;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+
+#ifndef SIZE
+#define SIZE 8
+#endif
+#ifndef CACHE_HISTORY_LAYER
+#define CACHE_HISTORY_LAYER(index) ((history_head + (index)) % SIZE)
+#endif
+layout(set = 0, binding = 3) uniform sampler1D spectrum0;
+layout(set = 0, binding = 4) uniform sampler1DArray spectrum_history;
+
+
+#ifndef SPECTRUM_HISTORY_LAYER
+#define SPECTRUM_HISTORY_LAYER(index) ((spectrum_history_head - ((index) % max(spectrum_history_size, 1)) + max(spectrum_history_size, 1)) % max(spectrum_history_size, 1))
+#endif
+
+
+
+
+
+
+const float PI = 3.14159265359;
+const float TAU = 6.28318530718;
+const float HUE_OFFSET = 0.74;
+const float DISTORTION = 1.22;
+const float PERSISTENCE = 0.80;
+
+float clockTime() {
+    return max(time_f, iTime);
+}
+
+float hash21(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+vec2 hash22(vec2 p) {
+    return fract(sin(vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)))) * 43758.5453123);
+}
+
+float noise21(vec2 p) {
+    vec2 cell = floor(p);
+    vec2 local = fract(p);
+    local = local * local * (3.0 - 2.0 * local);
+    return mix(mix(hash21(cell), hash21(cell + vec2(1.0, 0.0)), local.x),
+               mix(hash21(cell + vec2(0.0, 1.0)), hash21(cell + 1.0), local.x), local.y);
+}
+
+float fbm(vec2 p) {
+    float value = 0.0;
+    float weight = 0.5;
+    mat2 basis = mat2(0.80, -0.60, 0.60, 0.80);
+    for (int octave = 0; octave < 5; ++octave) {
+        value += noise21(p) * weight;
+        p = basis * p * 2.03 + vec2(1.7, 2.4);
+        weight *= 0.5;
+    }
+    return value;
+}
+
+vec2 mirrorUV(vec2 uv) {
+    return 1.0 - abs(mod(uv, 2.0) - 1.0);
+}
+
+vec3 perceptualPalette(float phase) {
+    vec3 wave = 0.5 + 0.5 * cos(TAU * (phase + HUE_OFFSET + vec3(0.00, 0.30, 0.66)));
+    vec3 opponent = mix(wave, wave.gbr, 0.22);
+    return clamp((opponent - 0.05) * 1.10, 0.0, 1.0);
+}
+
+vec3 toneMap(vec3 value) {
+    value = max(value, 0.0);
+    return 1.0 - exp(-value * (1.12 + value * 0.08));
+}
+
+vec4 cacheFrame(int index, vec2 uv) {
+    if (index == 0)
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(0))));
+    if (index == 1)
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(1))));
+    if (index == 2)
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(2))));
+    if (index == 3)
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(3))));
+    if (index == 4)
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(4))));
+    if (index == 5)
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(5))));
+    if (index == 6)
+        return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(6))));
+    return texture(history, vec3(uv, float(CACHE_HISTORY_LAYER(7))));
+}
+
+float spectrumHistory(int index, float frequency) {
+    if (index == 0)
+        return texture(spectrum0, frequency).r;
+    if (index == 1)
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(1)))).r;
+    if (index == 2)
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(2)))).r;
+    if (index == 3)
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(3)))).r;
+    if (index == 4)
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(4)))).r;
+    if (index == 5)
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(5)))).r;
+    if (index == 6)
+        return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(6)))).r;
+    return texture(spectrum_history, vec2(frequency, float(SPECTRUM_HISTORY_LAYER(7)))).r;
+}
+
+vec4 historyBands(int index) {
+    return vec4(spectrumHistory(index, 0.04), spectrumHistory(index, 0.22),
+                spectrumHistory(index, 0.58), spectrumHistory(index, 0.86));
+}
+
+vec3 perceptualField(vec2 p, float age, vec4 band) {
+    float t = clockTime();
+    vec2 grid = p * (7.0 + band.z * 6.0);
+    vec2 id = floor(grid);
+    vec2 local = fract(grid) - 0.5;
+    float energy = 0.0;
+    vec2 flow = vec2(0.0);
+    for (int pointIndex = 0; pointIndex < 3; ++pointIndex) {
+        vec2 seed = hash22(id + float(pointIndex) * 13.7 + age);
+        float phase = t * (0.25 + seed.x * 0.5) + seed.y * TAU + age * 0.4;
+        vec2 point = seed - 0.5 + vec2(sin(phase), cos(phase * 1.13)) * 0.18;
+        float phosphene = exp(-length(local - point) * (15.0 + band.w * 30.0));
+        energy += phosphene;
+        flow += vec2(cos(phase), sin(phase)) * phosphene;
+    }
+    float blink = 0.72 + 0.28 * sin(t * 1.8 + hash21(id) * TAU - age);
+    return vec3(energy * blink / 2.0, flow * 0.35);
+}
+
+void main(void) {
+    float aspect = max(iResolution.x, 1.0) / max(iResolution.y, 1.0);
+    vec2 aspectScale = vec2(aspect, 1.0);
+    vec2 p = (tc - 0.5) * aspectScale;
+    float eccentricity = smoothstep(0.06, 0.92, length(p));
+    vec3 live = texture(samp, tc).rgb;
+
+    vec3 accumulation = live * 0.42;
+    float totalWeight = 0.42;
+    vec4 newest = historyBands(0);
+    vec4 oldest = historyBands(7);
+    float temporalDelta = length(newest - oldest);
+
+    for (int index = 0; index < 8; ++index) {
+        float age = float(index);
+        vec4 bands = historyBands(index);
+        vec3 field = perceptualField(p, age, bands);
+        float energy = clamp(abs(field.x), 0.0, 2.0);
+        vec2 flow = clamp(field.yz, vec2(-2.0), vec2(2.0));
+
+        float breathing = 1.0 + sin(clockTime() * 0.21 - age * 0.16) * (0.006 + bands.x * 0.018);
+        vec2 historyUV = (tc - 0.5) * breathing + 0.5;
+        float peripheralGain = mix(0.45, 1.0, eccentricity);
+        historyUV += flow / aspectScale * DISTORTION * (0.007 + bands.y * 0.018) * peripheralGain;
+        historyUV = mirrorUV(historyUV);
+
+        vec3 cached = cacheFrame(index, historyUV).rgb;
+        vec3 afterimage = mix(cached, cached.gbr, 0.10 + age * 0.025);
+        vec3 fieldColor =
+            perceptualPalette(energy * 0.21 + age * 0.073 + bands.w * 0.27 + clockTime() * 0.010);
+        float luminous = pow(clamp(energy, 0.0, 1.0), 2.0);
+        vec3 layer = mix(afterimage, afterimage * fieldColor * 1.18, 0.44);
+        layer += fieldColor * luminous * (0.10 + bands.z * 0.48);
+
+        float weight = pow(PERSISTENCE, age + 1.0) * (0.46 + bands.x * 0.66 + bands.y * 0.34);
+        accumulation += layer * weight;
+        totalWeight += weight;
+    }
+
+    vec3 result = accumulation / max(totalWeight, 0.001);
+    vec3 currentField = perceptualField(p, 0.0, newest);
+    float currentEnergy = clamp(abs(currentField.x), 0.0, 1.4);
+    vec3 auraColor =
+        perceptualPalette(currentEnergy * 0.28 + temporalDelta * 0.18 + clockTime() * 0.012);
+    float aura = pow(clamp(currentEnergy, 0.0, 1.0), 2.5);
+    float fieldEdge = fwidth(currentField.x);
+
+    result = 1.0 - (1.0 - result) * (1.0 - clamp(auraColor * aura * 0.28, 0.0, 0.72));
+    result += auraColor * fieldEdge * (1.1 + newest.w * 2.2);
+    result = mix(result, live, 0.10 * (1.0 - eccentricity));
+    result *= 1.0 + clamp(amp_smooth, 0.0, 1.0) * 0.16;
+    result = toneMap(result);
+
+    float inversion =
+        smoothstep(0.72, 0.98, amp_peak) * smoothstep(0.06, 0.48, temporalDelta) * 0.64;
+    vec3 inverted = mix(vec3(1.0) - result, (vec3(1.0) - result).brg, 0.24);
+    result = mix(result, inverted, inversion);
+    color = vec4(clamp(result, 0.0, 1.0), texture(samp, tc).a);
+}
