@@ -1,0 +1,129 @@
+#version 450
+
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+#define alpha ext.u0.x
+#define history_head int(ext.u3.x)
+#define iFrame int(ext.u2.x)
+
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+
+
+
+ivec2 clampPos(ivec2 p, ivec2 size) {
+    return clamp(p, ivec2(0), size - ivec2(1));
+}
+
+vec2 pixelUv(ivec2 p, ivec2 size) {
+    return (vec2(clampPos(p, size)) + 0.5) / vec2(size);
+}
+
+vec3 renderOrbitTrap(ivec2 p, ivec2 size) {
+    vec2 uv = pixelUv(p, size);
+    float aspect = float(size.x) / float(size.y);
+    
+    // Map to complex plane and apply aspect ratio
+    vec2 c = (uv - 0.5) * 4.0;
+    c.x *= aspect;
+
+    // Use iFrame to drive the animation over time
+    float time = float(iFrame) * 0.02;
+    
+    // Create a moving Julia set coordinate
+    vec2 jc = vec2(sin(time * 0.5) * 0.8, cos(time * 0.3) * 0.8);
+
+    // Interpolate between Mandelbrot and Julia set behavior
+    vec2 z = mix(c, jc, clamp(alpha, 0.0, 1.0));
+    vec2 startC = mix(c, jc, 1.0 - clamp(alpha, 0.0, 1.0));
+
+    vec3 trap = vec3(1e20);
+
+    for (int i = 0; i < 150; ++i) {
+        z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + startC;
+
+        // Orbit traps mimic the glowing wisps of a Buddhabrot
+        trap.x = min(trap.x, length(z - vec2(sin(time), cos(time))));
+        trap.y = min(trap.y, abs(z.x + z.y));
+        trap.z = min(trap.z, length(z));
+
+        if (dot(z, z) > 16.0) {
+            break;
+        }
+    }
+
+    // Inverse distance coloring to create volumetric glow
+    vec3 col = vec3(0.0);
+    col += vec3(0.2, 0.4, 0.9) * (0.03 / (trap.x + 0.01));
+    col += vec3(0.9, 0.3, 0.1) * (0.01 / (trap.y + 0.01));
+    col += vec3(0.1, 0.8, 0.5) * (0.02 / (trap.z + 0.01));
+
+    return clamp(col, 0.0, 1.0);
+}
+
+vec3 sampleSource(ivec2 p, ivec2 size) {
+    vec3 baseTex = textureLod(samp, pixelUv(p, size), 0.0).rgb;
+    vec3 fractal = renderOrbitTrap(p, size);
+    return mix(baseTex, fractal, clamp(alpha, 0.0, 1.0));
+}
+
+int effectBlockSize() {
+    return max(int(round(mix(2.0, 64.0, clamp(alpha, 0.0, 1.0)))), 1);
+}
+
+#ifndef SIZE
+#define SIZE 8
+#endif
+
+#ifndef USE_HISTORY_TEXTURE_ARRAY
+#define USE_HISTORY_TEXTURE_ARRAY 1
+#endif
+
+#if USE_HISTORY_TEXTURE_ARRAY
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+
+#else
+uniform sampler2D textures[SIZE];
+#endif
+
+vec3 sampleHistory(int index, ivec2 p, ivec2 size) {
+    vec2 uv = pixelUv(p, size);
+    index = clamp(index, 0, SIZE - 1);
+#if USE_HISTORY_TEXTURE_ARRAY
+    int layer = (history_head + index) % SIZE;
+    return textureLod(history, vec3(uv, float(layer)), 0.0).rgb;
+#else
+    return textureLod(textures[index], uv, 0.0).rgb;
+#endif
+}
+
+vec3 squareBlockHistory(ivec2 p, ivec2 size) {
+    int block = effectBlockSize();
+    int blocksPerRow = (size.x + block - 1) / block;
+    int blockIndex = (p.y / block) * blocksPerRow + p.x / block;
+    int maximum = SIZE - 1;
+    int cycle = max(maximum * 2, 1);
+    int stepIndex = (iFrame + blockIndex) % cycle;
+    int textureIndex = stepIndex <= maximum ? stepIndex : cycle - stepIndex;
+    return mix(sampleSource(p, size), sampleHistory(textureIndex, p, size), 0.5);
+}
+
+void main() {
+    ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(p, size)))
+        return;
+        
+    vec3 color = squareBlockHistory(p, size);
+    imageStore(outputImage, p, vec4(clamp(color, 0.0, 1.0), 1.0));
+}

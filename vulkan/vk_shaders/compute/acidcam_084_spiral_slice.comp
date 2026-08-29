@@ -1,0 +1,47 @@
+#version 450
+
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+#define alpha ext.u0.x
+#define time_f ext.u2.y
+
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+
+
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return textureLod(samp, (vec2(position) + 0.5) / vec2(size), 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    vec2 center = vec2(size) * 0.5;
+    vec2 delta = vec2(position) - center;
+    float radius = length(delta);
+    float angle = atan(delta.y, delta.x);
+    float slice = floor((angle + 3.14159265) / 0.261799);
+    float radial_band = floor(radius / 18.0);
+    float phase = slice * 1.7 + radial_band * 0.9 + time_f * 2.5;
+    float rotation = sin(phase) * 0.20 * alpha;
+    mat2 rotate = mat2(cos(rotation), -sin(rotation), sin(rotation), cos(rotation));
+    vec2 displaced = rotate * delta;
+    displaced += normalize(delta + vec2(0.001)) * sin(phase * 1.3) * 28.0 * alpha;
+    vec3 source = source_at(position, size);
+    vec3 sliced = source_at(ivec2(center + displaced), size);
+    imageStore(outputImage, position, vec4(mix(source, sliced.gbr, alpha), 1.0));
+}

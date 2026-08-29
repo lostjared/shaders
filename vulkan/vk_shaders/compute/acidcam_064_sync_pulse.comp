@@ -1,0 +1,44 @@
+#version 450
+
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+#define alpha ext.u0.x
+#define time_f ext.u2.y
+
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+
+
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    vec2 uv = (vec2(position) + 0.5) / vec2(size);
+    return textureLod(samp, uv, 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    float row = float(position.y) / float(max(size.y, 1));
+    float pulse_center = fract(time_f * 0.24);
+    float pulse_distance = abs(fract(row - pulse_center + 0.5) - 0.5);
+    float pulse = smoothstep(0.055, 0.0, pulse_distance);
+    int horizontal_shift = int(sin(row * 90.0 + time_f * 8.0) * pulse * float(size.x) * 0.3 * alpha);
+    int vertical_shift = int(pulse * 14.0 * alpha);
+    ivec2 sample_position = position + ivec2(horizontal_shift, vertical_shift);
+    vec3 color = source_at(sample_position, size);
+    color += vec3(0.08, 0.22, 0.3) * pulse * alpha;
+    imageStore(outputImage, position, vec4(clamp(color, 0.0, 1.0), 1.0));
+}

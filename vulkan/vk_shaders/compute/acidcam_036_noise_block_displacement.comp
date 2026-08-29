@@ -1,0 +1,62 @@
+#version 450
+
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+#define alpha ext.u0.x
+#define iFrame int(ext.u2.x)
+
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+
+
+
+float hash12(vec2 value) {
+    return fract(sin(dot(value, vec2(127.1, 311.7))) * 43758.5453);
+}
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return textureLod(samp, (vec2(position) + 0.5) / vec2(size), 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size)))
+        return;
+
+    float strength = clamp(alpha, 0.0, 1.0);
+    ivec2 block_size = ivec2(max(4, int(mix(32.0, 8.0, strength))),
+                             max(2, int(mix(14.0, 4.0, strength))));
+    ivec2 block = position / block_size;
+    float frame_step = floor(float(iFrame) / 3.0);
+    float random_value = hash12(vec2(block) + vec2(frame_step, -frame_step * 0.37));
+    float block_gate = step(1.0 - 0.72 * strength, random_value);
+
+    int horizontal_shift = int((hash12(vec2(block.y, frame_step)) - 0.5) *
+                               float(size.x) * 0.30 * strength);
+    int vertical_shift = int((hash12(vec2(block.x, frame_step + 17.0)) - 0.5) *
+                             24.0 * strength);
+    ivec2 displaced = position + ivec2(horizontal_shift, vertical_shift) * int(block_gate);
+    vec3 source = source_at(position, size);
+    vec3 shifted = source_at(displaced, size);
+
+    float static_noise = hash12(vec2(position) + frame_step * vec2(13.0, 7.0));
+    vec3 digital_noise = vec3(static_noise,
+                              hash12(vec2(position.yx) + frame_step * 11.0),
+                              1.0 - static_noise);
+    float noise_gate = block_gate * step(0.84, hash12(vec2(block) + 41.0));
+    vec3 color = mix(source, shifted.brg, block_gate * (0.45 + 0.55 * strength));
+    color = mix(color, digital_noise, noise_gate * 0.70);
+    imageStore(outputImage, position, vec4(clamp(color, 0.0, 1.0), 1.0));
+}

@@ -1,0 +1,44 @@
+#version 450
+
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+#define alpha ext.u0.x
+#define iFrame int(ext.u2.x)
+
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+
+
+
+vec3 source_at(ivec2 position, ivec2 size) {
+    position = clamp(position, ivec2(0), size - 1);
+    return textureLod(samp, (vec2(position) + 0.5) / vec2(size), 0.0).rgb;
+}
+
+void main() {
+    ivec2 position = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(position, size))) return;
+
+    int lane = position.y / 6;
+    int phase = (lane * 13 + iFrame) & 63;
+    int direction = ((lane & 1) == 0) ? 1 : -1;
+    int braid = int(sin(float(position.x) * 0.035 + float(phase) * 0.21) * 18.0 * alpha);
+    ivec2 sample_position = position + ivec2(direction * (phase + braid), braid / 3);
+    vec3 source = source_at(position, size);
+    vec3 shifted = source_at(sample_position, size);
+    int bit = (position.x + lane + iFrame / 3) & 7;
+    float gate = float(bit < int(2.0 + alpha * 5.0));
+    vec3 color = mix(source, shifted.gbr, gate * alpha);
+    imageStore(outputImage, position, vec4(color, 1.0));
+}
