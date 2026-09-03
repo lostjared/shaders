@@ -1,0 +1,53 @@
+#version 450
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+layout(set = 0, binding = 3) uniform sampler1D spectrum;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+
+#define history_head int(ext.u3.x + 0.5)
+#define history_size max(int(ext.u3.y), 1)
+
+int get_history_layer(int delay) {
+    int layer = (history_head - delay) % history_size;
+    if (layer < 0) {
+        layer += history_size;
+    }
+    return layer;
+}
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(pixel, size)))
+        return;
+    vec2 uv = (vec2(pixel) + 0.5) / vec2(size);
+    vec4 val1 = textureLod(samp, uv, 0.0);
+    vec4 pix0 = textureLod(history, vec3(uv, float(get_history_layer(1))), 0.0);
+    vec4 pix1 = textureLod(history, vec3(uv, float(get_history_layer(4))), 0.0);
+    vec4 pix2 = textureLod(history, vec3(uv, float(get_history_layer(7))), 0.0);
+    vec4 final_color = vec4(0.0, 0.0, 0.0, 1.0);
+    bool strobe = (history_head % 2) != 0;
+    if (!strobe) {
+        final_color.r = pix2.r;
+        final_color.g = pix1.g;
+        final_color.b = pix0.b;
+    } else {
+        final_color.r = pix0.r;
+        final_color.g = pix1.g;
+        final_color.b = pix2.b;
+    }
+    final_color = mix(final_color, val1, 0.5);
+    imageStore(outputImage, pixel, final_color);
+}

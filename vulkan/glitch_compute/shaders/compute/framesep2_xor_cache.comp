@@ -1,0 +1,63 @@
+#version 450
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+
+#define history_head int(ext.u3.x + 0.5)
+#define history_size max(int(ext.u3.y), 1)
+#define time_f ext.u2.y
+#define band_size ext.custom_uniforms[6].w
+#define amp_l ext.audio_bands.x
+#define strength ext.custom_uniforms[6].y
+
+int get_history_layer(int delay) {
+    int layer = (history_head - delay) % history_size;
+    if (layer < 0) layer += history_size;
+    return layer;
+}
+
+float hash12(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(pixel, size))) return;
+    vec2 uv = (vec2(pixel) + 0.5) / vec2(size);
+    vec4 live_frame = textureLod(samp, uv, 0.0);
+    float band_height = int(band_size) + 1; 
+    band_height = band_height * (amp_l * 64.0);
+    band_height = max(band_height, 1.0);
+    int band_index = int(pixel.y / band_height);
+    int band_offset = (history_head + band_index) % history_size;
+    float slow_time = floor(time_f * 3.0);
+    float random_toggle = step(0.5, hash12(vec2(slow_time, 0.0)));
+    vec4 history_pixel = textureLod(history, vec3(uv, float(get_history_layer(band_offset))), 0.0);
+    ivec3 src_p = ivec3(live_frame.rgb * 255.0);
+    ivec3 hist_p = ivec3(history_pixel.rgb * 255.0);
+    int audio_mask = int(amp_l * 255.0) & 0xFF; 
+    ivec3 mask;
+    mask.r = audio_mask ^ ((band_index)       % 255);
+    mask.g = audio_mask ^ ((band_index + 85)  % 255);
+    mask.b = audio_mask ^ ((band_index + 170) % 255);
+    int ui_mask = int(strength * 255.0);
+    mask = mask ^ ivec3(ui_mask);
+    ivec3 x_v = src_p ^ hist_p ^ mask;
+    x_v = clamp(x_v, 0, 255);
+    vec4 final_color = vec4(vec3(x_v) / 255.0, 1.0);
+    final_color = mix(final_color, live_frame, random_toggle);
+    imageStore(outputImage, pixel, final_color);
+}

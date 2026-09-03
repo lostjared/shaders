@@ -1,0 +1,49 @@
+// diagsquarelarge
+#version 450
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+
+#define history_head int(ext.u3.x + 0.5)
+#define history_size max(int(ext.u3.y), 1)
+
+#define amp_l ext.audio_bands.x
+#define amp_p ext.u2.w
+#define alpha ext.u0.x
+
+int get_history_layer(int delay) {
+    int layer = (history_head - delay) % history_size;
+    if (layer < 0) layer += history_size;
+    return layer;
+}
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(pixel, size))) return;
+    vec2 uv = (vec2(pixel) + 0.5) / vec2(size);
+    int square_size = 64; 
+    square_size = max(32 + int(amp_l * 64.0), 1);
+    ivec2 block_coord = pixel / square_size;
+    float beat_gate = step(0.6, amp_l);
+    int blocks_x = (size.x + square_size - 1) / square_size;
+    int block_index = block_coord.y * blocks_x + block_coord.x;
+    int temporal_offset = (block_index + history_head) % history_size;
+    vec4 cascaded_frame = textureLod(history, vec3(uv, float(get_history_layer(temporal_offset))), 0.0);
+    vec4 live_frame = textureLod(samp, uv, 0.0);
+    float v = mix(0.5, 1.0, beat_gate);
+    
+    imageStore(outputImage, pixel, mix(live_frame, cascaded_frame, v));
+}

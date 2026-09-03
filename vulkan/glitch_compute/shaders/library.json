@@ -1,0 +1,219 @@
+{
+    "backend": "acmxvk",
+    "custom_uniforms": {
+        "alpha_b": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 4,
+            "step": 0.01,
+            "value": 0
+        },
+        "alpha_g": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 3,
+            "step": 0.01,
+            "value": 0
+        },
+        "alpha_r": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 2,
+            "step": 0.01,
+            "value": 0
+        },
+        "alpha_value": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 1,
+            "step": 0.01,
+            "value": 0
+        },
+        "band_size": {
+            "maximum": 360,
+            "minimum": 0,
+            "slot": 27,
+            "step": 1,
+            "value": 0
+        },
+        "blendAmt": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 14,
+            "step": 0.01,
+            "value": 0
+        },
+        "frequency": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 24,
+            "step": 0.01,
+            "value": 0
+        },
+        "iChannelTime": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 12,
+            "step": 0.01,
+            "value": 0
+        },
+        "index_value": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 8,
+            "step": 0.01,
+            "value": 0
+        },
+        "random_seed": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 26,
+            "step": 0.01,
+            "value": 0
+        },
+        "restore_black": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 9,
+            "step": 0.01,
+            "value": 0
+        },
+        "seed": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 10,
+            "step": 0.01,
+            "value": 0
+        },
+        "slider1": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 20,
+            "step": 0.01,
+            "value": 0.47000000000000003
+        },
+        "slider2": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 21,
+            "step": 0.01,
+            "value": 0.39
+        },
+        "slider3": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 22,
+            "step": 0.01,
+            "value": 0.35
+        },
+        "slider4": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 23,
+            "step": 0.01,
+            "value": 0.68
+        },
+        "square_size": {
+            "maximum": 128,
+            "minimum": 1,
+            "slot": 0,
+            "step": 1,
+            "value": 55
+        },
+        "strength": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 25,
+            "step": 0.01,
+            "value": 0.81
+        },
+        "time_speed": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 13,
+            "step": 0.01,
+            "value": 0
+        },
+        "uDistortion": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 15,
+            "step": 0.01,
+            "value": 0
+        },
+        "uPhaseRate": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 19,
+            "step": 0.01,
+            "value": 0
+        },
+        "uRandRate": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 18,
+            "step": 0.01,
+            "value": 0
+        },
+        "uRotateSpeed": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 16,
+            "step": 0.01,
+            "value": 0
+        },
+        "uWarpSpeed": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 17,
+            "step": 0.01,
+            "value": 0
+        },
+        "value1": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 11,
+            "step": 0.01,
+            "value": 0
+        },
+        "value_alpha_b": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 7,
+            "step": 0.01,
+            "value": 0
+        },
+        "value_alpha_g": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 6,
+            "step": 0.01,
+            "value": 0
+        },
+        "value_alpha_r": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 5,
+            "step": 0.01,
+            "value": 0
+        }
+    },
+    "library_type": "source",
+    "shaders": [
+        "compute/color_trails_audio_cache.comp",
+        "compute/color_trails_cache.comp",
+        "compute/colortrails_audio_cache.comp",
+        "compute/framesep2_cache.comp",
+        "compute/framesep2_xor_cache.comp",
+        "compute/frameshuffle_cache.comp",
+        "compute/framestretch_x_cache.comp",
+        "compute/framestretch_y_cache.comp",
+        "compute/frametrail_cache.comp",
+        "compute/smooth_cache.comp",
+        "compute/sqonoff_cache.comp",
+        "compute/squareblocklarge_cache.comp",
+        "compute/var_value_cache.comp",
+        "passthrough.frag"
+    ],
+    "version": 1
+}

@@ -1,0 +1,50 @@
+//frame cache
+
+#version 450
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+
+#define history_head int(ext.u3.x + 0.5)
+#define history_size max(int(ext.u3.y), 1)
+#define alpha ext.u0.x
+
+int get_history_layer(int delay) {
+    int layer = (history_head - delay) % history_size;
+    if (layer < 0) {
+        layer += history_size;
+    }
+    return layer;
+}
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(pixel, size)))
+        return;
+    vec2 uv = (vec2(pixel) + 0.5) / vec2(size);
+    vec4 live_frame = textureLod(samp, uv, 0.0);
+    int cache_layer = history_head % history_size;
+    float blend = clamp(alpha, 0.0, 1.0);
+    if(alpha >= 0.0 && alpha <= 0.2)
+        cache_layer = 1;
+    else if(alpha > 0.2 && alpha <= 0.6)
+         cache_layer = 4;
+    else if(alpha > 0.6 && alpha <= 1.0)
+         cache_layer = 7; 
+                 
+    vec4 cache = textureLod(history, vec3(uv, float(get_history_layer(cache_layer))), 0.0);
+    imageStore(outputImage, pixel, mix(live_frame, cache, 0.5));
+}

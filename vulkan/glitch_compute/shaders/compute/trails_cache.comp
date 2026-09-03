@@ -1,0 +1,53 @@
+#version 450
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+
+#define history_head int(ext.u3.x + 0.5)
+#define history_size max(int(ext.u3.y), 1)
+#define time_f ext.u2.y
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(pixel, size)))
+        return;
+
+    vec2 uv = (vec2(pixel) + 0.5) / vec2(size);
+    vec4 live_frame = textureLod(samp, uv, 0.0);
+
+    vec4 trail_accum = vec4(0.0);
+    
+    int trail_taps = 5; 
+    float strobe_freq = 12.0; 
+
+    for (int i = 1; i <= trail_taps; ++i) {
+        float strobe_phase = fract(time_f * strobe_freq - float(i) * 0.15);
+        float strobe_pulse = step(0.85, strobe_phase);
+        int delay = i * 6;
+        int cache_layer = (history_head - delay) % history_size;
+        if (cache_layer < 0) {
+            cache_layer += history_size;
+        }
+        vec4 past_frame = textureLod(history, vec3(uv, float(cache_layer)), 0.0);       
+        trail_accum = max(trail_accum, past_frame * strobe_pulse);
+    }
+
+    float trail_intensity = 0.85; 
+    vec4 final_color = max(live_frame, trail_accum * trail_intensity);
+    
+    imageStore(outputImage, pixel, final_color);
+}

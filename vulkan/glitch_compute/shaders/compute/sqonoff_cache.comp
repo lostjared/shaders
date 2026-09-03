@@ -1,0 +1,82 @@
+#version 450
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+
+#define history_head int(ext.u3.x + 0.5)
+#define history_size max(int(ext.u3.y), 1)
+#define amp_low ext.audio_bands.x
+#define amp_peak ext.u2.w
+#define time_f ext.u2.y
+
+int get_history_layer(int delay) {
+    int layer = (history_head - delay) % history_size;
+    if (layer < 0) layer += history_size;
+    return layer;
+}
+
+// Replaces C++ rand() with a deterministic GPU spatial hash
+float hash12(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(pixel, size))) return;
+    
+    vec2 uv = (vec2(pixel) + 0.5) / vec2(size);
+    vec4 live_frame = textureLod(samp, uv, 0.0);
+    vec4 final_color = live_frame;
+
+    // 1. Grid Initialization (ac::SqOnOff concept)
+    // The block size reacts dynamically to the bass, growing larger on kicks
+    float block_w = 16.0 + floor(amp_low * 64.0);
+    float block_h = 16.0 + floor(amp_low * 32.0);
+    vec2 block_id = floor(vec2(pixel) / vec2(block_w, block_h));
+    
+    // 2. Temporal Randomization
+    // We step the time variable so the blocks update rhythmically instead of 60fps blur
+    float time_step = floor(time_f * 15.0); 
+    float block_rand = hash12(block_id + time_step);
+
+    // 3. Audio-Driven Threshold
+    // The louder the audio, the lower the threshold, causing more blocks to glitch
+    float threshold = 0.8 - (amp_peak * 0.4); 
+    
+    // 4. The Macroblock Swap
+    if (block_rand > threshold) {
+        // Randomize the history depth per-block! 
+        // Some blocks pull from 1 frame ago, some pull from MAX frames ago.
+        int random_delay = int(hash12(block_id * 2.0) * float(history_size - 1)) + 1;
+        int spread = int(amp_peak * 6.0);
+        
+        vec4 p0 = textureLod(history, vec3(uv, float(get_history_layer(random_delay))), 0.0);
+        vec4 p1 = textureLod(history, vec3(uv, float(get_history_layer(random_delay + spread))), 0.0);
+        vec4 p2 = textureLod(history, vec3(uv, float(get_history_layer(random_delay + spread * 2))), 0.0);
+        
+        bool strobe = (history_head % 2) != 0;
+        if (!strobe) {
+            final_color.r = p2.r; final_color.g = p1.g; final_color.b = p0.b;
+        } else {
+            final_color.r = p0.r; final_color.g = p1.g; final_color.b = p2.b;
+        }
+        
+        // Hard blend matching ac::SqOnOffAlphaPixel
+        final_color = mix(live_frame, final_color, 0.8);
+    }
+
+    imageStore(outputImage, pixel, final_color);
+}
