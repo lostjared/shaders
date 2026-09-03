@@ -18,7 +18,7 @@ layout(set = 0, binding = 1, std140) uniform SpriteExtended {
 
 #define history_head int(ext.u3.x + 0.5)
 #define history_size max(int(ext.u3.y), 1)
-
+#define square ext.custom_uniforms[7].y
 #define amp_l ext.audio_bands.x
 #define amp_p ext.u2.w
 #define alpha ext.u0.x
@@ -34,8 +34,8 @@ void main() {
     ivec2 size = imageSize(outputImage);
     if (any(greaterThanEqual(pixel, size))) return;
     vec2 uv = (vec2(pixel) + 0.5) / vec2(size);
-    int square_size = 64; 
-    square_size = max(32 + int(amp_l * 64.0), 1);
+    int square_size = max(int(square), 1); 
+    square_size = max(32 + int(amp_l * square_size), 1);
     ivec2 block_coord = pixel / square_size;
     float beat_gate = step(0.6, amp_l);
     int blocks_x = (size.x + square_size - 1) / square_size;

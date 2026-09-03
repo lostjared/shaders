@@ -48,7 +48,7 @@
             "minimum": 0,
             "slot": 24,
             "step": 0.01,
-            "value": 0.76
+            "value": 0.7000000000000001
         },
         "iChannelTime": {
             "maximum": 1,
@@ -76,7 +76,7 @@
             "minimum": 0.001,
             "slot": 28,
             "step": 0.01,
-            "value": 0.001
+            "value": 20
         },
         "restore_black": {
             "maximum": 1,
@@ -90,7 +90,7 @@
             "minimum": 0,
             "slot": 10,
             "step": 0.01,
-            "value": 0
+            "value": 0.03
         },
         "slider1": {
             "maximum": 1,
@@ -111,14 +111,21 @@
             "minimum": 0,
             "slot": 22,
             "step": 0.01,
-            "value": 0.35
+            "value": 0.29
         },
         "slider4": {
             "maximum": 1,
             "minimum": 0,
             "slot": 23,
             "step": 0.01,
-            "value": 0.68
+            "value": 0.62
+        },
+        "square": {
+            "maximum": 128,
+            "minimum": 1,
+            "slot": 29,
+            "step": 1,
+            "value": 48
         },
         "square_size": {
             "maximum": 128,
@@ -153,7 +160,7 @@
             "minimum": 0,
             "slot": 19,
             "step": 0.01,
-            "value": 0
+            "value": 0.18
         },
         "uRandRate": {
             "maximum": 1,
