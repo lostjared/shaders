@@ -1,0 +1,48 @@
+#version 450
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+
+#define time_f ext.u2.y
+#define history_head int(ext.u3.x + 0.5)
+#define history_size max(int(ext.u3.y), 1)
+#define strength ext.custom_uniforms[7].x
+#define frequency ext.custom_uniforms[6].x
+#define amp_l ext.audio_bands.x
+
+int get_history_layer(int delay) {
+    int layer = (history_head - delay) % history_size;
+    if (layer < 0) layer += history_size;
+    return layer;
+}
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(pixel, size))) return;
+    vec2 uv = (vec2(pixel) + 0.5) / vec2(size);
+    vec4 live_frame = textureLod(samp, uv, 0.0);
+    int total_rows_processed = history_head * size.y;
+    float global_counter = float(pixel.y + total_rows_processed);
+    float wave = mod(global_counter * sin(amp_l * time_f), 200.0);
+    float offset_size = max(100.0 - abs(wave - 100.0), 1.0); 
+    float str_value = max(strength * (amp_l + 10.0 * sin(time_f)), 1.0);
+    offset_size *= str_value; 
+    float block_x = floor(float(pixel.x) / offset_size) * offset_size;
+    vec2 block_uv = vec2(block_x / float(size.x), uv.y);
+    int index = int(global_counter) % history_size; 
+    vec4 history_pixel = textureLod(history, vec3(block_uv, float(get_history_layer(index))), 0.0);
+    imageStore(outputImage, pixel, history_pixel);
+}

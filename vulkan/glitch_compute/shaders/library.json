@@ -48,7 +48,7 @@
             "minimum": 0,
             "slot": 24,
             "step": 0.01,
-            "value": 0
+            "value": 0.76
         },
         "iChannelTime": {
             "maximum": 1,
@@ -70,6 +70,13 @@
             "slot": 26,
             "step": 0.01,
             "value": 0
+        },
+        "res_x": {
+            "maximum": 20,
+            "minimum": 0.001,
+            "slot": 28,
+            "step": 0.01,
+            "value": 0.001
         },
         "restore_black": {
             "maximum": 1,
@@ -125,7 +132,7 @@
             "minimum": 0,
             "slot": 25,
             "step": 0.01,
-            "value": 0.81
+            "value": 0.24
         },
         "time_speed": {
             "maximum": 1,
@@ -209,6 +216,7 @@
         "compute/framestretch_x_cache.comp",
         "compute/framestretch_y_cache.comp",
         "compute/frametrail_cache.comp",
+        "compute/lineinlineout_cache.comp",
         "compute/smooth_cache.comp",
         "compute/sqonoff_cache.comp",
         "compute/squareblocklarge_cache.comp",
