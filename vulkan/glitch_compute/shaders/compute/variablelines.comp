@@ -1,0 +1,48 @@
+#version 450
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+
+#define time_f ext.u2.y
+#define history_head int(ext.u3.x + 0.5)
+#define history_size max(int(ext.u3.y), 1)
+#define strength_value 1.0
+#define mix_weight 0.3
+
+uint hash_u32(uint x) {
+    x ^= x >> 16;
+    x *= 0x7feb352dU;
+    x ^= x >> 15;
+    x *= 0x846ca68bU;
+    x ^= x >> 16;
+    return x;
+}
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(pixel, size))) return;
+    vec4 live_frame = texelFetch(samp, pixel, 0);
+    uint seed = uint(pixel.y) * 1973u + uint(history_head) * 9277u + 1u;
+    int rand_offset = int(hash_u32(seed) % uint(size.x));
+    float str = 1.0;
+    int offset = int(float(rand_offset) * str);
+    int sample_x = (pixel.x + offset) % size.x;
+    if (sample_x < 0) sample_x += size.x;
+    vec4 shifted_frame = texelFetch(samp, ivec2(sample_x, pixel.y), 0);
+    float blend_val = (mix_weight > 0.0) ? clamp(mix_weight, 0.0, 1.0) : 0.3;
+    vec4 final_color = mix(live_frame, shifted_frame, blend_val);
+    imageStore(outputImage, pixel, final_color);
+}
