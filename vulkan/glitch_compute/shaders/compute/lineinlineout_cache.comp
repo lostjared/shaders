@@ -18,7 +18,7 @@ layout(set = 0, binding = 1, std140) uniform SpriteExtended {
 #define time_f ext.u2.y
 #define history_head int(ext.u3.x + 0.5)
 #define history_size max(int(ext.u3.y), 1)
-#define strength ext.custom_uniforms[7].x
+#define lineinlineout_strength ext.custom_uniforms[7].x
 #define frequency ext.custom_uniforms[6].x
 #define amp_l ext.audio_bands.x
 
@@ -38,7 +38,7 @@ void main() {
     float global_counter = float(pixel.y + total_rows_processed);
     float wave = mod(global_counter * sin(amp_l * time_f), 200.0);
     float offset_size = max(100.0 - abs(wave - 100.0), 1.0); 
-    float str_value = max(strength * (amp_l + 10.0 * sin(time_f)), 1.0);
+    float str_value = max(lineinlineout_strength * (amp_l + 10.0 * sin(time_f)), 1.0);
     offset_size *= str_value; 
     float block_x = floor(float(pixel.x) / offset_size) * offset_size;
     vec2 block_uv = vec2(block_x / float(size.x), uv.y);

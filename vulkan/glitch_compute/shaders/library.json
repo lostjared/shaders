@@ -64,19 +64,19 @@
             "step": 0.01,
             "value": 0
         },
+        "lineinlineout_strength": {
+            "maximum": 1,
+            "minimum": 0,
+            "slot": 28,
+            "step": 0.01,
+            "value": 0
+        },
         "random_seed": {
             "maximum": 1,
             "minimum": 0,
             "slot": 26,
             "step": 0.01,
             "value": 0
-        },
-        "res_x": {
-            "maximum": 20,
-            "minimum": 0.001,
-            "slot": 28,
-            "step": 0.01,
-            "value": 20
         },
         "restore_black": {
             "maximum": 1,
@@ -125,7 +125,7 @@
             "minimum": 1,
             "slot": 29,
             "step": 1,
-            "value": 48
+            "value": 45
         },
         "square_size": {
             "maximum": 128,
@@ -227,7 +227,9 @@
         "compute/smooth_cache.comp",
         "compute/sqonoff_cache.comp",
         "compute/squareblocklarge_cache.comp",
+        "compute/trails_cache.comp",
         "compute/var_value_cache.comp",
+        "compute/variablelines.comp",
         "passthrough.frag"
     ],
     "version": 1
