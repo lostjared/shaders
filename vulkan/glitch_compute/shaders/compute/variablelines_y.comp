@@ -1,0 +1,36 @@
+#version 450
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(set = 0, binding = 5, rgba8) writeonly uniform image2D outputImage;
+layout(set = 0, binding = 0) uniform sampler2D samp;
+layout(set = 0, binding = 2) uniform sampler2DArray history;
+layout(set = 0, binding = 1, std140) uniform SpriteExtended {
+    vec4 mouse;
+    vec4 u0;
+    vec4 u1;
+    vec4 u2;
+    vec4 u3;
+    vec4 custom_uniforms[16];
+    vec4 audio_bands;
+    vec4 audio_history;
+} ext;
+
+#define history_head int(ext.u3.x + 0.5)
+#define frequency ext.custom_uniforms[6].x
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 size = imageSize(outputImage);
+    if (any(greaterThanEqual(pixel, size))) return;
+    int total_cols_processed = history_head * size.x;
+    float global_counter = float(pixel.x + total_cols_processed);
+    float speed = max(frequency, 1.0);
+    global_counter *= speed;
+    float limit = float(size.y - 1);
+    float wave = mod(global_counter, limit * 2.0);
+    int offset = int(limit - abs(wave - limit));
+    offset = clamp(offset, 1, size.y - 1);
+    int sample_y = (pixel.y + offset) % size.y;
+    vec4 shifted_frame = texelFetch(samp, ivec2(pixel.x, sample_y), 0);
+    imageStore(outputImage, pixel, shifted_frame);
+}

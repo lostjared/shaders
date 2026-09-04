@@ -48,7 +48,7 @@
             "minimum": 0,
             "slot": 24,
             "step": 0.01,
-            "value": 0.7000000000000001
+            "value": 0
         },
         "iChannelTime": {
             "maximum": 1,
@@ -230,6 +230,7 @@
         "compute/trails_cache.comp",
         "compute/var_value_cache.comp",
         "compute/variablelines.comp",
+        "compute/variablelines_y.comp",
         "passthrough.frag"
     ],
     "version": 1
