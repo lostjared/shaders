@@ -1,15 +1,15 @@
 # libacidcam CPU-to-ACMXVK Conversion
 
 This directory tracks standalone `libacidcam` CPU filters being converted into
-ACMXVK compute shaders. The target is 300 high-value filters. Filters whose
+ACMXVK compute shaders. The current target is 350 high-value filters. Filters whose
 names contain `SubFilter` and filters that invoke libacidcam's subfilter
 dispatch mechanism are excluded.
 
 ## Progress
 
-- Target: 300 shaders
-- Source shaders created: 300
-- Compile validated: 300
+- Target: 350 shaders
+- Source shaders created: 350
+- Compile validated: 350
 - Remaining: 0
 
 The first batch establishes the shared ACMXVK compute ABI and covers direct
@@ -321,11 +321,61 @@ exposed through slots 0 through 3 in `library.json`.
 | 298 | SobelNorm | `SobelNorm` | edge | `compute/sobelnorm.comp` | Compiled | Normalized Sobel edges |
 | 299 | SobelThreshold | `SobelThreshold` | edge | `compute/sobelthreshold.comp` | Compiled | Thresholded Sobel edges |
 | 300 | MedianBlurHigherLevel | `MedianBlurHigherLevel` | blur | `compute/medianblurhigherlevel.comp` | Compiled | High-radius median-like blur |
+| 301 | FadeBars | `FadeBars` | line | `compute/fadebars.comp` | Compiled | Animated fading horizontal bars |
+| 302 | StrobeXor | `StrobeXor` | bitwise | `compute/strobexor.comp` | Compiled | Animated full-frame XOR strobe |
+| 303 | IntertwinedMirror | `IntertwinedMirror` | mirror | `compute/intertwinedmirror.comp` | Compiled | Intertwined horizontal mirror bands |
+| 304 | InterRGB_Bars_XY | `InterRGB_Bars_XY` | channel | `compute/interrgb_bars_xy.comp` | Compiled | Interlaced RGB bars on both axes |
+| 305 | InterRGB_Bars_X | `InterRGB_Bars_X` | channel | `compute/interrgb_bars_x.comp` | Compiled | Interlaced horizontal RGB bars |
+| 306 | InterRGB_Bars_Y | `InterRGB_Bars_Y` | channel | `compute/interrgb_bars_y.comp` | Compiled | Interlaced vertical RGB bars |
+| 307 | FlipBlendAll | `FlipBlendAll` | mirror | `compute/flipblendall.comp` | Compiled | Animated blend of all flipped orientations |
+| 308 | SelfScaleXorIncrease | `SelfScaleXorIncrease` | bitwise | `compute/selfscalexorincrease.comp` | Compiled | Animated scaled-color XOR |
+| 309 | Blend_RedGreenBlue | `Blend_RedGreenBlue` | channel | `compute/blend_redgreenblue.comp` | Compiled | Neighbor-sampled RGB blend |
+| 310 | XorBlend_RedGreenBlue | `XorBlend_RedGreenBlue` | bitwise | `compute/xorblend_redgreenblue.comp` | Compiled | Neighbor-sampled RGB XOR |
+| 311 | BlendIncrease_RedGreenBlue | `BlendIncrease_RedGreenBlue` | channel | `compute/blendincrease_redgreenblue.comp` | Compiled | Expanding RGB separation blend |
+| 312 | Blend_RedReenBlue_Dark | `Blend_RedReenBlue_Dark` | channel | `compute/blend_redreenblue_dark.comp` | Compiled | Dark RGB separation blend |
+| 313 | DarkModBlend | `DarkModBlend` | color | `compute/darkmodblend.comp` | Compiled | Animated dark modulo blend |
+| 314 | PictureBuzz | `PictureBuzz` | glitch | `compute/picturebuzz.comp` | Compiled | Rapid horizontal picture buzz |
+| 315 | IncDifference | `IncDifference` | color | `compute/incdifference.comp` | Compiled | Animated channel difference |
+| 316 | IncDifferenceAlpha | `IncDifferenceAlpha` | color | `compute/incdifferencealpha.comp` | Compiled | Alpha-blended animated difference |
+| 317 | ChannelSort_NoBlend_Descending | `ChannelSort_NoBlend_Descending` | channel | `compute/channelsort_noblend_descending.comp` | Compiled | Descending per-pixel channel sort |
+| 318 | ChannelSort_NoBlend_Ascending | `ChannelSort_NoBlend_Ascending` | channel | `compute/channelsort_noblend_ascending.comp` | Compiled | Ascending per-pixel channel sort |
+| 319 | RandomPixels | `RandomPixels` | noise | `compute/randompixels.comp` | Compiled | Seeded random bright pixels |
+| 320 | DarkRandomPixels | `DarkRandomPixels` | noise | `compute/darkrandompixels.comp` | Compiled | Seeded random dark pixels |
+| 321 | Bars | `Bars` | line | `compute/bars.comp` | Compiled | Animated alternating color bars |
+| 322 | BlendCombinedValues | `BlendCombinedValues` | blend | `compute/blendcombinedvalues.comp` | Compiled | Combined neighboring pixel blend |
+| 323 | GradientXorPixels | `GradientXorPixels` | bitwise | `compute/gradientxorpixels.comp` | Compiled | Coordinate-gradient pixel XOR |
+| 324 | PurpleRain | `PurpleRain` | color | `compute/purplerain.comp` | Compiled | Animated purple rain streaks |
+| 325 | PixelByPixelXor | `PixelByPixelXor` | bitwise | `compute/pixelbypixelxor.comp` | Compiled | Coordinate-driven per-pixel XOR |
+| 326 | CopyXorAlpha | `CopyXorAlpha` | bitwise | `compute/copyxoralpha.comp` | Compiled | Offset-copy XOR alpha blend |
+| 327 | AveragePixelsXor | `AveragePixelsXor` | bitwise | `compute/averagepixelsxor.comp` | Compiled | Averaged neighborhood XOR |
+| 328 | AveragePixelAlpha | `AveragePixelAlpha` | blend | `compute/averagepixelalpha.comp` | Compiled | Cross-neighborhood alpha average |
+| 329 | NegativeByRow | `NegativeByRow` | line | `compute/negativebyrow.comp` | Compiled | Alternating negative rows |
+| 330 | IncorrectLine | `IncorrectLine` | glitch | `compute/incorrectline.comp` | Compiled | Misaligned horizontal glitch lines |
+| 331 | XorShift | `XorShift` | bitwise | `compute/xorshift.comp` | Compiled | Animated shifted-pixel XOR |
+| 332 | StrobeXorAndOr | `StrobeXorAndOr` | bitwise | `compute/strobexorandor.comp` | Compiled | Cycling XOR, AND, and OR strobe |
+| 333 | XorWithSource | `XorWithSource` | bitwise | `compute/xorwithsource.comp` | Compiled | Source color XOR pattern |
+| 334 | RGBSep1x | `RGBSep1x` | channel | `compute/rgbsep1x.comp` | Compiled | One-axis animated RGB separation |
+| 335 | RandomIncrease | `RandomIncrease` | noise | `compute/randomincrease.comp` | Compiled | Random channel amplification |
+| 336 | DivideAndIncH | `DivideAndIncH` | geometry | `compute/divideandinch.comp` | Compiled | Horizontally divided channel increase |
+| 337 | DivideAndIncW | `DivideAndIncW` | geometry | `compute/divideandincw.comp` | Compiled | Vertically divided channel increase |
+| 338 | IncreaseDecreaseGamma | `IncreaseDecreaseGamma` | color | `compute/increasedecreasegamma.comp` | Compiled | Oscillating gamma adjustment |
+| 339 | GammaIncDecIncrease | `GammaIncDecIncrease` | color | `compute/gammaincdecincrease.comp` | Compiled | Increasing gamma oscillation |
+| 340 | TwistedVision | `TwistedVision` | distort | `compute/twistedvision.comp` | Compiled | Twisted radial channel vision |
+| 341 | RandomFlipFilter | `RandomFlipFilter` | geometry | `compute/randomflipfilter.comp` | Compiled | Timeline-seeded random flip |
+| 342 | NegParadox | `NegParadox` | color | `compute/negparadox.comp` | Compiled | Oscillating negative color paradox |
+| 343 | ThoughtMode | `ThoughtMode` | color | `compute/thoughtmode.comp` | Compiled | Animated high-contrast thought palette |
+| 344 | RainbowBlend | `rainbowBlend` | color | `compute/rainbowblend.comp` | Compiled | Animated rainbow color blend |
+| 345 | RandBlend | `randBlend` | noise | `compute/randblend.comp` | Compiled | Seeded random color blend |
+| 346 | NewBlend | `newBlend` | color | `compute/newblend.comp` | Compiled | Animated nonlinear color blend |
+| 347 | ShuffleColorMap | `ShuffleColorMap` | channel | `compute/shufflecolormap.comp` | Compiled | Timeline-shuffled channel mapping |
+| 348 | XorSquare | `XorSquare` | bitwise | `compute/xorsquare.comp` | Compiled | Checker-square color XOR |
+| 349 | AverageHorizontalFilter | `AverageHorizontalFilter` | blend | `compute/averagehorizontalfilter.comp` | Compiled | Horizontal neighborhood average |
+| 350 | AverageVerticalFilter | `AverageVerticalFilter` | blend | `compute/averageverticalfilter.comp` | Compiled | Vertical neighborhood average |
 
 ## Validation policy
 
 Each batch must compile through ACMXVK's source-library builder before its
-status is changed to `Compiled`. Batches 1 through 6 compiled all 300 sources
+status is changed to `Compiled`. Batches 1 through 7 compiled all 350 sources
 with zero failures using the ACMXVK builder. Visual equivalence is tracked separately from
 compiler validation because some CPU filters depend on mutable static values
 whose GPU equivalents use the normalized library controls and ACMXVK shader
