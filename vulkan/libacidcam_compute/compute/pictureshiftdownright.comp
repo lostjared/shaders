@@ -1,0 +1,3 @@
+#version 450
+#define AC_EFFECT_ID 279
+#include "include/filter_common.glsl"

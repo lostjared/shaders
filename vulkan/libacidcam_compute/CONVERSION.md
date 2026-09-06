@@ -8,9 +8,9 @@ dispatch mechanism are excluded.
 ## Progress
 
 - Target: 300 shaders
-- Source shaders created: 200
-- Compile validated: 200
-- Remaining: 100
+- Source shaders created: 300
+- Compile validated: 300
+- Remaining: 0
 
 The first batch establishes the shared ACMXVK compute ABI and covers direct
 color, channel, geometry, scanline, pixelation, block, bitwise, gradient, and
@@ -221,11 +221,111 @@ exposed through slots 0 through 3 in `library.json`.
 | 198 | ExpandLeftRight | `ExpandLeftRight` | distort | `compute/expandleftright.comp` | Compiled | Horizontal center expansion |
 | 199 | ShiftPixelsRGB | `ShiftPixelsRGB` | channel | `compute/shiftpixelsrgb.comp` | Compiled | Independent RGB pixel shifts |
 | 200 | JaggedLine | `JaggedLine` | distort | `compute/jaggedline.comp` | Compiled | Seeded jagged line displacement |
+| 201 | ScratchyTrails | `ScratchyTrails` | trail | `compute/scratchytrails.comp` | Compiled | Scratch-like offset color trails |
+| 202 | ExpandPixelate | `ExpandPixelate` | pixelate | `compute/expandpixelate.comp` | Compiled | Expanding pixel blocks |
+| 203 | DiagSquare8 | `DiagSquare8` | geometry | `compute/diagsquare8.comp` | Compiled | Eight-pixel diagonal squares |
+| 204 | DiagSquareRandom | `DiagSquareRandom` | geometry | `compute/diagsquarerandom.comp` | Compiled | Seeded diagonal square shifts |
+| 205 | DiagSquareX | `DiagSquareX` | geometry | `compute/diagsquarex.comp` | Compiled | Crossed diagonal square shifts |
+| 206 | SquareShiftDirRGB | `SquareShiftDirRGB` | channel | `compute/squareshiftdirrgb.comp` | Compiled | Directional square RGB shifts |
+| 207 | StretchLineRowIncRGB | `StretchLineRowIncRGB` | channel | `compute/stretchlinerowincrgb.comp` | Compiled | Increasing row RGB stretch |
+| 208 | StretchLineColIncRGB | `StretchLineColIncRGB` | channel | `compute/stretchlinecolincrgb.comp` | Compiled | Increasing column RGB stretch |
+| 209 | StretchLineRowIncSource | `StretchLineRowIncSource` | distort | `compute/stretchlinerowincsource.comp` | Compiled | Increasing source row stretch |
+| 210 | StretchLineColIncSource | `StretchLineColIncSource` | distort | `compute/stretchlinecolincsource.comp` | Compiled | Increasing source column stretch |
+| 211 | AlternateAlpha | `AlternateAlpha` | blend | `compute/alternatealpha.comp` | Compiled | Alternating source alpha modulation |
+| 212 | Square_Block_Resize_Vertical_RGB | `Square_Block_Resize_Vertical_RGB` | channel | `compute/square_block_resize_vertical_rgb.comp` | Compiled | Vertical block RGB resize |
+| 213 | DiagSquareRGB | `DiagSquareRGB` | channel | `compute/diagsquarergb.comp` | Compiled | Diagonal square RGB separation |
+| 214 | Square_Block_Resize_RGB | `Square_Block_Resize_RGB` | channel | `compute/square_block_resize_rgb.comp` | Compiled | Square block RGB resize |
+| 215 | VariableLinesY_RGB | `VariableLinesY_RGB` | channel | `compute/variablelinesy_rgb.comp` | Compiled | Variable vertical RGB lines |
+| 216 | SquareShiftDirGradient | `SquareShiftDirGradient` | gradient | `compute/squareshiftdirgradient.comp` | Compiled | Directional square gradient shifts |
+| 217 | BlendWithSourcePercent | `BlendWithSourcePercent` | blend | `compute/blendwithsourcepercent.comp` | Compiled | Animated source percentage blend |
+| 218 | ReverseRandom | `ReverseRandom` | geometry | `compute/reverserandom.comp` | Compiled | Seeded random reversal |
+| 219 | SquareBlockGlitch | `SquareBlockGlitch` | glitch | `compute/squareblockglitch.comp` | Compiled | Seeded square block glitch |
+| 220 | SquareStretchRows | `SquareStretchRows` | distort | `compute/squarestretchrows.comp` | Compiled | Alternating stretched rows |
+| 221 | SquareStretchRowsDelay | `SquareStretchRowsDelay` | distort | `compute/squarestretchrowsdelay.comp` | Compiled | Delayed stretched rows |
+| 222 | SquareStretchEven | `SquareStretchEven` | distort | `compute/squarestretcheven.comp` | Compiled | Even-band square stretch |
+| 223 | SketchFilter | `SketchFilter` | edge | `compute/sketchfilter.comp` | Compiled | Monochrome sketch edges |
+| 224 | SquareStretchEven32 | `SquareStretchEven32` | distort | `compute/squarestretcheven32.comp` | Compiled | Wide even-band square stretch |
+| 225 | RGBLineFuzz | `RGBLineFuzz` | channel | `compute/rgblinefuzz.comp` | Compiled | Vertical RGB line fuzz |
+| 226 | RGBLineFuzzX | `RGBLineFuzzX` | channel | `compute/rgblinefuzzx.comp` | Compiled | Horizontal RGB line fuzz |
+| 227 | LinesAcrossX | `LinesAcrossX` | line | `compute/linesacrossx.comp` | Compiled | Animated lines across rows |
+| 228 | XorLineX | `XorLineX` | bitwise | `compute/xorlinex.comp` | Compiled | Row line byte XOR |
+| 229 | AlphaComponentIncrease | `AlphaComponentIncrease` | color | `compute/alphacomponentincrease.comp` | Compiled | Animated component amplification |
+| 230 | ExpandContract | `ExpandContract` | distort | `compute/expandcontract.comp` | Compiled | Alternating expansion and contraction |
+| 231 | MoveInThenMoveOut | `MoveInThenMoveOut` | distort | `compute/moveinthenmoveout.comp` | Compiled | Slow inward and outward motion |
+| 232 | MoveInThenMoveOutFast | `MoveInThenMoveOutFast` | distort | `compute/moveinthenmoveoutfast.comp` | Compiled | Fast inward and outward motion |
+| 233 | DistortionFuzz | `DistortionFuzz` | glitch | `compute/distortionfuzz.comp` | Compiled | Seeded two-axis distortion fuzz |
+| 234 | DistortionByRow | `DistortionByRow` | distort | `compute/distortionbyrow.comp` | Compiled | Progressive row distortion |
+| 235 | DistortionByRowRev | `DistortionByRowRev` | distort | `compute/distortionbyrowrev.comp` | Compiled | Reverse progressive row distortion |
+| 236 | DistortionByRowVar | `DistortionByRowVar` | distort | `compute/distortionbyrowvar.comp` | Compiled | Oscillating row distortion |
+| 237 | DistortionByRowRand | `DistortionByRowRand` | distort | `compute/distortionbyrowrand.comp` | Compiled | Seeded row distortion |
+| 238 | DistortionByCol | `DistortionByCol` | distort | `compute/distortionbycol.comp` | Compiled | Progressive column distortion |
+| 239 | DistortionByColRand | `DistortionByColRand` | distort | `compute/distortionbycolrand.comp` | Compiled | Seeded column distortion |
+| 240 | DistortionByColVar | `DistortionByColVar` | distort | `compute/distortionbycolvar.comp` | Compiled | Oscillating column distortion |
+| 241 | LongLines | `LongLines` | line | `compute/longlines.comp` | Compiled | Long displaced horizontal lines |
+| 242 | TearRight | `TearRight` | glitch | `compute/tearright.comp` | Compiled | Rightward image tearing |
+| 243 | TearDown | `TearDown` | glitch | `compute/teardown.comp` | Compiled | Downward image tearing |
+| 244 | TearUp | `TearUp` | glitch | `compute/tearup.comp` | Compiled | Upward image tearing |
+| 245 | TearLeft | `TearLeft` | glitch | `compute/tearleft.comp` | Compiled | Leftward image tearing |
+| 246 | DistortStretch | `DistortStretch` | distort | `compute/distortstretch.comp` | Compiled | Layered stretch distortion |
+| 247 | FadeOnOff | `FadeOnOff` | strobe | `compute/fadeonoff.comp` | Compiled | Smooth fade on and off |
+| 248 | Stereo | `Stereo` | channel | `compute/stereo.comp` | Compiled | Stereo red-cyan separation |
+| 249 | ShiftLinesDown | `ShiftLinesDown` | distort | `compute/shiftlinesdown.comp` | Compiled | Downward shifted line bands |
+| 250 | VisualSnow | `VisualSnow` | noise | `compute/visualsnow.comp` | Compiled | Animated monochrome visual snow |
+| 251 | VisualSnowX2 | `VisualSnowX2` | noise | `compute/visualsnowx2.comp` | Compiled | Dense animated color snow |
+| 252 | LineGlitch | `LineGlitch` | glitch | `compute/lineglitch.comp` | Compiled | Seeded horizontal line glitch |
+| 253 | SlitReverse64 | `SlitReverse64` | geometry | `compute/slitreverse64.comp` | Compiled | Reversed sixty-four-pixel slits |
+| 254 | SlitReverse64_Increase | `SlitReverse64_Increase` | geometry | `compute/slitreverse64_increase.comp` | Compiled | Expanding reversed slits |
+| 255 | SlitStretch | `SlitStretch` | distort | `compute/slitstretch.comp` | Compiled | Animated slit stretching |
+| 256 | LineLeftRight | `LineLeftRight` | distort | `compute/lineleftright.comp` | Compiled | Alternating left-right lines |
+| 257 | LineLeftRightResize | `LineLeftRightResize` | distort | `compute/lineleftrightresize.comp` | Compiled | Resized alternating line shifts |
+| 258 | RGBLineTrails | `RGBLineTrails` | trail | `compute/rgblinetrails.comp` | Compiled | Separated RGB line trails |
+| 259 | RGBCollectionBlend | `RGBCollectionBlend` | trail | `compute/rgbcollectionblend.comp` | Compiled | Offset RGB trail blend |
+| 260 | RGBCollectionIncrease | `RGBCollectionIncrease` | trail | `compute/rgbcollectionincrease.comp` | Compiled | Increasing RGB trail separation |
+| 261 | RGBCollectionEx | `RGBCollectionEx` | trail | `compute/rgbcollectionex.comp` | Compiled | Extended RGB trail blend |
+| 262 | RGBLongTrails | `RGBLongTrails` | trail | `compute/rgblongtrails.comp` | Compiled | Long RGB displacement trails |
+| 263 | FadeRGB_Speed | `FadeRGB_Speed` | color | `compute/fadergb_speed.comp` | Compiled | Speed-controlled RGB fading |
+| 264 | RGBStrobeTrails | `RGBStrobeTrails` | trail | `compute/rgbstrobetrails.comp` | Compiled | Strobing RGB trails |
+| 265 | FadeRGB_Variable | `FadeRGB_Variable` | color | `compute/fadergb_variable.comp` | Compiled | Variable RGB channel fading |
+| 266 | BoxGlitch | `BoxGlitch` | glitch | `compute/boxglitch.comp` | Compiled | Seeded box displacement glitch |
+| 267 | VerticalPictureDistort | `VerticalPictureDistort` | distort | `compute/verticalpicturedistort.comp` | Compiled | Vertical picture distortion |
+| 268 | ShortTrail | `ShortTrail` | trail | `compute/shorttrail.comp` | Compiled | Short directional trail |
+| 269 | DiagInward | `DiagInward` | geometry | `compute/diaginward.comp` | Compiled | Diagonal inward sampling |
+| 270 | DiagSquareInward | `DiagSquareInward` | geometry | `compute/diagsquareinward.comp` | Compiled | Inward diagonal squares |
+| 271 | DiagSquareInwardResize | `DiagSquareInwardResize` | geometry | `compute/diagsquareinwardresize.comp` | Compiled | Resized inward diagonal squares |
+| 272 | DiagSquareInwardResizeXY | `DiagSquareInwardResizeXY` | geometry | `compute/diagsquareinwardresizexy.comp` | Compiled | Two-axis resized inward squares |
+| 273 | ParticleSlide | `ParticleSlide` | glitch | `compute/particleslide.comp` | Compiled | Particle-like sliding blocks |
+| 274 | DiagPixelated | `DiagPixelated` | pixelate | `compute/diagpixelated.comp` | Compiled | Diagonal pixelation |
+| 275 | DiagPixelatedResize | `DiagPixelatedResize` | pixelate | `compute/diagpixelatedresize.comp` | Compiled | Resized diagonal pixelation |
+| 276 | DiagPixelRGB_Collection | `DiagPixelRGB_Collection` | channel | `compute/diagpixelrgb_collection.comp` | Compiled | Diagonal RGB pixel trails |
+| 277 | RGBShiftTrails | `RGBShiftTrails` | trail | `compute/rgbshifttrails.comp` | Compiled | Animated RGB shift trails |
+| 278 | PictureShiftDown | `PictureShiftDown` | distort | `compute/pictureshiftdown.comp` | Compiled | Downward picture shift |
+| 279 | PictureShiftRight | `PictureShiftRight` | distort | `compute/pictureshiftright.comp` | Compiled | Rightward picture shift |
+| 280 | PictureShiftDownRight | `PictureShiftDownRight` | distort | `compute/pictureshiftdownright.comp` | Compiled | Diagonal picture shift |
+| 281 | FlipPictureShift | `FlipPictureShift` | geometry | `compute/flippictureshift.comp` | Compiled | Flipped picture shifting |
+| 282 | FlipPictureRandomMirror | `FlipPictureRandomMirror` | geometry | `compute/flippicturerandommirror.comp` | Compiled | Random flipped mirror |
+| 283 | PictureShiftVariable | `PictureShiftVariable` | distort | `compute/pictureshiftvariable.comp` | Compiled | Variable picture shifting |
+| 284 | RGBWideTrails | `RGBWideTrails` | trail | `compute/rgbwidetrails.comp` | Compiled | Wide RGB displacement trails |
+| 285 | StretchR_Right | `StretchR_Right` | channel | `compute/stretchr_right.comp` | Compiled | Rightward red stretch |
+| 286 | StretchG_Right | `StretchG_Right` | channel | `compute/stretchg_right.comp` | Compiled | Rightward green stretch |
+| 287 | StretchB_Right | `StretchB_Right` | channel | `compute/stretchb_right.comp` | Compiled | Rightward blue stretch |
+| 288 | StretchR_Down | `StretchR_Down` | channel | `compute/stretchr_down.comp` | Compiled | Downward red stretch |
+| 289 | StretchG_Down | `StretchG_Down` | channel | `compute/stretchg_down.comp` | Compiled | Downward green stretch |
+| 290 | StretchB_Down | `StretchB_Down` | channel | `compute/stretchb_down.comp` | Compiled | Downward blue stretch |
+| 291 | Distorted_LinesY | `Distorted_LinesY` | line | `compute/distorted_linesy.comp` | Compiled | Distorted vertical lines |
+| 292 | Distorted_LinesX | `Distorted_LinesX` | line | `compute/distorted_linesx.comp` | Compiled | Distorted horizontal lines |
+| 293 | TripHSV | `TripHSV` | color | `compute/triphsv.comp` | Compiled | Animated HSV color trip |
+| 294 | Diag_Line_InOut | `Diag_Line_InOut` | distort | `compute/diag_line_inout.comp` | Compiled | Diagonal line expansion and contraction |
+| 295 | Histogram | `Histogram` | color | `compute/histogram.comp` | Compiled | Histogram-style tonal mapping |
+| 296 | XorSumStrobe | `XorSumStrobe` | bitwise | `compute/xorsumstrobe.comp` | Compiled | Summed-channel XOR strobe |
+| 297 | DetectEdges | `DetectEdges` | edge | `compute/detectedges.comp` | Compiled | Luma edge detection |
+| 298 | SobelNorm | `SobelNorm` | edge | `compute/sobelnorm.comp` | Compiled | Normalized Sobel edges |
+| 299 | SobelThreshold | `SobelThreshold` | edge | `compute/sobelthreshold.comp` | Compiled | Thresholded Sobel edges |
+| 300 | MedianBlurHigherLevel | `MedianBlurHigherLevel` | blur | `compute/medianblurhigherlevel.comp` | Compiled | High-radius median-like blur |
 
 ## Validation policy
 
 Each batch must compile through ACMXVK's source-library builder before its
-status is changed to `Compiled`. Batches 1 through 4 compiled all 200 sources
+status is changed to `Compiled`. Batches 1 through 6 compiled all 300 sources
 with zero failures using the ACMXVK builder. Visual equivalence is tracked separately from
 compiler validation because some CPU filters depend on mutable static values
 whose GPU equivalents use the normalized library controls and ACMXVK shader

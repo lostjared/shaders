@@ -53,6 +53,13 @@ float animated_phase() {
     return ext.u2.y * mix(0.25, 8.0, clamp(speed, 0.0, 1.0));
 }
 
+vec3 hsv_to_rgb(vec3 hsv) {
+    vec3 value = clamp(abs(mod(hsv.x * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) -
+                           1.0,
+                       0.0, 1.0);
+    return hsv.z * mix(vec3(1.0), value, hsv.y);
+}
+
 void main() {
     ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
     ivec2 size = imageSize(output_image);
@@ -886,6 +893,657 @@ void main() {
                                    43758.5453);
     int offset = int((random_value - 0.5) * mix(8.0, 160.0, scale_value) * strength);
     result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 200
+    int distance_value = max(1, int(mix(2.0, 54.0, scale_value)));
+    float scratch = fract(sin(float(pixel.y / 3) * 71.91 + floor(phase * 7.0)) *
+                             43758.5453);
+    int offset = int((scratch - 0.5) * float(distance_value));
+    result = vec3(fetch_clamped(pixel + ivec2(offset, 0), size).r,
+                  fetch_clamped(pixel - ivec2(offset / 2, 0), size).g,
+                  fetch_clamped(pixel + ivec2(offset / 3, 0), size).b);
+#elif AC_EFFECT_ID == 201
+    float pulse = 0.5 + 0.5 * sin(phase);
+    int block_size = max(2, int(mix(3.0, 84.0, scale_value) *
+                                mix(0.35, 1.0, pulse)));
+    vec2 expanded = (uv - 0.5) * mix(1.0, 0.7, pulse * strength) + 0.5;
+    ivec2 sample_pixel = ivec2(expanded * vec2(size));
+    result = fetch_clamped((sample_pixel / block_size) * block_size, size).rgb;
+#elif AC_EFFECT_ID == 202
+    ivec2 origin = (pixel / 8) * 8;
+    int diagonal = ((origin.x + origin.y) / 8) & 1;
+    result = fetch_clamped(origin + (diagonal == 0 ? ivec2(0, 7) : ivec2(7, 0)), size).rgb;
+#elif AC_EFFECT_ID == 203
+    int block_size = max(4, int(mix(8.0, 72.0, scale_value)));
+    ivec2 cell = pixel / block_size;
+    float random_value = fract(sin(dot(vec2(cell), vec2(19.19, 83.71)) +
+                                   floor(phase * 3.0)) *
+                                  43758.5453);
+    ivec2 corner = ivec2(random_value > 0.5 ? block_size - 1 : 0,
+                         fract(random_value * 13.0) > 0.5 ? block_size - 1 : 0);
+    result = fetch_clamped(cell * block_size + corner, size).rgb;
+#elif AC_EFFECT_ID == 204
+    int block_size = max(4, int(mix(8.0, 68.0, scale_value)));
+    ivec2 cell = pixel / block_size;
+    int direction = ((cell.x + cell.y) & 1) == 0 ? 1 : -1;
+    int offset = int(sin(phase + float(cell.x - cell.y)) *
+                     float(block_size) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, direction * offset), size).rgb;
+#elif AC_EFFECT_ID == 205
+    int block_size = max(3, int(mix(6.0, 56.0, scale_value)));
+    ivec2 cell = pixel / block_size;
+    int direction = ((cell.x + cell.y) & 1) == 0 ? 1 : -1;
+    int offset = int(float(block_size) * strength * sin(phase + float(cell.x + cell.y)));
+    result = vec3(fetch_clamped(pixel + ivec2(direction * offset, 0), size).r,
+                  fetch_clamped(pixel + ivec2(0, offset), size).g,
+                  fetch_clamped(pixel - ivec2(direction * offset, offset), size).b);
+#elif AC_EFFECT_ID == 206
+    int band_size = max(2, int(mix(3.0, 24.0, scale_value)));
+    float progress = float(pixel.y) / float(max(size.y - 1, 1));
+    int offset = int(progress * mix(4.0, 120.0, scale_value) * strength);
+    int direction = ((pixel.y / band_size) & 1) == 0 ? 1 : -1;
+    result = vec3(fetch_clamped(pixel + ivec2(direction * offset, 0), size).r,
+                  fetch_clamped(pixel - ivec2(direction * offset / 2, 0), size).g,
+                  fetch_clamped(pixel + ivec2(direction * offset / 3, 0), size).b);
+#elif AC_EFFECT_ID == 207
+    int band_size = max(2, int(mix(3.0, 24.0, scale_value)));
+    float progress = float(pixel.x) / float(max(size.x - 1, 1));
+    int offset = int(progress * mix(4.0, 120.0, scale_value) * strength);
+    int direction = ((pixel.x / band_size) & 1) == 0 ? 1 : -1;
+    result = vec3(fetch_clamped(pixel + ivec2(0, direction * offset), size).r,
+                  fetch_clamped(pixel - ivec2(0, direction * offset / 2), size).g,
+                  fetch_clamped(pixel + ivec2(0, direction * offset / 3), size).b);
+#elif AC_EFFECT_ID == 208
+    int band_size = max(2, int(mix(3.0, 28.0, scale_value)));
+    float progress = float(pixel.y) / float(max(size.y - 1, 1));
+    int direction = ((pixel.y / band_size) & 1) == 0 ? 1 : -1;
+    int offset = int(direction * progress * mix(6.0, 150.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 209
+    int band_size = max(2, int(mix(3.0, 28.0, scale_value)));
+    float progress = float(pixel.x) / float(max(size.x - 1, 1));
+    int direction = ((pixel.x / band_size) & 1) == 0 ? 1 : -1;
+    int offset = int(direction * progress * mix(6.0, 150.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(0, offset), size).rgb;
+#elif AC_EFFECT_ID == 210
+    int channel = int(floor(phase * 3.0)) % 3;
+    float alpha_value = mix(0.1, 0.5, 0.5 + 0.5 * sin(phase));
+    result[channel] = source[channel] * 0.5 * alpha_value;
+#elif AC_EFFECT_ID == 211
+    int block_size = max(3, int(mix(6.0, 64.0, scale_value)));
+    ivec2 origin = (pixel / block_size) * block_size;
+    int vertical = int((0.5 + 0.5 * sin(phase)) * float(block_size));
+    result = vec3(fetch_clamped(origin + ivec2(0, vertical), size).r,
+                  fetch_clamped(origin + ivec2(block_size / 2, vertical / 2), size).g,
+                  fetch_clamped(origin + ivec2(block_size - 1, 0), size).b);
+#elif AC_EFFECT_ID == 212
+    int block_size = max(3, int(mix(6.0, 58.0, scale_value)));
+    ivec2 origin = (pixel / block_size) * block_size;
+    int offset = int(sin(phase + float(origin.x + origin.y) / float(block_size)) *
+                     float(block_size) * strength);
+    result = vec3(fetch_clamped(origin + ivec2(offset), size).r,
+                  fetch_clamped(origin - ivec2(offset / 2), size).g,
+                  fetch_clamped(origin + ivec2(-offset, offset), size).b);
+#elif AC_EFFECT_ID == 213
+    int block_size = max(3, int(mix(5.0, 72.0, scale_value)));
+    ivec2 origin = (pixel / block_size) * block_size;
+    int inset = int((0.5 + 0.5 * sin(phase)) * float(block_size - 1));
+    result = vec3(fetch_clamped(origin + ivec2(inset, 0), size).r,
+                  fetch_clamped(origin + ivec2(0, inset), size).g,
+                  fetch_clamped(origin + ivec2(inset), size).b);
+#elif AC_EFFECT_ID == 214
+    int width_value = max(1, int(mix(2.0, 36.0, scale_value)));
+    int band = pixel.x / width_value;
+    int offset = int(sin(phase + float(band) * 0.7) *
+                     mix(2.0, 70.0, scale_value) * strength);
+    result = vec3(fetch_clamped(pixel + ivec2(0, offset), size).r,
+                  source.g,
+                  fetch_clamped(pixel - ivec2(0, offset), size).b);
+#elif AC_EFFECT_ID == 215
+    int block_size = max(3, int(mix(6.0, 60.0, scale_value)));
+    ivec2 cell = pixel / block_size;
+    int direction = ((cell.x + cell.y) & 1) == 0 ? 1 : -1;
+    int offset = int(direction * sin(phase + float(cell.x)) *
+                     float(block_size) * strength);
+    vec3 shifted = fetch_clamped(pixel + ivec2(offset), size).rgb;
+    vec3 gradient = 0.5 + 0.5 * cos(phase + vec3(0.0, 2.094, 4.188) +
+                                     (uv.x + uv.y) * 6.28318);
+    result = shifted * gradient;
+#elif AC_EFFECT_ID == 216
+    float blend_value = 0.5 + 0.5 * sin(phase);
+    vec3 opposite = sample_clamped(vec2(1.0) - uv).rgb;
+    result = mix(source.rgb, opposite, blend_value * strength);
+#elif AC_EFFECT_ID == 217
+    float random_value = fract(sin(floor(phase * 2.0) * 81.731) * 43758.5453);
+    vec2 reverse_uv = random_value < 0.25 ? vec2(1.0 - uv.x, uv.y) :
+                      random_value < 0.5 ? vec2(uv.x, 1.0 - uv.y) :
+                      random_value < 0.75 ? vec2(1.0) - uv : uv;
+    result = sample_clamped(reverse_uv).rgb;
+#elif AC_EFFECT_ID == 218
+    int block_size = max(4, int(mix(8.0, 92.0, scale_value)));
+    ivec2 cell = pixel / block_size;
+    float random_value = fract(sin(dot(vec2(cell), vec2(18.13, 73.17)) +
+                                   floor(phase * 5.0)) *
+                                  43758.5453);
+    ivec2 offset = ivec2(int((random_value - 0.5) * float(block_size) * 3.0),
+                         int((fract(random_value * 11.0) - 0.5) * float(block_size)));
+    vec3 shifted = fetch_clamped(pixel + offset, size).rgb;
+    result = random_value > 0.45 ? shifted.brg : source.rgb;
+#elif AC_EFFECT_ID == 219
+    int band_size = max(2, int(mix(4.0, 40.0, scale_value)));
+    int band = pixel.y / band_size;
+    int direction = (band & 1) == 0 ? 1 : -1;
+    int offset = int(direction * sin(phase + float(band)) *
+                     mix(4.0, 110.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 220
+    int band_size = max(2, int(mix(4.0, 40.0, scale_value)));
+    int band = pixel.y / band_size;
+    float delayed_phase = phase - float(band) * 0.18;
+    int offset = int(sin(delayed_phase) * mix(4.0, 110.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 221
+    int band_size = max(2, int(mix(4.0, 44.0, scale_value)));
+    int band = pixel.y / band_size;
+    int offset = (band & 1) == 0 ?
+                     int(sin(phase + float(band)) * mix(5.0, 120.0, scale_value) * strength) :
+                     0;
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 222
+    vec3 left_color = fetch_clamped(pixel - ivec2(1, 0), size).rgb;
+    vec3 right_color = fetch_clamped(pixel + ivec2(1, 0), size).rgb;
+    vec3 upper_color = fetch_clamped(pixel - ivec2(0, 1), size).rgb;
+    vec3 lower_color = fetch_clamped(pixel + ivec2(0, 1), size).rgb;
+    float edge = length((right_color - left_color) + (lower_color - upper_color));
+    float paper = 1.0 - smoothstep(mix(0.05, 0.45, scale_value),
+                                   mix(0.12, 0.75, scale_value), edge);
+    result = mix(source.rgb, vec3(paper), strength);
+#elif AC_EFFECT_ID == 223
+    int band_size = 32;
+    int band = pixel.y / band_size;
+    int offset = (band & 1) == 0 ?
+                     int(sin(phase + float(band)) * mix(8.0, 140.0, scale_value) * strength) :
+                     0;
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 224
+    int band_size = max(1, int(mix(2.0, 18.0, scale_value)));
+    int band = pixel.y / band_size;
+    float random_value = fract(sin(float(band) * 61.713 + floor(phase * 7.0)) *
+                                   43758.5453);
+    int offset = int((random_value - 0.5) * mix(6.0, 96.0, scale_value) * strength);
+    result = vec3(fetch_clamped(pixel + ivec2(offset, 0), size).r,
+                  fetch_clamped(pixel - ivec2(offset / 2, 0), size).g,
+                  fetch_clamped(pixel + ivec2(offset / 3, 0), size).b);
+#elif AC_EFFECT_ID == 225
+    int band_size = max(1, int(mix(2.0, 18.0, scale_value)));
+    int band = pixel.x / band_size;
+    float random_value = fract(sin(float(band) * 61.713 + floor(phase * 7.0)) *
+                                   43758.5453);
+    int offset = int((random_value - 0.5) * mix(6.0, 96.0, scale_value) * strength);
+    result = vec3(fetch_clamped(pixel + ivec2(0, offset), size).r,
+                  fetch_clamped(pixel - ivec2(0, offset / 2), size).g,
+                  fetch_clamped(pixel + ivec2(0, offset / 3), size).b);
+#elif AC_EFFECT_ID == 226
+    vec3 previous = fetch_clamped(pixel - ivec2(1, 0), size).rgb;
+    result = from_u8(to_u8(source.rgb) ^ to_u8(previous));
+#elif AC_EFFECT_ID == 227
+    vec3 row_average = vec3(0.0);
+    for (int sample_index = 0; sample_index < 16; ++sample_index) {
+        int sample_x = int((float(sample_index) + 0.5) * float(size.x) / 16.0);
+        row_average += fetch_clamped(ivec2(sample_x, pixel.y), size).rgb;
+    }
+    row_average /= 16.0;
+    result = mix(source.rgb, from_u8(to_u8(source.rgb) ^ to_u8(row_average)), 0.5);
+#elif AC_EFFECT_ID == 228
+    int channel = int(floor(phase * 3.0)) % 3;
+    float alpha_value = mix(0.1, 1.0, 0.5 + 0.5 * sin(phase));
+    uvec3 value = to_u8(source.rgb);
+    value[channel] ^= uint(float(value[channel]) * alpha_value * strength);
+    result = from_u8(value);
+#elif AC_EFFECT_ID == 229
+    float zoom = 1.0 + sin(phase) * mix(0.04, 0.48, scale_value) * strength;
+    result = sample_clamped((uv - 0.5) / zoom + 0.5).rgb;
+#elif AC_EFFECT_ID == 230
+    float zoom = 1.0 + sin(phase * 0.45) * mix(0.03, 0.42, scale_value) * strength;
+    result = sample_clamped((uv - 0.5) / zoom + 0.5).rgb;
+#elif AC_EFFECT_ID == 231
+    float zoom = 1.0 + sin(phase * 1.8) * mix(0.03, 0.42, scale_value) * strength;
+    result = sample_clamped((uv - 0.5) / zoom + 0.5).rgb;
+#elif AC_EFFECT_ID == 232
+    int block_size = max(2, int(mix(3.0, 22.0, scale_value)));
+    ivec2 cell = pixel / block_size;
+    float random_value = fract(sin(dot(vec2(cell), vec2(33.31, 91.17)) +
+                                   floor(phase * 8.0)) *
+                                  43758.5453);
+    ivec2 offset = ivec2((random_value - 0.5) * mix(4.0, 130.0, scale_value) * strength,
+                         (fract(random_value * 17.0) - 0.5) *
+                             mix(4.0, 130.0, scale_value) * strength);
+    result = fetch_clamped(pixel + offset, size).rgb;
+#elif AC_EFFECT_ID == 233
+    float progress = float(pixel.y) / float(max(size.y - 1, 1));
+    int offset = int(progress * mix(4.0, 180.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 234
+    float progress = 1.0 - float(pixel.y) / float(max(size.y - 1, 1));
+    int offset = -int(progress * mix(4.0, 180.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 235
+    int offset = int(sin(phase + uv.y * mix(8.0, 42.0, scale_value)) *
+                     mix(4.0, 150.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 236
+    int band_size = max(1, int(mix(2.0, 20.0, scale_value)));
+    int band = pixel.y / band_size;
+    float random_value = fract(sin(float(band) * 19.731 + floor(phase * 5.0)) *
+                                   43758.5453);
+    int offset = int((random_value - 0.5) * mix(8.0, 210.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 237
+    float progress = float(pixel.x) / float(max(size.x - 1, 1));
+    int offset = int(progress * mix(4.0, 180.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(0, offset), size).rgb;
+#elif AC_EFFECT_ID == 238
+    int band_size = max(1, int(mix(2.0, 20.0, scale_value)));
+    int band = pixel.x / band_size;
+    float random_value = fract(sin(float(band) * 19.731 + floor(phase * 5.0)) *
+                                   43758.5453);
+    int offset = int((random_value - 0.5) * mix(8.0, 210.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(0, offset), size).rgb;
+#elif AC_EFFECT_ID == 239
+    int offset = int(sin(phase + uv.x * mix(8.0, 42.0, scale_value)) *
+                     mix(4.0, 150.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(0, offset), size).rgb;
+#elif AC_EFFECT_ID == 240
+    int band_size = max(2, int(mix(4.0, 42.0, scale_value)));
+    int band = pixel.y / band_size;
+    int offset = int(sin(phase * 0.7 + float(band) * 0.43) *
+                     mix(20.0, 260.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 241
+    int band_size = max(2, int(mix(3.0, 26.0, scale_value)));
+    int band = pixel.y / band_size;
+    float random_value = fract(sin(float(band) * 42.17 + floor(phase * 4.0)) *
+                                   43758.5453);
+    int offset = int(random_value * mix(10.0, 230.0, scale_value) * strength);
+    result = fetch_clamped(pixel - ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 242
+    int band_size = max(2, int(mix(3.0, 26.0, scale_value)));
+    int band = pixel.x / band_size;
+    float random_value = fract(sin(float(band) * 42.17 + floor(phase * 4.0)) *
+                                   43758.5453);
+    int offset = int(random_value * mix(10.0, 230.0, scale_value) * strength);
+    result = fetch_clamped(pixel - ivec2(0, offset), size).rgb;
+#elif AC_EFFECT_ID == 243
+    int band_size = max(2, int(mix(3.0, 26.0, scale_value)));
+    int band = pixel.x / band_size;
+    float random_value = fract(sin(float(band) * 42.17 + floor(phase * 4.0)) *
+                                   43758.5453);
+    int offset = int(random_value * mix(10.0, 230.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(0, offset), size).rgb;
+#elif AC_EFFECT_ID == 244
+    int band_size = max(2, int(mix(3.0, 26.0, scale_value)));
+    int band = pixel.y / band_size;
+    float random_value = fract(sin(float(band) * 42.17 + floor(phase * 4.0)) *
+                                   43758.5453);
+    int offset = int(random_value * mix(10.0, 230.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 245
+    vec2 centered = uv - 0.5;
+    vec2 wave = vec2(sin(uv.y * 23.0 + phase), cos(uv.x * 19.0 - phase)) *
+                mix(0.005, 0.12, scale_value) * strength;
+    centered *= 1.0 + 0.25 * sin(phase + length(centered) * 12.0) * strength;
+    result = sample_clamped(centered + wave + 0.5).rgb;
+#elif AC_EFFECT_ID == 246
+    float fade = 0.5 + 0.5 * sin(phase);
+    result = source.rgb * mix(1.0, fade, strength);
+#elif AC_EFFECT_ID == 247
+    float distance_value = mix(0.001, 0.06, scale_value) * strength;
+    result = vec3(sample_clamped(uv + vec2(distance_value, 0.0)).r,
+                  source.g,
+                  sample_clamped(uv - vec2(distance_value, 0.0)).b);
+#elif AC_EFFECT_ID == 248
+    int band_size = max(2, int(mix(3.0, 30.0, scale_value)));
+    int band = pixel.x / band_size;
+    int offset = int((0.5 + 0.5 * sin(phase + float(band))) *
+                     mix(5.0, 130.0, scale_value) * strength);
+    result = fetch_clamped(pixel - ivec2(0, offset), size).rgb;
+#elif AC_EFFECT_ID == 249
+    float random_value = fract(sin(dot(vec2(pixel), vec2(12.9898, 78.233)) +
+                                   floor(phase * 15.0)) *
+                                  43758.5453);
+    float snow = step(mix(0.9, 0.45, scale_value), random_value);
+    result = mix(source.rgb, vec3(random_value), snow * strength);
+#elif AC_EFFECT_ID == 250
+    float first_noise = fract(sin(dot(vec2(pixel), vec2(12.9898, 78.233)) +
+                                  floor(phase * 18.0)) *
+                                 43758.5453);
+    float second_noise = fract(sin(dot(vec2(pixel.yx), vec2(39.346, 11.135)) -
+                                   floor(phase * 23.0)) *
+                                  24634.6345);
+    vec3 snow_color = vec3(first_noise, second_noise,
+                           fract(first_noise * 7.0 + second_noise * 3.0));
+    result = mix(source.rgb, snow_color,
+                 step(mix(0.82, 0.25, scale_value), max(first_noise, second_noise)) * strength);
+#elif AC_EFFECT_ID == 251
+    int band_size = max(1, int(mix(2.0, 18.0, scale_value)));
+    int band = pixel.y / band_size;
+    float random_value = fract(sin(float(band) * 65.713 + floor(phase * 9.0)) *
+                                   43758.5453);
+    int offset = int((random_value - 0.5) * mix(12.0, 260.0, scale_value) * strength);
+    vec3 shifted = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+    result = random_value > 0.38 ? shifted : source.rgb;
+#elif AC_EFFECT_ID == 252
+    int slit = pixel.y / 64;
+    int local_y = pixel.y % 64;
+    int sample_y = slit * 64 + (63 - local_y);
+    result = fetch_clamped(ivec2(pixel.x, sample_y), size).rgb;
+#elif AC_EFFECT_ID == 253
+    int slit_size = max(4, int(mix(16.0, 128.0, 0.5 + 0.5 * sin(phase))));
+    int slit = pixel.y / slit_size;
+    int local_y = pixel.y % slit_size;
+    result = fetch_clamped(ivec2(pixel.x, slit * slit_size + slit_size - 1 - local_y), size).rgb;
+#elif AC_EFFECT_ID == 254
+    int slit_size = max(3, int(mix(6.0, 64.0, scale_value)));
+    int slit = pixel.y / slit_size;
+    float stretch = 1.0 + sin(phase + float(slit) * 0.47) * 0.75 * strength;
+    int local_y = int(float(pixel.y % slit_size) / max(stretch, 0.25));
+    result = fetch_clamped(ivec2(pixel.x, slit * slit_size + local_y), size).rgb;
+#elif AC_EFFECT_ID == 255
+    int band_size = max(2, int(mix(3.0, 26.0, scale_value)));
+    int band = pixel.y / band_size;
+    int direction = (band & 1) == 0 ? 1 : -1;
+    int offset = int(direction * (0.5 + 0.5 * sin(phase + float(band) * 0.2)) *
+                     mix(8.0, 180.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 256
+    int band_size = max(2, int(mix(4.0, 52.0, 0.5 + 0.5 * sin(phase))));
+    int band = pixel.y / band_size;
+    int direction = (band & 1) == 0 ? 1 : -1;
+    float scale = mix(0.65, 1.35, 0.5 + 0.5 * cos(phase + float(band)));
+    int sample_x = int((float(pixel.x) - float(size.x) * 0.5) / scale +
+                       float(size.x) * 0.5 + direction * float(band_size) * strength);
+    result = fetch_clamped(ivec2(sample_x, pixel.y), size).rgb;
+#elif AC_EFFECT_ID == 257
+    int distance_value = max(2, int(mix(4.0, 96.0, scale_value)));
+    int line = pixel.y / max(2, distance_value / 4);
+    int offset = int(sin(phase + float(line) * 0.33) * float(distance_value) * strength);
+    result = vec3(fetch_clamped(pixel + ivec2(offset, 0), size).r,
+                  fetch_clamped(pixel - ivec2(offset / 2, 0), size).g,
+                  fetch_clamped(pixel - ivec2(offset, 0), size).b);
+#elif AC_EFFECT_ID == 258
+    int distance_value = max(1, int(mix(3.0, 76.0, scale_value)));
+    vec3 first = fetch_clamped(pixel + ivec2(distance_value, 0), size).rgb;
+    vec3 second = fetch_clamped(pixel - ivec2(0, distance_value), size).rgb;
+    result = vec3((source.r + first.r) * 0.5,
+                  (source.g + second.g) * 0.5,
+                  (first.b + second.b) * 0.5);
+#elif AC_EFFECT_ID == 259
+    int distance_value = max(1, int(mix(3.0, 120.0, scale_value) *
+                                    (0.25 + 0.75 * abs(sin(phase)))));
+    result = vec3(fetch_clamped(pixel + ivec2(distance_value, 0), size).r,
+                  fetch_clamped(pixel - ivec2(distance_value / 2, 0), size).g,
+                  fetch_clamped(pixel + ivec2(0, distance_value), size).b);
+#elif AC_EFFECT_ID == 260
+    int distance_value = max(1, int(mix(3.0, 100.0, scale_value)));
+    vec3 horizontal = fetch_clamped(pixel + ivec2(distance_value, 0), size).rgb;
+    vec3 vertical = fetch_clamped(pixel + ivec2(0, distance_value), size).rgb;
+    vec3 diagonal = fetch_clamped(pixel - ivec2(distance_value), size).rgb;
+    result = vec3(horizontal.r, vertical.g, diagonal.b);
+#elif AC_EFFECT_ID == 261
+    int distance_value = max(4, int(mix(12.0, 240.0, scale_value)));
+    int offset = int(sin(phase * 0.6) * float(distance_value) * strength);
+    result = vec3(fetch_clamped(pixel + ivec2(offset, 0), size).r,
+                  fetch_clamped(pixel - ivec2(offset, 0), size).g,
+                  fetch_clamped(pixel + ivec2(offset / 2, offset / 2), size).b);
+#elif AC_EFFECT_ID == 262
+    vec3 fade = 0.5 + 0.5 * sin(phase + vec3(0.0, 2.094, 4.188));
+    result = mix(source.rgb, source.rgb * fade, strength);
+#elif AC_EFFECT_ID == 263
+    int distance_value = max(2, int(mix(4.0, 110.0, scale_value)));
+    int offset = int(sin(phase * 2.5) * float(distance_value));
+    vec3 trail = vec3(fetch_clamped(pixel + ivec2(offset, 0), size).r,
+                      fetch_clamped(pixel - ivec2(offset, 0), size).g,
+                      fetch_clamped(pixel + ivec2(0, offset), size).b);
+    result = sin(phase * 4.0) > 0.0 ? trail : vec3(1.0) - trail;
+#elif AC_EFFECT_ID == 264
+    vec3 frequency = mix(vec3(0.4, 0.7, 1.0), vec3(1.3, 2.1, 3.2), scale_value);
+    vec3 fade = 0.5 + 0.5 * sin(phase * frequency + vec3(0.0, 1.7, 3.4));
+    result = mix(source.rgb, source.rgb * fade, strength);
+#elif AC_EFFECT_ID == 265
+    int block_size = max(4, int(mix(8.0, 84.0, scale_value)));
+    ivec2 cell = pixel / block_size;
+    float random_value = fract(sin(dot(vec2(cell), vec2(27.17, 93.31)) +
+                                   floor(phase * 6.0)) *
+                                  43758.5453);
+    ivec2 offset = ivec2(int((random_value - 0.5) * float(block_size) * 4.0),
+                         int((fract(random_value * 19.0) - 0.5) * float(block_size) * 2.0));
+    result = random_value > 0.52 ? fetch_clamped(pixel + offset, size).bgr : source.rgb;
+#elif AC_EFFECT_ID == 266
+    int column_size = max(2, int(mix(3.0, 28.0, scale_value)));
+    int column = pixel.x / column_size;
+    int offset = int(sin(phase + float(column) * 0.36) *
+                     mix(5.0, 150.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(0, offset), size).rgb;
+#elif AC_EFFECT_ID == 267
+    int distance_value = max(1, int(mix(2.0, 36.0, scale_value)));
+    vec3 nearby = fetch_clamped(pixel - ivec2(distance_value, distance_value / 2), size).rgb;
+    result = mix(source.rgb, nearby, 0.5 * strength);
+#elif AC_EFFECT_ID == 268
+    vec2 centered = uv - 0.5;
+    float inward = mix(1.0, 0.55, (0.5 + 0.5 * sin(phase)) * strength);
+    vec2 sample_uv = vec2(sign(centered.x), sign(centered.y)) *
+                         pow(abs(centered) * 2.0, vec2(inward)) * 0.5 +
+                     0.5;
+    result = sample_clamped(sample_uv).rgb;
+#elif AC_EFFECT_ID == 269
+    int block_size = max(4, int(mix(8.0, 72.0, scale_value)));
+    ivec2 cell = pixel / block_size;
+    ivec2 center_cell = ivec2(size / block_size) / 2;
+    ivec2 direction = ivec2(sign(vec2(center_cell - cell)));
+    int offset = int((0.5 + 0.5 * sin(phase + float(cell.x + cell.y))) *
+                     float(block_size) * strength);
+    result = fetch_clamped(pixel + direction * offset, size).rgb;
+#elif AC_EFFECT_ID == 270
+    int block_size = max(4, int(mix(8.0, 88.0, 0.5 + 0.5 * sin(phase))));
+    ivec2 cell = pixel / block_size;
+    ivec2 center_cell = ivec2(size / block_size) / 2;
+    ivec2 direction = ivec2(sign(vec2(center_cell - cell)));
+    result = fetch_clamped(cell * block_size + direction *
+                           int(float(block_size) * strength), size).rgb;
+#elif AC_EFFECT_ID == 271
+    vec2 pulse = 0.5 + 0.5 * vec2(sin(phase), cos(phase * 0.77));
+    ivec2 block_size = max(ivec2(3), ivec2(mix(vec2(6.0), vec2(82.0), pulse * scale_value)));
+    ivec2 cell = pixel / block_size;
+    ivec2 center_cell = (size / block_size) / 2;
+    ivec2 direction = ivec2(sign(vec2(center_cell - cell)));
+    result = fetch_clamped(cell * block_size + direction *
+                           ivec2(vec2(block_size) * strength), size).rgb;
+#elif AC_EFFECT_ID == 272
+    int block_size = max(2, int(mix(3.0, 18.0, scale_value)));
+    ivec2 cell = pixel / block_size;
+    float random_value = fract(sin(dot(vec2(cell), vec2(17.17, 61.91)) +
+                                   floor(phase * 12.0)) *
+                                  43758.5453);
+    int offset = int((random_value - 0.5) * mix(20.0, 220.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, int(offset * 0.25)), size).rgb;
+#elif AC_EFFECT_ID == 273
+    int block_size = max(2, int(mix(3.0, 38.0, scale_value)));
+    ivec2 cell = pixel / block_size;
+    int diagonal = cell.x + cell.y;
+    ivec2 origin = cell * block_size + ivec2(diagonal % block_size);
+    result = fetch_clamped(origin, size).rgb;
+#elif AC_EFFECT_ID == 274
+    int block_size = max(2, int(mix(4.0, 64.0, 0.5 + 0.5 * sin(phase))));
+    ivec2 cell = pixel / block_size;
+    int diagonal = cell.x + cell.y;
+    result = fetch_clamped(cell * block_size + ivec2(diagonal % block_size), size).rgb;
+#elif AC_EFFECT_ID == 275
+    int block_size = max(3, int(mix(5.0, 48.0, scale_value)));
+    ivec2 cell = pixel / block_size;
+    int offset = (cell.x + cell.y) % block_size;
+    result = vec3(fetch_clamped(cell * block_size + ivec2(offset), size).r,
+                  fetch_clamped(cell * block_size - ivec2(offset / 2), size).g,
+                  fetch_clamped(cell * block_size + ivec2(-offset, offset), size).b);
+#elif AC_EFFECT_ID == 276
+    int distance_value = max(2, int(mix(5.0, 130.0, scale_value)));
+    int offset = int(sin(phase) * float(distance_value) * strength);
+    vec3 first = vec3(fetch_clamped(pixel + ivec2(offset, 0), size).r,
+                      fetch_clamped(pixel - ivec2(offset, 0), size).g,
+                      fetch_clamped(pixel + ivec2(0, offset), size).b);
+    vec3 second = fetch_clamped(pixel - ivec2(offset / 2), size).bgr;
+    result = (first + second) * 0.5;
+#elif AC_EFFECT_ID == 277
+    int offset = int((0.5 + 0.5 * sin(phase)) *
+                     mix(8.0, 220.0, scale_value) * strength);
+    result = fetch_clamped(pixel - ivec2(0, offset), size).rgb;
+#elif AC_EFFECT_ID == 278
+    int offset = int((0.5 + 0.5 * sin(phase)) *
+                     mix(8.0, 220.0, scale_value) * strength);
+    result = fetch_clamped(pixel - ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 279
+    int offset = int((0.5 + 0.5 * sin(phase)) *
+                     mix(8.0, 190.0, scale_value) * strength);
+    result = fetch_clamped(pixel - ivec2(offset), size).rgb;
+#elif AC_EFFECT_ID == 280
+    int offset = int(sin(phase) * mix(8.0, 180.0, scale_value) * strength);
+    vec2 flipped_uv = vec2(1.0 - uv.x, uv.y);
+    ivec2 sample_pixel = ivec2(flipped_uv * vec2(size)) + ivec2(offset, 0);
+    result = fetch_clamped(sample_pixel, size).rgb;
+#elif AC_EFFECT_ID == 281
+    float random_value = fract(sin(floor(phase * 3.0) * 93.713) * 43758.5453);
+    int offset = int((random_value - 0.5) * mix(10.0, 180.0, scale_value));
+    vec2 mirror_uv = random_value < 0.5 ? vec2(1.0 - uv.x, uv.y) :
+                                           vec2(uv.x, 1.0 - uv.y);
+    result = fetch_clamped(ivec2(mirror_uv * vec2(size)) + ivec2(offset), size).rgb;
+#elif AC_EFFECT_ID == 282
+    vec2 offset = vec2(sin(phase * 0.73), cos(phase * 1.17)) *
+                  mix(0.005, 0.22, scale_value) * strength;
+    result = sample_clamped(uv - offset).rgb;
+#elif AC_EFFECT_ID == 283
+    int distance_value = max(6, int(mix(18.0, 280.0, scale_value)));
+    int offset = int(sin(phase * 0.5) * float(distance_value) * strength);
+    result = vec3(fetch_clamped(pixel + ivec2(offset, 0), size).r,
+                  fetch_clamped(pixel - ivec2(offset, 0), size).g,
+                  fetch_clamped(pixel + ivec2(offset / 2, 0), size).b);
+#elif AC_EFFECT_ID == 284
+    int offset = int((float(pixel.x) / float(max(size.x - 1, 1))) *
+                     mix(4.0, 150.0, scale_value) * strength);
+    result.r = fetch_clamped(pixel - ivec2(offset, 0), size).r;
+#elif AC_EFFECT_ID == 285
+    int offset = int((float(pixel.x) / float(max(size.x - 1, 1))) *
+                     mix(4.0, 150.0, scale_value) * strength);
+    result.g = fetch_clamped(pixel - ivec2(offset, 0), size).g;
+#elif AC_EFFECT_ID == 286
+    int offset = int((float(pixel.x) / float(max(size.x - 1, 1))) *
+                     mix(4.0, 150.0, scale_value) * strength);
+    result.b = fetch_clamped(pixel - ivec2(offset, 0), size).b;
+#elif AC_EFFECT_ID == 287
+    int offset = int((float(pixel.y) / float(max(size.y - 1, 1))) *
+                     mix(4.0, 150.0, scale_value) * strength);
+    result.r = fetch_clamped(pixel - ivec2(0, offset), size).r;
+#elif AC_EFFECT_ID == 288
+    int offset = int((float(pixel.y) / float(max(size.y - 1, 1))) *
+                     mix(4.0, 150.0, scale_value) * strength);
+    result.g = fetch_clamped(pixel - ivec2(0, offset), size).g;
+#elif AC_EFFECT_ID == 289
+    int offset = int((float(pixel.y) / float(max(size.y - 1, 1))) *
+                     mix(4.0, 150.0, scale_value) * strength);
+    result.b = fetch_clamped(pixel - ivec2(0, offset), size).b;
+#elif AC_EFFECT_ID == 290
+    int line_size = max(1, int(mix(2.0, 18.0, scale_value)));
+    int column = pixel.x / line_size;
+    int offset = int(sin(phase + float(column) * 0.51) *
+                     mix(3.0, 110.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(0, offset), size).rgb;
+#elif AC_EFFECT_ID == 291
+    int line_size = max(1, int(mix(2.0, 18.0, scale_value)));
+    int row = pixel.y / line_size;
+    int offset = int(sin(phase + float(row) * 0.51) *
+                     mix(3.0, 110.0, scale_value) * strength);
+    result = fetch_clamped(pixel + ivec2(offset, 0), size).rgb;
+#elif AC_EFFECT_ID == 292
+    float maximum_value = max(source.r, max(source.g, source.b));
+    float minimum_value = min(source.r, min(source.g, source.b));
+    float delta = maximum_value - minimum_value;
+    float hue = delta < 0.0001 ? 0.0 :
+                maximum_value == source.r ? mod((source.g - source.b) / delta, 6.0) / 6.0 :
+                maximum_value == source.g ? ((source.b - source.r) / delta + 2.0) / 6.0 :
+                                             ((source.r - source.g) / delta + 4.0) / 6.0;
+    float saturation = maximum_value < 0.0001 ? 0.0 : delta / maximum_value;
+    vec3 tripped = hsv_to_rgb(vec3(fract(hue + phase * 0.05 * strength),
+                                   clamp(saturation * mix(1.0, 2.0, scale_value), 0.0, 1.0),
+                                   maximum_value));
+    result = mix(source.rgb, tripped, strength);
+#elif AC_EFFECT_ID == 293
+    int line_size = max(2, int(mix(3.0, 24.0, scale_value)));
+    int diagonal = (pixel.x + pixel.y) / line_size;
+    float expansion = sin(phase + float(diagonal) * 0.27) *
+                      mix(3.0, 120.0, scale_value) * strength;
+    ivec2 direction = ivec2(pixel.x < size.x / 2 ? -1 : 1,
+                            pixel.y < size.y / 2 ? -1 : 1);
+    result = fetch_clamped(pixel + direction * int(expansion), size).rgb;
+#elif AC_EFFECT_ID == 294
+    float luminance = dot(source.rgb, vec3(0.299, 0.587, 0.114));
+    float contrast = mix(0.7, 2.8, scale_value);
+    vec3 mapped = clamp((source.rgb - luminance) * contrast +
+                        smoothstep(0.0, 1.0, luminance), 0.0, 1.0);
+    result = mix(source.rgb, mapped, strength);
+#elif AC_EFFECT_ID == 295
+    uvec3 value = to_u8(source.rgb);
+    uint sum_value = (value.r + value.g + value.b) & 255u;
+    uint mask = uint(float(sum_value) * (0.5 + 0.5 * sin(phase)) * strength);
+    result = from_u8(value ^ uvec3(mask));
+#elif AC_EFFECT_ID == 296
+    float left_value = dot(fetch_clamped(pixel - ivec2(1, 0), size).rgb,
+                           vec3(0.299, 0.587, 0.114));
+    float right_value = dot(fetch_clamped(pixel + ivec2(1, 0), size).rgb,
+                            vec3(0.299, 0.587, 0.114));
+    float upper_value = dot(fetch_clamped(pixel - ivec2(0, 1), size).rgb,
+                            vec3(0.299, 0.587, 0.114));
+    float lower_value = dot(fetch_clamped(pixel + ivec2(0, 1), size).rgb,
+                            vec3(0.299, 0.587, 0.114));
+    float edge = clamp(abs(right_value - left_value) + abs(lower_value - upper_value), 0.0, 1.0);
+    result = mix(source.rgb, vec3(edge), strength);
+#elif AC_EFFECT_ID == 297
+    float top_left = dot(fetch_clamped(pixel + ivec2(-1, -1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float top = dot(fetch_clamped(pixel + ivec2(0, -1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float top_right = dot(fetch_clamped(pixel + ivec2(1, -1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float left_value = dot(fetch_clamped(pixel + ivec2(-1, 0), size).rgb, vec3(0.299, 0.587, 0.114));
+    float right_value = dot(fetch_clamped(pixel + ivec2(1, 0), size).rgb, vec3(0.299, 0.587, 0.114));
+    float bottom_left = dot(fetch_clamped(pixel + ivec2(-1, 1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float bottom = dot(fetch_clamped(pixel + ivec2(0, 1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float bottom_right = dot(fetch_clamped(pixel + ivec2(1, 1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float gradient_x = -top_left - 2.0 * left_value - bottom_left +
+                       top_right + 2.0 * right_value + bottom_right;
+    float gradient_y = -top_left - 2.0 * top - top_right +
+                       bottom_left + 2.0 * bottom + bottom_right;
+    float edge = clamp(length(vec2(gradient_x, gradient_y)), 0.0, 1.0);
+    result = mix(source.rgb, vec3(edge), strength);
+#elif AC_EFFECT_ID == 298
+    float top_left = dot(fetch_clamped(pixel + ivec2(-1, -1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float top = dot(fetch_clamped(pixel + ivec2(0, -1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float top_right = dot(fetch_clamped(pixel + ivec2(1, -1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float left_value = dot(fetch_clamped(pixel + ivec2(-1, 0), size).rgb, vec3(0.299, 0.587, 0.114));
+    float right_value = dot(fetch_clamped(pixel + ivec2(1, 0), size).rgb, vec3(0.299, 0.587, 0.114));
+    float bottom_left = dot(fetch_clamped(pixel + ivec2(-1, 1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float bottom = dot(fetch_clamped(pixel + ivec2(0, 1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float bottom_right = dot(fetch_clamped(pixel + ivec2(1, 1), size).rgb, vec3(0.299, 0.587, 0.114));
+    float gradient_x = -top_left - 2.0 * left_value - bottom_left +
+                       top_right + 2.0 * right_value + bottom_right;
+    float gradient_y = -top_left - 2.0 * top - top_right +
+                       bottom_left + 2.0 * bottom + bottom_right;
+    float edge = length(vec2(gradient_x, gradient_y));
+    float threshold_value = mix(0.05, 0.7, scale_value);
+    result = mix(source.rgb, vec3(step(threshold_value, edge)), strength);
+#elif AC_EFFECT_ID == 299
+    int radius = max(1, int(mix(1.0, 5.0, scale_value)));
+    vec3 first = fetch_clamped(pixel - ivec2(radius, 0), size).rgb;
+    vec3 second = fetch_clamped(pixel + ivec2(radius, 0), size).rgb;
+    vec3 third = fetch_clamped(pixel - ivec2(0, radius), size).rgb;
+    vec3 fourth = fetch_clamped(pixel + ivec2(0, radius), size).rgb;
+    vec3 minimum_color = min(source.rgb, min(first, min(second, min(third, fourth))));
+    vec3 maximum_color = max(source.rgb, max(first, max(second, max(third, fourth))));
+    result = source.rgb + first + second + third + fourth - minimum_color - maximum_color;
+    result /= 3.0;
 #endif
 
     result = mix(source.rgb, result, clamp(mix_amount, 0.0, 1.0));
