@@ -8,9 +8,9 @@ dispatch mechanism are excluded.
 ## Progress
 
 - Target: 300 shaders
-- Source shaders created: 50
-- Compile validated: 50
-- Remaining: 250
+- Source shaders created: 200
+- Compile validated: 200
+- Remaining: 100
 
 The first batch establishes the shared ACMXVK compute ABI and covers direct
 color, channel, geometry, scanline, pixelation, block, bitwise, gradient, and
@@ -71,12 +71,162 @@ exposed through slots 0 through 3 in `library.json`.
 | 48 | GradientColors | `GradientColors` | gradient | `compute/gradientcolors.comp` | Compiled | Animated cosine palette |
 | 49 | Threshold | `Threshold` | threshold | `compute/threshold.comp` | Compiled | Per-channel threshold |
 | 50 | ThresholdDark | `ThresholdDark` | threshold | `compute/thresholddark.comp` | Compiled | Luma dark-threshold removal |
+| 51 | Flash Black | `FlashBlack` | strobe | `compute/flash_black.comp` | Compiled | Alternating source and black |
+| 52 | FlashWhite | `FlashWhite` | strobe | `compute/flashwhite.comp` | Compiled | Alternating source and white |
+| 53 | FlashBlackAndWhite | `FlashBlackAndWhite` | strobe | `compute/flashblackandwhite.comp` | Compiled | Black-and-white flash |
+| 54 | Strobe Red Then Green Then Blue | `StrobeRedGreenBlue` | strobe | `compute/strobe_red_then_green_then_blue.comp` | Compiled | Cycling isolated RGB channels |
+| 55 | RGBFlash | `RGBFlash` | strobe | `compute/rgbflash.comp` | Compiled | Animated RGB color flash |
+| 56 | StrobeScan | `StrobeScan` | strobe | `compute/strobescan.comp` | Compiled | Moving luminous scan band |
+| 57 | NegativeStrobe | `NegativeStrobe` | strobe | `compute/negativestrobe.comp` | Compiled | Source and negative strobe |
+| 58 | BrightStrobe | `BrightStrobe` | strobe | `compute/brightstrobe.comp` | Compiled | Brightness strobe |
+| 59 | DarkStrobe | `DarkStrobe` | strobe | `compute/darkstrobe.comp` | Compiled | Darkness strobe |
+| 60 | HalfNegateStrobe | `HalfNegateStrobe` | strobe | `compute/halfnegatestrobe.comp` | Compiled | Moving partial negative |
+| 61 | FadeStrobe | `FadeStrobe` | strobe | `compute/fadestrobe.comp` | Compiled | Smooth source-to-negative fade |
+| 62 | MirrorStrobe | `MirrorStrobe` | strobe | `compute/mirrorstrobe.comp` | Compiled | Alternating source and mirror |
+| 63 | AndStrobe | `AndStrobe` | strobe | `compute/andstrobe.comp` | Compiled | Animated byte AND mask |
+| 64 | OrStrobe | `OrStrobe` | strobe | `compute/orstrobe.comp` | Compiled | Animated byte OR mask |
+| 65 | RandomStrobeFlash | `RandomStrobeFlash` | strobe | `compute/randomstrobeflash.comp` | Compiled | Frame-seeded negative flashes |
+| 66 | ScaleFlash | `ScaleFlash` | strobe | `compute/scaleflash.comp` | Compiled | Animated center zoom |
+| 67 | ColorFlashIncrease | `ColorFlashIncrease` | strobe | `compute/colorflashincrease.comp` | Compiled | Additive animated color flash |
+| 68 | Wave | `Wave` | distort | `compute/wave.comp` | Compiled | Horizontal sine displacement |
+| 69 | HighWave | `HighWave` | distort | `compute/highwave.comp` | Compiled | High-amplitude sine displacement |
+| 70 | Double Vision | `DoubleVision` | distort | `compute/double_vision.comp` | Compiled | Symmetric offset blend |
+| 71 | SlideRGB | `SlideRGB` | distort | `compute/slidergb.comp` | Compiled | Multi-axis RGB displacement |
+| 72 | Side2Side | `Side2Side` | distort | `compute/side2side.comp` | Compiled | Animated horizontal slide |
+| 73 | Top2Bottom | `Top2Bottom` | distort | `compute/top2bottom.comp` | Compiled | Animated vertical slide |
+| 74 | Outward | `Outward` | distort | `compute/outward.comp` | Compiled | Animated center expansion |
+| 75 | Outward Square | `OutwardSquare` | distort | `compute/outward_square.comp` | Compiled | Square-distance expansion |
+| 76 | ShiftPixels | `ShiftPixels` | distort | `compute/shiftpixels.comp` | Compiled | Row-band horizontal displacement |
+| 77 | ShiftPixelsDown | `ShiftPixelsDown` | distort | `compute/shiftpixelsdown.comp` | Compiled | Column-band vertical displacement |
+| 78 | DiagonalLines | `DiagonalLines` | line | `compute/diagonallines.comp` | Compiled | Animated diagonal line modulation |
+| 79 | HorizontalLines | `HorizontalLines` | line | `compute/horizontallines.comp` | Compiled | Animated horizontal line modulation |
+| 80 | Lines | `Lines` | line | `compute/lines.comp` | Compiled | Crossed animated line modulation |
+| 81 | WhiteLines | `WhiteLines` | line | `compute/whitelines.comp` | Compiled | Thin white line overlay |
+| 82 | ThickWhiteLines | `ThickWhiteLines` | line | `compute/thickwhitelines.comp` | Compiled | Thick white line overlay |
+| 83 | GradientLines | `GradientLines` | gradient | `compute/gradientlines.comp` | Compiled | Rainbow diagonal gradient lines |
+| 84 | GradientSelf | `GradientSelf` | gradient | `compute/gradientself.comp` | Compiled | Horizontal self-gradient |
+| 85 | GradientSelfVertical | `GradientSelfVertical` | gradient | `compute/gradientselfvertical.comp` | Compiled | Vertical self-gradient |
+| 86 | GradientStripes | `GradientStripes` | gradient | `compute/gradientstripes.comp` | Compiled | Animated color stripes |
+| 87 | GradientReverse | `GradientReverse` | gradient | `compute/gradientreverse.comp` | Compiled | Reverse horizontal gradient |
+| 88 | GradientReverseVertical | `GradientReverseVertical` | gradient | `compute/gradientreversevertical.comp` | Compiled | Reverse vertical gradient |
+| 89 | GradientReverseBox | `GradientReverseBox` | gradient | `compute/gradientreversebox.comp` | Compiled | Repeated box gradient |
+| 90 | GradientNewFilter | `GradientNewFilter` | gradient | `compute/gradientnewfilter.comp` | Compiled | Animated palette modulation |
+| 91 | GradientLeftRightInOut | `GradientLeftRightInOut` | gradient | `compute/gradientleftrightinout.comp` | Compiled | Centered horizontal gradient |
+| 92 | GradientUpDownInOut | `GradientUpDownInOut` | gradient | `compute/gradientupdowninout.comp` | Compiled | Centered vertical gradient |
+| 93 | SquareBars | `SquareBars` | grid | `compute/squarebars.comp` | Compiled | Alternating square bar sampling |
+| 94 | SquareBars8 | `SquareBars8` | grid | `compute/squarebars8.comp` | Compiled | Eight-pixel square bars |
+| 95 | SquareVertical8 | `SquareVertical8` | grid | `compute/squarevertical8.comp` | Compiled | Eight-pixel vertical mirror bars |
+| 96 | SquareVertical16 | `SquareVertical16` | grid | `compute/squarevertical16.comp` | Compiled | Sixteen-pixel vertical mirror bars |
+| 97 | GridFilter8x | `GridFilter8x` | grid | `compute/gridfilter8x.comp` | Compiled | Eight-pixel grid sampling |
+| 98 | GridFilter16x | `GridFilter16x` | grid | `compute/gridfilter16x.comp` | Compiled | Sixteen-pixel grid sampling |
+| 99 | GridFilter8xBlend | `GridFilter8xBlend` | grid | `compute/gridfilter8xblend.comp` | Compiled | Blended eight-pixel grid |
+| 100 | Circular | `Circular` | distort | `compute/circular.comp` | Compiled | Polar circular distortion |
+| 101 | Self AlphaBlend | `SelfAlphaBlend` | blend | `compute/self_alphablend.comp` | Compiled | Adjustable nearby-pixel self blend |
+| 102 | Self Scale | `SelfScale` | color | `compute/self_scale.comp` | Compiled | Wrapped byte-channel scaling |
+| 103 | Blend #3 | `Blend3` | blend | `compute/blend_3.comp` | Compiled | Source and dual-flip average |
+| 104 | MirrorBlend | `MirrorBlend` | mirror | `compute/mirrorblend.comp` | Compiled | Adjustable horizontal mirror blend |
+| 105 | Mirror Average | `MirrorAverage` | mirror | `compute/mirror_average.comp` | Compiled | Horizontal mirror average |
+| 106 | Mirror Average Mix | `MirrorAverageMix` | mirror | `compute/mirror_average_mix.comp` | Compiled | Source and dual-mirror mix |
+| 107 | MoveRed | `MoveRed` | channel | `compute/movered.comp` | Compiled | Animated red-channel displacement |
+| 108 | MoveRGB | `MoveRGB` | channel | `compute/movergb.comp` | Compiled | Animated three-channel displacement |
+| 109 | MoveRedGreenBlue | `MoveRedGreenBlue` | channel | `compute/moveredgreenblue.comp` | Compiled | Diagonal RGB displacement |
+| 110 | HorizontalBlend | `HorizontalBlend` | blend | `compute/horizontalblend.comp` | Compiled | Horizontal neighbor blend |
+| 111 | VerticalBlend | `VerticalBlend` | blend | `compute/verticalblend.comp` | Compiled | Vertical neighbor blend |
+| 112 | OppositeBlend | `OppositeBlend` | blend | `compute/oppositeblend.comp` | Compiled | Opposite-coordinate blend |
+| 113 | Soft_Mirror | `Soft_Mirror` | mirror | `compute/soft_mirror.comp` | Compiled | Edge-weighted mirror |
+| 114 | ColorMorphing | `ColorMorphing` | color | `compute/colormorphing.comp` | Compiled | Animated source-driven palette |
+| 115 | LineRGB | `LineRGB` | channel | `compute/linergb.comp` | Compiled | RGB channel line bands |
+| 116 | PixelRGB | `PixelRGB` | channel | `compute/pixelrgb.comp` | Compiled | RGB channel pixel pattern |
+| 117 | BoxedRGB | `BoxedRGB` | channel | `compute/boxedrgb.comp` | Compiled | RGB channel block pattern |
+| 118 | ColorRange | `ColorRange` | color | `compute/colorrange.comp` | Compiled | Adjustable color quantization |
+| 119 | InterMirror | `InterMirror` | mirror | `compute/intermirror.comp` | Compiled | Interlaced horizontal mirror |
+| 120 | InterFullMirror | `InterFullMirror` | mirror | `compute/interfullmirror.comp` | Compiled | Checkerboard dual-axis mirror |
+| 121 | MirrorRGB | `MirrorRGB` | mirror | `compute/mirrorrgb.comp` | Compiled | Mirror-separated RGB channels |
+| 122 | AverageVertical | `AverageVertical` | blend | `compute/averagevertical.comp` | Compiled | Three-sample vertical average |
+| 123 | RGBMirror | `RGBMirror` | mirror | `compute/rgbmirror.comp` | Compiled | RGB dual-axis mirror |
+| 124 | RandomXorOpposite | `RandomXorOpposite` | bitwise | `compute/randomxoropposite.comp` | Compiled | Seeded opposite-pixel XOR |
+| 125 | RandomMirror | `RandomMirror` | mirror | `compute/randommirror.comp` | Compiled | Frame-selected mirror axis |
+| 126 | RandomMirrorBlend | `RandomMirrorBlend` | mirror | `compute/randommirrorblend.comp` | Compiled | Adjustable random-axis mirror blend |
+| 127 | RandomMirrorAlphaBlend | `RandomMirrorAlphaBlend` | mirror | `compute/randommirroralphablend.comp` | Compiled | Seeded random mirror alpha |
+| 128 | MirrorXor | `MirrorXor` | bitwise | `compute/mirrorxor.comp` | Compiled | Source and horizontal-mirror XOR |
+| 129 | MirrorXorAll | `MirrorXorAll` | bitwise | `compute/mirrorxorall.comp` | Compiled | Source and dual-mirror XOR |
+| 130 | MirrorXorScale | `MirrorXorScale` | bitwise | `compute/mirrorxorscale.comp` | Compiled | Scaled mirror byte XOR |
+| 131 | EnergyMirror | `EnergyMirror` | mirror | `compute/energymirror.comp` | Compiled | Amplified mirror difference |
+| 132 | MirrorXorAlpha | `MirrorXorAlpha` | bitwise | `compute/mirrorxoralpha.comp` | Compiled | Alpha blend with mirror XOR |
+| 133 | FlipMirror | `FlipMirror` | mirror | `compute/flipmirror.comp` | Compiled | Split-axis mirror |
+| 134 | FlipMirrorAverage | `FlipMirrorAverage` | mirror | `compute/flipmirroraverage.comp` | Compiled | Average of source and axis mirrors |
+| 135 | AlphaBlendWithSource | `AlphaBlendWithSource` | blend | `compute/alphablendwithsource.comp` | Compiled | Adjustable scaled-source blend |
+| 136 | RGBMirror1 | `RGBMirror1` | mirror | `compute/rgbmirror1.comp` | Compiled | Reordered mirrored RGB channels |
+| 137 | FlashMirror | `FlashMirror` | mirror | `compute/flashmirror.comp` | Compiled | Mirror negative flash |
+| 138 | ReverseMirrorX | `ReverseMirrorX` | mirror | `compute/reversemirrorx.comp` | Compiled | Reverse folded mirror |
+| 139 | MirrorXorAll_Reverse | `MirrorXorAll_Reverse` | bitwise | `compute/mirrorxorall_reverse.comp` | Compiled | Reverse all-mirror XOR |
+| 140 | MirrorRGBReverse | `MirrorRGBReverse` | mirror | `compute/mirrorrgbreverse.comp` | Compiled | Reverse mirrored channels |
+| 141 | MirrorRGBReverseBlend | `MirrorRGBReverseBlend` | mirror | `compute/mirrorrgbreverseblend.comp` | Compiled | Reverse mirror channel blend |
+| 142 | MirrorBitwiseXor | `MirrorBitwiseXor` | bitwise | `compute/mirrorbitwisexor.comp` | Compiled | Rotated-bit mirror XOR |
+| 143 | AlphaBlendMirror | `AlphaBlendMirror` | mirror | `compute/alphablendmirror.comp` | Compiled | Dual-mirror alpha blend |
+| 144 | TwistedMirror | `TwistedMirror` | mirror | `compute/twistedmirror.comp` | Compiled | Polar twisted mirror |
+| 145 | FlipAlphaBlend | `FlipAlphaBlend` | blend | `compute/flipalphablend.comp` | Compiled | Animated axis-flip blend |
+| 146 | MirrorMedian | `MirrorMedian` | mirror | `compute/mirrormedian.comp` | Compiled | Mirror and horizontal-neighbor median |
+| 147 | MirrorAlphaBlend | `MirrorAlphaBlend` | mirror | `compute/mirroralphablend.comp` | Compiled | Source and dual-mirror blend |
+| 148 | MirrorEachSecond | `MirrorEachSecond` | mirror | `compute/mirroreachsecond.comp` | Compiled | Timeline-selected mirror mode |
+| 149 | Mirror_Xor_Combined | `Mirror_Xor_Combined` | bitwise | `compute/mirror_xor_combined.comp` | Compiled | Combined mirror average XOR |
+| 150 | MirrorVerticalAndHorizontal | `MirrorVerticalAndHorizontal` | mirror | `compute/mirrorverticalandhorizontal.comp` | Compiled | Four-way mirror average |
+| 151 | Tri | `Tri` | geometry | `compute/tri.comp` | Compiled | Animated triangular color geometry |
+| 152 | Distort | `Distort` | distort | `compute/distort.comp` | Compiled | Two-axis sine distortion |
+| 153 | CosSinMultiply | `cossinMultiply` | color | `compute/cossinmultiply.comp` | Compiled | Cosine and sine color modulation |
+| 154 | Pixel Scale | `pixelScale` | pixelate | `compute/pixel_scale.comp` | Compiled | Animated pixel-block scaling |
+| 155 | Boxes | `Boxes` | grid | `compute/boxes.comp` | Compiled | Adjustable box grid |
+| 156 | Boxes Fade | `BoxesFade` | grid | `compute/boxes_fade.comp` | Compiled | Animated fading box grid |
+| 157 | WhitePixel | `WhitePixel` | pixelate | `compute/whitepixel.comp` | Compiled | Sparse animated white pixels |
+| 158 | FourSquare | `FourSquare` | geometry | `compute/foursquare.comp` | Compiled | Four-way tiled reflection |
+| 159 | EightSquare | `EightSquare` | geometry | `compute/eightsquare.comp` | Compiled | Eight-way tiled reflection |
+| 160 | DiagonalSquare | `DiagonalSquare` | geometry | `compute/diagonalsquare.comp` | Compiled | Diagonal square displacement |
+| 161 | DiagonalSquareRandom | `DiagonalSquareRandom` | geometry | `compute/diagonalsquarerandom.comp` | Compiled | Random diagonal square displacement |
+| 162 | SquareStretchDown | `SquareStretchDown` | distort | `compute/squarestretchdown.comp` | Compiled | Downward square-band stretch |
+| 163 | SquareStretchRight | `SquareStretchRight` | distort | `compute/squarestretchright.comp` | Compiled | Rightward square-band stretch |
+| 164 | SquareStretchUp | `SquareStretchUp` | distort | `compute/squarestretchup.comp` | Compiled | Upward square-band stretch |
+| 165 | SquareStretchLeft | `SquareStretchLeft` | distort | `compute/squarestretchleft.comp` | Compiled | Leftward square-band stretch |
+| 166 | RandomQuads | `RandomQuads` | geometry | `compute/randomquads.comp` | Compiled | Seeded quadrant transforms |
+| 167 | GridRandom | `GridRandom` | grid | `compute/gridrandom.comp` | Compiled | Seeded grid-cell displacement |
+| 168 | GridRandomPixel | `GridRandomPixel` | grid | `compute/gridrandompixel.comp` | Compiled | Seeded grid pixel replacement |
+| 169 | Curtain | `Curtain` | distort | `compute/curtain.comp` | Compiled | Horizontal curtain folds |
+| 170 | RandomCurtain | `RandomCurtain` | distort | `compute/randomcurtain.comp` | Compiled | Random horizontal curtain folds |
+| 171 | CurtainVertical | `CurtainVertical` | distort | `compute/curtainvertical.comp` | Compiled | Vertical curtain folds |
+| 172 | RandomCurtainVertical | `RandomCurtainVertical` | distort | `compute/randomcurtainvertical.comp` | Compiled | Random vertical curtain folds |
+| 173 | SlideFilter | `SlideFilter` | distort | `compute/slidefilter.comp` | Compiled | Alternating horizontal slides |
+| 174 | SlideFilterXor | `SlideFilterXor` | bitwise | `compute/slidefilterxor.comp` | Compiled | Horizontal slide byte XOR |
+| 175 | RandomSlideFilter | `RandomSlideFilter` | distort | `compute/randomslidefilter.comp` | Compiled | Seeded horizontal slides |
+| 176 | SlideUpDown | `SlideUpDown` | distort | `compute/slideupdown.comp` | Compiled | Alternating vertical slides |
+| 177 | SlideUpDownXor | `SlideUpDownXor` | bitwise | `compute/slideupdownxor.comp` | Compiled | Vertical slide byte XOR |
+| 178 | SlideUpDownRandom | `SlideUpDownRandom` | distort | `compute/slideupdownrandom.comp` | Compiled | Seeded vertical slides |
+| 179 | StretchOutward | `StretchOutward` | distort | `compute/stretchoutward.comp` | Compiled | Animated outward stretch |
+| 180 | ExpandFrame | `ExpandFrame` | distort | `compute/expandframe.comp` | Compiled | Animated frame expansion |
+| 181 | RotateFrame | `RotateFrame` | geometry | `compute/rotateframe.comp` | Compiled | Continuous frame rotation |
+| 182 | RotateFrameReverse | `RotateFrameReverse` | geometry | `compute/rotateframereverse.comp` | Compiled | Reverse frame rotation |
+| 183 | RotateSet | `RotateSet` | geometry | `compute/rotateset.comp` | Compiled | Stepped frame rotation |
+| 184 | RotateSetReverse | `RotateSetReverse` | geometry | `compute/rotatesetreverse.comp` | Compiled | Reverse stepped rotation |
+| 185 | PixelateExpandDistort | `PixelateExpandDistort` | pixelate | `compute/pixelateexpanddistort.comp` | Compiled | Pixelated radial expansion |
+| 186 | PixelateExpandDistortX | `PixelateExpandDistortX` | pixelate | `compute/pixelateexpanddistortx.comp` | Compiled | Pixelated horizontal expansion |
+| 187 | PixelateExpandDistortY | `PixelateExpandDistortY` | pixelate | `compute/pixelateexpanddistorty.comp` | Compiled | Pixelated vertical expansion |
+| 188 | PixelateExpandDistortExtra | `PixelateExpandDistortExtra` | pixelate | `compute/pixelateexpanddistortextra.comp` | Compiled | Layered pixel expansion distortion |
+| 189 | DistortPixelate | `DistortPixelate` | pixelate | `compute/distortpixelate.comp` | Compiled | Wave-distorted pixelation |
+| 190 | PixelateSquares | `PixelateSquares` | pixelate | `compute/pixelatesquares.comp` | Compiled | Checker-scaled square pixelation |
+| 191 | DiagPixel | `DiagPixel` | distort | `compute/diagpixel.comp` | Compiled | Diagonal pixel displacement |
+| 192 | DiagPixelY | `DiagPixelY` | distort | `compute/diagpixely.comp` | Compiled | Vertical diagonal displacement |
+| 193 | DiagPixelY2 | `DiagPixelY2` | distort | `compute/diagpixely2.comp` | Compiled | Alternating vertical diagonal displacement |
+| 194 | DiagPixelY3 | `DiagPixelY3` | distort | `compute/diagpixely3.comp` | Compiled | Layered vertical diagonal displacement |
+| 195 | DiagPixelY4 | `DiagPixelY4` | distort | `compute/diagpixely4.comp` | Compiled | RGB vertical diagonal displacement |
+| 196 | DiagSquare | `DiagSquare` | geometry | `compute/diagsquare.comp` | Compiled | Diagonal square-band sampling |
+| 197 | DiagSquareLarge | `DiagSquareLarge` | geometry | `compute/diagsquarelarge.comp` | Compiled | Large diagonal square-band sampling |
+| 198 | ExpandLeftRight | `ExpandLeftRight` | distort | `compute/expandleftright.comp` | Compiled | Horizontal center expansion |
+| 199 | ShiftPixelsRGB | `ShiftPixelsRGB` | channel | `compute/shiftpixelsrgb.comp` | Compiled | Independent RGB pixel shifts |
+| 200 | JaggedLine | `JaggedLine` | distort | `compute/jaggedline.comp` | Compiled | Seeded jagged line displacement |
 
 ## Validation policy
 
 Each batch must compile through ACMXVK's source-library builder before its
-status is changed to `Compiled`. Batch 1 compiled all 50 sources with zero
-failures using the ACMXVK builder. Visual equivalence is tracked separately from
+status is changed to `Compiled`. Batches 1 through 4 compiled all 200 sources
+with zero failures using the ACMXVK builder. Visual equivalence is tracked separately from
 compiler validation because some CPU filters depend on mutable static values
 whose GPU equivalents use the normalized library controls and ACMXVK shader
 timeline.
